@@ -72,8 +72,14 @@ app:
     username: ${ADMIN_USERNAME:admin}
     password: ${ADMIN_PASSWORD:}
 
+  # Browser origins allowed to call this API. Never a wildcard - see WebCorsConfig.
+  #
+  # The default carries the deployed frontend and the two Vite dev ports, so a fresh
+  # deployment works before anyone sets an environment variable. CORS_ALLOWED_ORIGINS
+  # REPLACES this list rather than adding to it: an override for a new frontend origin
+  # must repeat any dev origins it still wants.
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://engineers-day-registration.vercel.app,http://localhost:5173,http://localhost:3000}
 
 logging:
   level:

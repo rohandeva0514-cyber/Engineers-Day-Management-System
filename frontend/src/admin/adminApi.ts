@@ -8,8 +8,16 @@
  * Credentials are held in memory for the session and sent as HTTP Basic. They are
  * deliberately NOT written to localStorage — a persisted admin password on a
  * shared operations laptop outlives the person using it.
+ *
+ * The backend it talks to is `API_BASE_URL`, the same value the public client uses,
+ * rather than a relative `/api/admin`. A relative path resolves against whatever
+ * origin served the page, so once the frontend and the API were deployed to
+ * different hosts the panel asked the static host for its dashboard and got the
+ * single-page app's own 404 back. The dev proxy hid it, because there the two
+ * origins really are one.
  */
 
+import { API_BASE_URL } from '@/services/apiBaseUrl';
 import { ApiError } from '@/services/apiError';
 
 export interface AdminEventRow {
@@ -91,7 +99,7 @@ async function adminRequest<T>(path: string, init: RequestInit = {}): Promise<T>
     throw new ApiError('UNKNOWN', 'Not signed in.', 401);
   }
 
-  const response = await fetch(`/api/admin${path}`, {
+  const response = await fetch(`${API_BASE_URL}/admin${path}`, {
     ...init,
     headers: {
       Accept: 'application/json',

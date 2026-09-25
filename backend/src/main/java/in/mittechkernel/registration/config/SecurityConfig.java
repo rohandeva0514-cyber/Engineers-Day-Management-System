@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Who may call what.
@@ -84,12 +85,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           CorsConfigurationSource corsConfigurationSource)
+            throws Exception {
         return http
-                // The existing CORS configuration still applies; without this the
-                // security filter would reject the browser's preflight before it
-                // ever reached WebCorsConfig.
-                .cors(Customizer.withDefaults())
+                // The one policy from WebCorsConfig, injected rather than discovered,
+                // so this chain cannot silently lose its CORS handling if the bean is
+                // ever renamed. Security's CorsFilter runs ahead of the rest of the
+                // chain, so preflight is answered and every response - including a 401
+                // from this chain - carries the Access-Control-* headers.
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
                 // No browser form posts and no cookie session, so there is no CSRF
                 // vector to protect: every request carries its own credentials.

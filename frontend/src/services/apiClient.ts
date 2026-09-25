@@ -1,9 +1,10 @@
 /**
  * The HTTP boundary.
  *
- * This is the only module in the application that calls `fetch`. Components,
+ * This is the only module in the public application that calls `fetch`. Components,
  * pages and hooks talk to the typed endpoint modules in this folder; nothing
- * reaches past them to the network.
+ * reaches past them to the network. (The admin panel has its own client, for the
+ * reasons given there; it shares this one's base URL via `apiBaseUrl.ts`.)
  *
  * Its second job is turning every possible failure — a 422, a 502, an unplugged
  * network cable, an HTML error page from a misconfigured proxy — into one
@@ -11,14 +12,8 @@
  * never read a status code, and never see a stack trace.
  */
 
+import { API_BASE_URL } from './apiBaseUrl';
 import { ApiError, type ApiErrorBody, type ApiErrorCode } from './apiError';
-
-/**
- * In development this is `/api`, proxied to Spring Boot by Vite, so the browser
- * sees a same-origin request and CORS never enters the picture. In production set
- * `VITE_API_BASE_URL` to wherever the service is deployed.
- */
-const BASE_URL = import.meta.env['VITE_API_BASE_URL'] ?? '/api';
 
 /** Requests should fail visibly rather than hang a form open indefinitely. */
 const DEFAULT_TIMEOUT_MS = 15_000;
@@ -62,7 +57,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   let response: Response;
   try {
-    response = await fetch(`${BASE_URL}${path}`, {
+    response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers: {
         Accept: 'application/json',

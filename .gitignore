@@ -35,3 +35,6 @@ logs/
 # unreviewable, undeltafiable, and permanent once committed.
 assests/
 frontend/public/models/
+
+.vercel
+.env*.local

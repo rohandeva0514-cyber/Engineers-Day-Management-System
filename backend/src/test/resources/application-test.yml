@@ -18,7 +18,9 @@ spring:
 
 app:
   cors:
-    allowed-origins: http://localhost:5173
+    # Both shapes the policy has to get right: the deployed frontend and a dev server.
+    # CorsPolicyTest asserts against these exact values.
+    allowed-origins: https://engineers-day-registration.vercel.app,http://localhost:5173
 
 logging:
   level:

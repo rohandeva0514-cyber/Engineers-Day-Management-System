@@ -1,0 +1,37 @@
+# --- secrets -------------------------------------------------------------
+.env
+.env.local
+*.local.properties
+
+# --- java / maven --------------------------------------------------------
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+hs_err_pid*
+replay_pid*
+
+# --- node / frontend (later milestone) -----------------------------------
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# --- editors and os ------------------------------------------------------
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# --- logs ----------------------------------------------------------------
+*.log
+logs/
+
+# --- large binary assets -------------------------------------------------
+# Kept on disk, deliberately out of history: multi-megabyte binaries are
+# unreviewable, undeltafiable, and permanent once committed.
+assests/
+frontend/public/models/

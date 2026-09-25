@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: registration-service
+
+  datasource:
+    # Credentials come from the environment. Nothing secret is committed.
+    url: ${DB_URL:jdbc:postgresql://localhost:55432/engineers_day}
+    username: ${DB_USERNAME:engineers_day}
+    password: ${DB_PASSWORD:}
+    hikari:
+      pool-name: registration-pool
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      # A registration that cannot get a connection should fail fast and be retried,
+      # not hold a browser open for half a minute.
+      connection-timeout: 5000
+
+  jpa:
+    # Flyway owns the schema. Hibernate must never create, alter or drop it - a schema
+    # invented at boot would silently drop the CHECK constraints that make overselling
+    # impossible, and those constraints are load-bearing.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        format_sql: true
+    show-sql: ${SHOW_SQL:false}
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    # Errors are rendered by GlobalExceptionHandler in one consistent shape; the servlet
+    # container's default page would leak stack traces and break that contract.
+    include-message: never
+    include-stacktrace: never
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+logging:
+  level:
+    in.mittechkernel.registration: ${LOG_LEVEL:INFO}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never

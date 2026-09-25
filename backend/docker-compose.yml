@@ -1,0 +1,29 @@
+# Local development database only. Not a production deployment.
+#
+# Start with:  docker compose up -d
+# Stop with:   docker compose down          (keeps data)
+# Wipe with:   docker compose down -v       (drops the volume - Flyway rebuilds on next boot)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: engineers-day-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-engineers_day}
+      POSTGRES_USER: ${DB_USERNAME:-engineers_day}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-engineers_day}
+    ports:
+      - "${DB_PORT:-55432}:5432"
+    volumes:
+      - engineers-day-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # The app fails fast on a missing database, so wait until Postgres actually
+      # accepts connections rather than just until the container is running.
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-engineers_day} -d ${DB_NAME:-engineers_day}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  engineers-day-pgdata:

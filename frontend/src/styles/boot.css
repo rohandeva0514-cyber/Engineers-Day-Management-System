@@ -1,0 +1,375 @@
+/* ===========================================================================
+   Boot / initialization screen.
+
+   Everything is monospace and left-aligned to a single column. The console is
+   not centred decoration — it is meant to read as output from a machine that was
+   already running before you arrived.
+   =========================================================================== */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.25rem, 5vw, 4rem);
+  background: var(--color-void);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* --- signal-loss flash ---------------------------------------------------- */
+.boot__flash {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: var(--color-signal);
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: hard-light;
+}
+
+/* --- console -------------------------------------------------------------- */
+.boot__console {
+  position: relative;
+  z-index: 10;
+  width: min(60ch, 100%);
+  font-family: var(--font-mono);
+  font-size: clamp(0.66rem, 1.65vw, 0.82rem);
+  line-height: 1.85;
+  will-change: transform, opacity;
+}
+
+/* --- identity ------------------------------------------------------------- */
+.boot__identity {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1rem, 3.4vw, 1.5rem);
+  letter-spacing: 0.3em;
+  color: var(--color-ink);
+  opacity: 0;
+}
+
+.boot[data-phase='hold'] .boot__identity {
+  opacity: 0;
+}
+
+.boot:not([data-phase='hold']) .boot__identity {
+  opacity: 1;
+  animation: identity-in 0.9s var(--ease-out-expo) both;
+}
+
+@keyframes identity-in {
+  0% {
+    opacity: 0;
+    letter-spacing: 0.9em;
+    filter: blur(8px);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    letter-spacing: 0.3em;
+  }
+}
+
+/* Chromatic split, driven purely off the data attribute so the markup stays one
+   element. Only alive during the identity phase — a permanently aberrated logo
+   just looks broken. */
+.boot__identity::before,
+.boot__identity::after {
+  content: attr(data-glitch);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot[data-phase='identity'] .boot__identity::before {
+  color: var(--color-magenta);
+  opacity: 0.55;
+  animation: split-a 0.55s steps(2) 3;
+}
+
+.boot[data-phase='identity'] .boot__identity::after {
+  color: var(--color-tech);
+  opacity: 0.55;
+  animation: split-b 0.55s steps(2) 3;
+}
+
+@keyframes split-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-2px, 1px, 0);
+  }
+}
+
+@keyframes split-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(2px, -1px, 0);
+  }
+}
+
+/* --- header readouts ------------------------------------------------------ */
+.boot__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2ch;
+  margin: 0.9rem 0 1.6rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+}
+
+.boot__meta-row {
+  display: flex;
+  gap: 0.75ch;
+}
+
+.boot__meta dt {
+  color: var(--color-faint);
+}
+
+.boot__meta dd {
+  margin: 0;
+  color: var(--color-tech);
+}
+
+/* --- log ------------------------------------------------------------------ */
+.boot__log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* Reserved height, driven by the actual line count the component passes in.
+     Without it the console grows line by line and the whole block jitters upward
+     as it fills — the single most common tell of a fake terminal. */
+  min-height: calc(var(--boot-log-lines, 6) * 1.85em);
+}
+
+.boot__line {
+  display: flex;
+  align-items: baseline;
+  gap: 1ch;
+  white-space: nowrap;
+  animation: line-in 0.28s var(--ease-out-expo) both;
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translate3d(-6px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.boot__prompt {
+  color: var(--color-signal);
+}
+
+.boot__label {
+  color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.boot__status {
+  margin-left: auto;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.boot__status[data-state='PENDING'] {
+  color: var(--color-faint);
+}
+
+.boot__status[data-state='OK'] {
+  color: var(--color-signal);
+}
+
+.boot__status[data-state='READY'] {
+  color: var(--color-tech);
+}
+
+.boot__status[data-state='LOCKED'] {
+  color: var(--color-orange);
+}
+
+/* --- progress ------------------------------------------------------------- */
+.boot__progress {
+  display: flex;
+  align-items: baseline;
+  gap: 2ch;
+  margin-top: 1.4rem;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out-expo);
+}
+
+.boot__progress[data-visible='true'] {
+  opacity: 1;
+}
+
+.boot__bar {
+  color: var(--color-signal);
+  letter-spacing: -0.04em;
+  text-shadow: 0 0 14px rgb(0 255 156 / 0.35);
+}
+
+.boot__percent {
+  color: var(--color-ink);
+}
+
+/* --- ready prompt --------------------------------------------------------- */
+.boot__ready {
+  margin-top: 1.6rem;
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  transition:
+    opacity 0.4s var(--ease-out-expo),
+    transform 0.4s var(--ease-out-expo);
+  pointer-events: none;
+}
+
+.boot__ready[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.boot__ready-text {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.8rem, 2.2vw, 1rem);
+  letter-spacing: 0.34em;
+  color: var(--color-signal);
+  text-shadow: 0 0 22px rgb(0 255 156 / 0.4);
+}
+
+.boot__enter {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--color-signal);
+  background: transparent;
+  color: var(--color-signal);
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  animation: prompt-pulse 1.9s ease-in-out infinite;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.boot__enter:hover,
+.boot__enter:focus-visible {
+  background: var(--color-signal);
+  color: var(--color-void);
+  animation: none;
+}
+
+@keyframes prompt-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(0 255 156 / 0);
+    opacity: 0.86;
+  }
+  50% {
+    box-shadow: 0 0 26px -6px rgb(0 255 156 / 0.8);
+    opacity: 1;
+  }
+}
+
+/* --- title card ----------------------------------------------------------- */
+.boot__titlecard {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 2rem;
+  text-align: center;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.boot__title-kernel {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.62rem, 1.5vw, 0.78rem);
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  color: var(--color-tech);
+}
+
+.boot__title-main {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2rem, 9.5vw, 7rem);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  text-shadow: 0 0 60px rgb(0 255 156 / 0.22);
+}
+
+.boot__title-year {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.6rem, 13vw, 9rem);
+  line-height: 0.9;
+  letter-spacing: 0.08em;
+  /* Outlined, not filled: the year is structure, the name is the statement. */
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-signal);
+  text-shadow: 0 0 44px rgb(0 255 156 / 0.35);
+}
+
+/* ===========================================================================
+   Reduced motion: the console arrives fully resolved. Same content, same
+   prompt, no sequence — and no pulsing.
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .boot:not([data-phase='hold']) .boot__identity,
+  .boot__line {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+    letter-spacing: 0.3em;
+  }
+
+  .boot__line {
+    letter-spacing: normal;
+  }
+
+  .boot__enter {
+    animation: none;
+    opacity: 1;
+  }
+
+  .boot__identity::before,
+  .boot__identity::after {
+    display: none;
+  }
+}

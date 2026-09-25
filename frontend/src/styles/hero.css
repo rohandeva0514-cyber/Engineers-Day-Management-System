@@ -1,0 +1,222 @@
+/* ===========================================================================
+   Hero — the title screen.
+
+   Typography is the entire composition. Nothing decorative competes with it:
+   the grid, the rules and the HUD are frame, and the frame stays quiet.
+   =========================================================================== */
+
+.hero {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: clamp(4.5rem, 9vh, 7rem) clamp(1.25rem, 6vw, 5rem);
+}
+
+.hero__inner {
+  width: 100%;
+  max-width: 78rem;
+  margin: 0 auto;
+}
+
+/* --- hairline frame ------------------------------------------------------- */
+.hero__rule {
+  position: absolute;
+  left: clamp(1.25rem, 6vw, 5rem);
+  right: clamp(1.25rem, 6vw, 5rem);
+  height: 1px;
+  background: linear-gradient(to right, var(--color-signal), var(--color-line) 42%, transparent);
+  transform-origin: left center;
+}
+
+.hero__rule--top {
+  top: clamp(2.5rem, 6vh, 4rem);
+}
+
+.hero__rule--bottom {
+  bottom: clamp(2.5rem, 6vh, 4rem);
+  background: linear-gradient(to left, var(--color-tech), var(--color-line) 42%, transparent);
+  transform-origin: right center;
+}
+
+/* --- eyebrow -------------------------------------------------------------- */
+.hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.85ch;
+  margin: 0 0 clamp(1.5rem, 4vh, 2.5rem);
+  font-family: var(--font-mono);
+  font-size: clamp(0.6rem, 1.4vw, 0.72rem);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.hero__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-signal);
+  box-shadow: 0 0 12px var(--color-signal);
+  animation: hud-blink 2.4s ease-in-out infinite;
+}
+
+/* --- title ---------------------------------------------------------------- */
+.hero__title {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.88;
+}
+
+.hero__title-line {
+  display: block;
+  font-size: clamp(2.35rem, 9vw, 7.5rem);
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+  /* clip-path is animated on entry, so the element needs its own layer or the
+     reveal seams against the grid behind it. */
+  will-change: clip-path, transform;
+}
+
+.hero__title-line--year {
+  font-size: clamp(3rem, 12vw, 10rem);
+  letter-spacing: 0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-signal);
+  text-shadow: 0 0 50px rgb(0 255 156 / 0.28);
+}
+
+/* --- statement ------------------------------------------------------------ */
+.hero__statement {
+  max-width: 24ch;
+  margin: clamp(2rem, 5vh, 3.25rem) 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 3.2vw, 2.1rem);
+  line-height: 1.06;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-signal);
+  text-shadow: 0 0 34px rgb(0 255 156 / 0.25);
+}
+
+.hero__sub {
+  margin: 1rem 0 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.64rem, 1.5vw, 0.78rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* --- call to action ------------------------------------------------------- */
+.hero__actions {
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+
+.hero__cta {
+  display: inline-block;
+  padding: 0.85rem 1.6rem;
+  border: 1px solid var(--color-signal);
+  font-family: var(--font-mono);
+  font-size: clamp(0.68rem, 1.5vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-signal);
+  background: rgb(0 255 156 / 0.04);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition:
+    background-color 0.22s var(--ease-out-expo),
+    color 0.22s var(--ease-out-expo),
+    box-shadow 0.22s var(--ease-out-expo);
+}
+
+.hero__cta:hover,
+.hero__cta:focus-visible {
+  background: var(--color-signal);
+  color: var(--color-void);
+  box-shadow: 0 0 36px -8px var(--color-signal);
+}
+
+/* --- HUD readout ---------------------------------------------------------- */
+.hero__hud {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, max-content));
+  gap: clamp(1.25rem, 4vw, 3.5rem);
+  margin: clamp(2.75rem, 7vh, 4.5rem) 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.hero__hud-cell dt {
+  margin-bottom: 0.4rem;
+}
+
+.hero__hud-value {
+  display: flex;
+  align-items: center;
+  gap: 0.7ch;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--color-ink);
+}
+
+.hero__hud-value[data-kind='live'] {
+  color: var(--color-signal);
+}
+
+.hero__hud-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-signal);
+  box-shadow: 0 0 10px var(--color-signal);
+  animation: hud-blink 2s ease-in-out infinite;
+}
+
+/* --- scroll hint ---------------------------------------------------------- */
+.hero__scroll-hint {
+  position: absolute;
+  bottom: clamp(1rem, 2.8vh, 1.7rem);
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  color: var(--color-faint);
+  animation: hint-breathe 3.4s ease-in-out infinite;
+}
+
+@keyframes hint-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ===========================================================================
+   Reduced motion — the composition is identical, it simply does not assemble.
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .hero__eyebrow-dot,
+  .hero__hud-pulse,
+  .hero__scroll-hint {
+    animation: none;
+    opacity: 1;
+  }
+}

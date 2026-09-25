@@ -1,0 +1,134 @@
+/* ===========================================================================
+   Ambient backdrop.
+
+   Fixed, non-interactive, composited. Every layer is either static or animates
+   transform/opacity only, so the whole stack stays off the main thread.
+   =========================================================================== */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* The layers are siblings on one stacking context; containing the parent keeps
+     their paints and layout out of the rest of the document. Deliberately not
+     `strict` — that adds size containment, which an inset-sized fixed element
+     does not need and which makes the box behave surprisingly if it is ever
+     reparented. */
+  contain: layout paint style;
+}
+
+.backdrop > * {
+  position: absolute;
+  inset: 0;
+}
+
+/* --- base wash: not flat black. A cold blue-green bloom low in the frame so the
+   screen reads as a lit environment rather than an empty div. --- */
+.backdrop__wash {
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 110%, rgb(0 255 156 / 0.09), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 82% -10%, rgb(34 211 238 / 0.06), transparent 62%),
+    var(--color-void);
+}
+
+/* --- horizon: a single thin lit line, drifting slowly. The only continuously
+   moving element in the stack. --- */
+.backdrop__horizon {
+  top: auto;
+  bottom: 22%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(0 255 156 / 0.28) 22%,
+    rgb(34 211 238 / 0.22) 54%,
+    transparent 88%
+  );
+  opacity: 0;
+  filter: blur(0.4px);
+}
+
+.backdrop[data-variant='world'] .backdrop__horizon {
+  opacity: 1;
+  animation: horizon-drift 26s ease-in-out infinite alternate;
+}
+
+@keyframes horizon-drift {
+  from {
+    transform: translate3d(-4%, 0, 0) scaleX(1);
+  }
+  to {
+    transform: translate3d(4%, 0, 0) scaleX(1.06);
+  }
+}
+
+/* --- grids: coarse engineering grid over a fine measurement grid. The fine one
+   is masked to the lower half so the frame has a floor. --- */
+.backdrop__grid {
+  opacity: 0.55;
+  mask-image: radial-gradient(ellipse 100% 78% at 50% 50%, black 30%, transparent 88%);
+}
+
+.backdrop__grid-fine {
+  opacity: 0.5;
+  mask-image: linear-gradient(to bottom, transparent 42%, black 100%);
+}
+
+.backdrop[data-variant='boot'] .backdrop__grid {
+  opacity: 0.3;
+}
+
+.backdrop[data-variant='boot'] .backdrop__grid-fine {
+  opacity: 0;
+}
+
+/* --- film noise. One generated tile, repeated; no animation, because animated
+   grain is a full-viewport repaint every frame for an effect nobody consciously
+   sees. --- */
+.backdrop__noise {
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-size: 160px 160px;
+}
+
+/* --- CRT scanlines --- */
+.backdrop__scanlines {
+  opacity: 0.9;
+}
+
+/* --- the sweep: one soft bright band crossing the screen every ~9s. This is the
+   CRT refresh tell, and it is deliberately the slowest thing on screen. --- */
+.backdrop__sweep {
+  height: 28vh;
+  top: -28vh;
+  background: linear-gradient(to bottom, transparent, rgb(230 240 236 / 0.035), transparent);
+  animation: sweep 9s linear infinite;
+}
+
+@keyframes sweep {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 128vh, 0);
+  }
+}
+
+.backdrop__vignette {
+  opacity: 1;
+}
+
+/* Reduced motion: keep every texture, stop every movement. The screen still
+   looks like the same machine — it is simply idle. */
+@media (prefers-reduced-motion: reduce) {
+  .backdrop__sweep {
+    display: none;
+  }
+
+  .backdrop__horizon {
+    animation: none;
+  }
+}

@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    hikari:
+      # The concurrency test fires 50 simultaneous registrations; a 10-connection pool
+      # with a 5s timeout would fail them on connection acquisition rather than on the
+      # capacity rule under test.
+      maximum-pool-size: 25
+      connection-timeout: 20000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    # Tests run the real migrations, including the seed data. If a migration is wrong,
+    # the test suite finds out rather than production.
+    locations: classpath:db/migration
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173
+
+logging:
+  level:
+    in.mittechkernel.registration: INFO
+    org.testcontainers: WARN
+    com.github.dockerjava: WARN

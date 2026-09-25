@@ -1,0 +1,315 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   MIT TECH KERNEL — Engineers' Day 2026
+   Design tokens.
+
+   Direction: a futuristic engineering terminal from a cyberpunk game. Near-black
+   ground, one dominant signal green, cool-white type. Cyan / magenta / orange /
+   red exist, but they are punctuation — the moment three of them share a screen
+   the whole thing collapses into a neon template.
+
+   Colour semantics (enforced by usage, not by CSS):
+     green   active · online · unlocked · success · primary action
+     cyan    technical readouts, metadata, coordinates
+     magenta special / rare UI moments only
+     orange  challenge, in-progress, caution
+     red     warning, failure, destructive
+   =========================================================================== */
+
+@theme {
+  /* --- ground: near-black, a touch of blue so it reads as night, not ink --- */
+  --color-void: #04060a;
+  --color-panel: #090d13;
+  --color-raised: #0f151d;
+  --color-overlay: #161d28;
+
+  /* --- structure --- */
+  --color-line: #1c2530;
+  --color-line-bright: #2c3a49;
+
+  /* --- text: cool white, never pure white --- */
+  --color-ink: #e6f0ec;
+  --color-muted: #8a9a95;
+  --color-faint: #55655f;
+
+  /* --- primary signal: cyberpunk green --- */
+  --color-signal: #00ff9c;
+  --color-signal-soft: #05311f;
+  --color-signal-deep: #00b36d;
+
+  /* --- technical voice: electric cyan --- */
+  --color-tech: #22d3ee;
+  --color-tech-soft: #06303a;
+
+  /* --- accents, used sparingly --- */
+  --color-magenta: #ff2d95;
+  --color-magenta-soft: #3a0722;
+  --color-orange: #ff8a1f;
+  --color-orange-soft: #3a2006;
+
+  /* --- semantic status --- */
+  --color-ok: #00ff9c;
+  --color-ok-soft: #05311f;
+  --color-danger: #ff3b3b;
+  --color-danger-soft: #3a0d0d;
+  --color-closed: #6d7484;
+
+  /* --- type --- */
+  --font-display: 'Orbitron', 'Rajdhani', system-ui, sans-serif;
+  --font-sans: 'Rajdhani', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  /* --- motion: one easing vocabulary for the whole site --- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ===========================================================================
+   Base
+   =========================================================================== */
+
+@layer base {
+  * {
+    min-width: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Lenis owns scroll on the experience route; native smooth scroll fights it.
+       Anchor jumps elsewhere are instant by design. */
+    scroll-behavior: auto;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  /* Focus is a first-class state: the registration flow must be completable on a
+     keyboard alone. */
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-void);
+  }
+
+  * {
+    scrollbar-color: var(--color-line-bright) var(--color-void);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-void);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-bright);
+    border: 2px solid var(--color-void);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-signal-deep);
+  }
+
+  /* Numbers that sit in columns — seat counts, team sizes, timers — line up. */
+  [data-tabular] {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ===========================================================================
+   Utilities — the angular geometry and HUD grammar
+   =========================================================================== */
+
+@layer utilities {
+  /* Corner cuts. This is where "angular, not rounded" actually lives. A border
+     radius would put the whole thing straight back into SaaS territory. */
+  .clip-notch {
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  .clip-notch-sm {
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 100% 100%, 0 100%);
+  }
+
+  .clip-notch-tr {
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  }
+
+  /* The small uppercase monospace caption used for field names, metadata keys
+     and section markers. The technical voice of the interface. */
+  .label-tech {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
+
+  .label-tech-bright {
+    color: var(--color-tech);
+  }
+
+  /* Display type: wide, mechanical, unmistakably not web-default. */
+  .type-display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    line-height: 0.92;
+    text-transform: uppercase;
+  }
+
+  /* Restrained glow. Signal colour only, and only where something is live. */
+  .glow-signal {
+    box-shadow:
+      0 0 0 1px var(--color-signal),
+      0 0 18px -6px var(--color-signal);
+  }
+
+  .text-glow {
+    text-shadow:
+      0 0 18px rgb(0 255 156 / 0.45),
+      0 0 60px rgb(0 255 156 / 0.15);
+  }
+
+  .text-glow-soft {
+    text-shadow: 0 0 24px rgb(0 255 156 / 0.22);
+  }
+
+  /* --- ambient surface texture. Static, very low contrast. These should read as
+     material, never as a pattern you consciously notice. --- */
+
+  .surface-grid {
+    background-image:
+      linear-gradient(to right, rgb(0 255 156 / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(0 255 156 / 0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .surface-grid-fine {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.02) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .surface-scanlines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.016) 0px,
+      rgb(255 255 255 / 0.016) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+
+  /* CRT vignette — pulls attention to the centre and implies screen curvature
+     without a single pixel of WebGL. */
+  .surface-vignette {
+    background: radial-gradient(
+      ellipse 120% 90% at 50% 45%,
+      transparent 40%,
+      rgb(0 0 0 / 0.45) 78%,
+      rgb(0 0 0 / 0.82) 100%
+    );
+  }
+
+  /* Hairline rule used instead of card borders in dense lists. */
+  .rule-t {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .anim-rise {
+    animation: rise 0.45s var(--ease-out-expo) both;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The terminal caret. One blink rhythm shared by every prompt on the site. */
+  .caret::after {
+    content: '';
+    display: inline-block;
+    width: 0.58em;
+    height: 1.05em;
+    margin-left: 0.14em;
+    vertical-align: -0.16em;
+    background: currentColor;
+    animation: caret-blink 1.05s steps(1) infinite;
+  }
+
+  /* Status-indicator blink, shared by every "live" dot in the HUD so they all
+     breathe on the same rhythm instead of drifting against each other. */
+  @keyframes hud-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.28;
+    }
+  }
+
+  @keyframes caret-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+/* ===========================================================================
+   Reduced motion — the whole site must be usable with animation off.
+   Nothing here is decorative-only: every animated reveal has a settled end state
+   that doubles as its reduced-motion state.
+   =========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  /* The caret is an affordance, not decoration — it stays visible, just still. */
+  .caret::after {
+    opacity: 1 !important;
+  }
+}

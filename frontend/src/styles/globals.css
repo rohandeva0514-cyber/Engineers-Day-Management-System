@@ -273,6 +273,37 @@
     }
   }
 
+  /* --- pending surfaces ---
+     One slow band crossing a frame that has no content yet. Cyan, because this is
+     the interface reporting on itself and cyan is the technical readout voice —
+     green would claim the thing is live, which is the one thing it is not.
+
+     Animated on background-position rather than transform: the band sweeps without
+     the frame needing a second stacking context, and at 2.6s it reads as a system
+     scanning rather than as a spinner demanding attention. --- */
+  .anim-scan-sweep {
+    background-image: linear-gradient(
+      100deg,
+      transparent 34%,
+      rgb(34 211 238 / 0.05) 46%,
+      rgb(34 211 238 / 0.11) 50%,
+      rgb(34 211 238 / 0.05) 54%,
+      transparent 66%
+    );
+    background-repeat: no-repeat;
+    background-size: 260% 100%;
+    animation: scan-sweep 2.6s var(--ease-in-out-quart) infinite;
+  }
+
+  @keyframes scan-sweep {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+
   /* The terminal caret. One blink rhythm shared by every prompt on the site. */
   .caret::after {
     content: '';

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useEvents } from '@/hooks/useEvents';
 import { EventCard } from '@/features/events/EventCard';
 import { ErrorState } from '@/components/ErrorState';
-import { Spinner, SkeletonRow } from '@/components/Spinner';
+import { EventCatalogueSkeleton } from '@/features/events/EventCatalogueSkeleton';
 import { TechLabel } from '@/components/Panel';
 import { availabilityOf, isSolo, isYearEligible } from '@/domain/rules';
 import type { Event, YearLevel } from '@/domain/types';
@@ -96,8 +96,8 @@ export function EventsPage() {
         />
       </div>
 
-      <div className="pt-8">
-        {events.status === 'loading' && <LoadingGrid />}
+      <div className="pt-8" aria-busy={events.status === 'loading'}>
+        {events.status === 'loading' && <EventCatalogueSkeleton />}
 
         {events.status === 'error' && (
           <ErrorState
@@ -155,7 +155,11 @@ function FilterGroup<T extends string | number>({
   return (
     <fieldset className="min-w-0">
       <legend className="label-tech mb-2">{legend}</legend>
-      <div className="flex flex-wrap gap-px bg-line">
+      {/* `w-fit`, because the hairline separators between options ARE this
+          element's background showing through the 1px gaps. Left full-width it
+          also painted across the empty space after the last option, which read as
+          a stray track hanging off the end of the row. */}
+      <div className="flex w-fit flex-wrap gap-px bg-line">
         {options.map((option) => {
           const isSelected = option.value === selected;
           return (
@@ -183,21 +187,3 @@ function FilterGroup<T extends string | number>({
   );
 }
 
-function LoadingGrid() {
-  return (
-    <>
-      <Spinner label="Loading events" className="mb-6" />
-      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-hidden="true">
-        {Array.from({ length: 6 }, (_, index) => (
-          <li key={index} className="border border-line bg-panel p-5">
-            <SkeletonRow className="h-3 w-24" />
-            <SkeletonRow className="mt-4 h-6 w-40" />
-            <SkeletonRow className="mt-3 h-3 w-full" />
-            <SkeletonRow className="mt-2 h-3 w-4/5" />
-            <SkeletonRow className="mt-6 h-10 w-full" />
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}

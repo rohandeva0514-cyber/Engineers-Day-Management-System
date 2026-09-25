@@ -46,6 +46,23 @@ public class Event {
     @Column(name = "participation_type", length = 16, nullable = false)
     private ParticipationType participationType;
 
+    /**
+     * Whether entering this event uses up the student's one primary-event slot.
+     *
+     * <p>Data, not a code branch: see V6__event_registration_slot.sql for why.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "registration_slot", length = 16, nullable = false)
+    private RegistrationSlot registrationSlot;
+
+    /**
+     * Whether registering for this event issues an event-day access code.
+     *
+     * <p>Data, not a code branch: see V9. Nothing in Java names Debugging.
+     */
+    @Column(name = "requires_access_code", nullable = false)
+    private boolean requiresAccessCode;
+
     @Column(name = "min_team_size", nullable = false)
     private int minTeamSize;
 
@@ -130,6 +147,16 @@ public class Event {
         return participationType == ParticipationType.SOLO;
     }
 
+    /** True when this event can be held alongside a primary one without consuming it. */
+    public boolean isOpenSlot() {
+        return registrationSlot == RegistrationSlot.OPEN;
+    }
+
+    /** True when entering this event uses up the student's single primary slot. */
+    public boolean isPrimarySlot() {
+        return registrationSlot == RegistrationSlot.PRIMARY;
+    }
+
     /** True when the event requires a team of one fixed size, e.g. Tech Debate's exactly 10. */
     public boolean requiresExactTeamSize() {
         return participationType == ParticipationType.TEAM && minTeamSize == maxTeamSize;
@@ -155,6 +182,28 @@ public class Event {
 
     public ParticipationType getParticipationType() {
         return participationType;
+    }
+
+    public RegistrationSlot getRegistrationSlot() {
+        return registrationSlot;
+    }
+
+    /** True when a registration for this event must be issued an access code. */
+    public boolean requiresAccessCode() {
+        return requiresAccessCode;
+    }
+
+    /**
+     * Open or close this event by hand.
+     *
+     * <p>Only the admin path calls this. It changes whether entries are accepted; it
+     * does NOT touch capacity or seats, so reopening a full event still refuses the
+     * next entry at the seat claim. Those are separate concepts on purpose.
+     */
+    public void setRegistrationStatus(RegistrationStatus status) {
+        // updated_at is mapped read-only and has no ON UPDATE trigger, so it is not
+        // touched here rather than assigned a value that would never be persisted.
+        this.registrationStatus = java.util.Objects.requireNonNull(status, "status");
     }
 
     public int getMinTeamSize() {

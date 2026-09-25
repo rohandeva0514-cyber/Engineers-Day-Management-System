@@ -1,0 +1,181 @@
+/* ===========================================================================
+   Level 01 — events.
+
+   The manifest is an empty bay, and it is meant to read as deliberately empty
+   rather than as a broken grid: a drawn frame, evenly spaced slot markers, and
+   a status line saying what it is waiting for.
+   =========================================================================== */
+
+.events {
+  position: relative;
+  z-index: 10;
+}
+
+.events__manifest {
+  position: relative;
+  width: min(100%, 68rem);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 7vh, 5rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 10vh, 7rem);
+}
+
+/* The corner ticks. `preserveAspectRatio: none` lets one 1000×560 viewBox
+   stretch to whatever the bay actually measures, so the marks stay pinned to
+   the real corners at every width — with `non-scaling-stroke` keeping the
+   hairlines a true 1px instead of stretching with the box. */
+.events__bay {
+  position: absolute;
+  inset: clamp(0.75rem, 2vw, 1.5rem);
+  width: auto;
+  height: auto;
+  fill: none;
+  stroke: var(--color-line-bright);
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.events__bay-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+/* --- standby and offline -------------------------------------------------- */
+
+.events__standby,
+.events__offline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.25rem, 3vh, 2rem);
+  padding: clamp(2rem, 6vh, 4rem) 0;
+  text-align: center;
+}
+
+.events__offline-body {
+  max-width: 44ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 1.9vw, 0.95rem);
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.events__retry {
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--color-line-bright);
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  transition:
+    color 0.22s var(--ease-out-expo),
+    border-color 0.22s var(--ease-out-expo);
+}
+
+.events__retry:hover,
+.events__retry:focus-visible {
+  color: var(--color-signal);
+  border-color: var(--color-signal);
+}
+
+/* Red for a failed fetch, amber for work in progress — the standby dot and the
+   offline dot must not look alike. */
+.events__status[data-offline='true'] {
+  color: var(--color-danger);
+}
+
+.events__status-dot[data-offline='true'] {
+  background: var(--color-danger);
+}
+
+/* The loading slots pulse; they are not interactive and carry no label. */
+.events__standby .events__slot {
+  animation: standby-pulse 1.8s ease-in-out infinite;
+}
+
+.events__standby .events__slot:nth-child(2n) {
+  animation-delay: 0.22s;
+}
+
+.events__standby .events__slot:nth-child(3n) {
+  animation-delay: 0.44s;
+}
+
+@keyframes standby-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* --- status --------------------------------------------------------------- */
+
+.events__status {
+  display: flex;
+  align-self: center;
+  align-items: center;
+  gap: 0.9ch;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.56rem, 1.2vw, 0.66rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Amber, not green: nothing here is online yet, and green means live. */
+.events__status-dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-orange);
+  animation: hud-blink 2.6s ease-in-out infinite;
+}
+
+/* --- slot markers --------------------------------------------------------- */
+
+.events__slots {
+  display: flex;
+  gap: clamp(0.5rem, 1.8vw, 1.1rem);
+  width: 100%;
+  max-width: 42rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.events__slot {
+  flex: 1;
+  height: clamp(2.75rem, 8vh, 4.5rem);
+  border: 1px solid var(--color-line);
+  /* Cut corner, one side only — the same notch language as the rest of the
+     site, at a size that suits a marker rather than a panel. */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+  background: linear-gradient(to bottom, rgb(230 240 236 / 0.02), transparent);
+  transform-origin: center bottom;
+}
+
+
+
+
+
+/* On a phone seven markers in a row are 30px wide each. Two rows of full-height
+   markers read as a manifest; a row of slivers reads as a broken chart. */
+@media (max-width: 40rem) {
+  .events__slots {
+    flex-wrap: wrap;
+  }
+
+  .events__slot {
+    flex: 1 1 calc(25% - 0.5rem);
+    height: 2.5rem;
+  }
+}

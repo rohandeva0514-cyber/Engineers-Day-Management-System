@@ -56,39 +56,41 @@ class RegistrationRulesApiTest extends PostgresIntegrationTest {
     }
 
     @Test
-    @DisplayName("Tech Debate accepts a team of exactly 10")
-    void debateAcceptsExactlyTen() {
+    @DisplayName("Tech Debate accepts an individual entry")
+    void debateAcceptsAnIndividual() {
+        // Tech Debate is temporarily SOLO - see V4__tech_debate_solo.sql. When that
+        // migration is reverted this test goes back to asserting a roster of ten.
         ResponseEntity<JsonNode> response = register(
-                TestRequests.team("tech-debate", "Kernel Panic", "DB", 10, (short) 1));
+                TestRequests.solo("tech-debate", "DB001", (short) 1));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         JsonNode body = response.getBody();
         assertThat(body).isNotNull();
-        assertThat(body.get("registrations")).hasSize(10);
-        assertThat(body.get("team").get("size").asInt()).isEqualTo(10);
-        assertThat(body.get("team").get("captainRollNo").asText()).isEqualTo("DB001");
-
-        // Ten people, ten registration rows, one team.
-        assertThat(countRegistrations("tech-debate")).isEqualTo(10);
+        assertThat(body.get("registrations")).hasSize(1);
+        assertThat(body.get("team").isNull()).isTrue();
+        assertThat(countRegistrations("tech-debate")).isEqualTo(1);
     }
 
     @Test
-    @DisplayName("a participant can register for several eligible events")
-    void multiEventRegistrationIsAllowed() {
+    @DisplayName("a participant may hold one primary event plus the open event")
+    void onePrimaryPlusOpenIsAllowed() {
         ParticipantRequest student = TestRequests.participant("1MS24CS050", (short) 1);
 
+        // One primary event, plus the open event. A second primary is refused - see
+        // RegistrationSlots and V6__event_registration_slot.sql.
         assertThat(register(new RegistrationRequest("chess", null, List.of(student), null))
                 .getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(register(TestRequests.team("fix-it", "Turnaround 050",
+                List.of(student))).getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(register(new RegistrationRequest("buildx", null, List.of(student), null))
-                .getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(register(new RegistrationRequest("debugging", null, List.of(student), null))
-                .getStatusCode()).isEqualTo(HttpStatus.CREATED);
+                .getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 
-        ResponseEntity<JsonNode> mine =
-                http.getForEntity("/api/registrations?rollNo=1MS24CS050", JsonNode.class);
+        // Looked up by email: roll numbers repeat, so they cannot address a student.
+        ResponseEntity<JsonNode> mine = http.getForEntity(
+                "/api/registrations?email=1ms24cs050@mit.example.edu", JsonNode.class);
         assertThat(mine.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(mine.getBody()).isNotNull();
-        assertThat(mine.getBody().get("registrations")).hasSize(3);
+        assertThat(mine.getBody().get("registrations")).hasSize(2);
     }
 
     // ------------------------------------------------------------ eligibility
@@ -119,11 +121,13 @@ class RegistrationRulesApiTest extends PostgresIntegrationTest {
         assertThat(register(TestRequests.solo("chess", "1MS23IS009", (short) 2)).getStatusCode())
                 .isEqualTo(HttpStatus.CREATED);
 
-        // Now claims to be a first year to reach BuildX. The stored record wins.
+        // Same email, now claiming a different year to reach BuildX. Matched by email,
+        // so the stored record wins whatever roll number is submitted.
         ResponseEntity<JsonNode> response = register(
                 new RegistrationRequest("buildx", null,
                         List.of(new ParticipantRequest("1MS23IS009", "Student 1MS23IS009",
-                                "1ms23is009@mit.example.edu", (short) 1)), null));
+                                "1ms23is009@mit.example.edu", (short) 1,
+                                "9876543210", "Computer Engineering", "A")), null));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(codeOf(response)).isEqualTo("PARTICIPANT_IDENTITY_CONFLICT");
@@ -166,16 +170,19 @@ class RegistrationRulesApiTest extends PostgresIntegrationTest {
         assertThat(countRegistrations("ideathon")).isZero();
     }
 
-    @ParameterizedTest(name = "Tech Debate rejects a team of {0}")
-    @ValueSource(ints = {1, 9, 11})
-    @DisplayName("Tech Debate rejects anything other than exactly 10")
-    void debateRejectsWrongSize(int size) {
+    @ParameterizedTest(name = "Tech Debate rejects a roster of {0}")
+    @ValueSource(ints = {2, 10})
+    @DisplayName("Tech Debate rejects a team roster while it is solo")
+    void debateRejectsTeamRosters(int size) {
+        // While Tech Debate is SOLO the roster rule is enforced by the solo path, so a
+        // ten-person submission is refused as a team sent to a solo event rather than as
+        // a wrong team size.
         ResponseEntity<JsonNode> response = register(
-                TestRequests.team("tech-debate", "Wrong Size " + size, "WS" + size, size, (short) 1));
+                new RegistrationRequest("tech-debate", null,
+                        TestRequests.roster("WS" + size, size, (short) 1), null));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-        assertThat(codeOf(response)).isEqualTo("INVALID_TEAM_SIZE");
-        assertThat(response.getBody().get("message").asText()).contains("exactly 10");
+        assertThat(codeOf(response)).isEqualTo("SOLO_EVENT_REJECTS_TEAM");
         assertThat(countRegistrations("tech-debate")).isZero();
     }
 
@@ -293,7 +300,8 @@ class RegistrationRulesApiTest extends PostgresIntegrationTest {
     @DisplayName("a malformed payload returns 400 with per-field errors")
     void malformedPayloadIsRejected() {
         RegistrationRequest request = new RegistrationRequest("chess", null,
-                List.of(new ParticipantRequest("", "", "not-an-email", (short) 7)), null);
+                List.of(new ParticipantRequest("", "", "not-an-email", (short) 7,
+                        "", "", "")), null);
 
         ResponseEntity<JsonNode> response = register(request);
 

@@ -1,5 +1,10 @@
 /* ===========================================================================
-   HUD navigation strip.
+   Navigation.
+
+   Floating, not a bar. No background panel, no bottom border, no blur — over a
+   title sequence that chrome reads as "web page" before the title has said
+   anything. The links sit in the margin at the same 10px scale as the hero's
+   readouts, so the whole screen speaks in one voice.
    =========================================================================== */
 
 .hud-nav {
@@ -12,26 +17,27 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 0.7rem clamp(1.25rem, 6vw, 5rem);
+  padding: clamp(1.1rem, 3.5vh, 1.9rem) clamp(1.25rem, 5vw, 4rem);
   font-family: var(--font-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--color-line);
-  background: color-mix(in srgb, var(--color-void) 72%, transparent);
-  backdrop-filter: blur(10px);
-}
-
-.hud-nav__mark {
-  color: var(--color-ink);
-  font-weight: 700;
-  text-decoration: none;
+  font-size: 0.62rem;
+  font-weight: 400;
   letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 
-.hud-nav__mark span {
-  color: var(--color-signal);
-  margin: 0 0.15em;
+/* Holds the logo image. `flex` rather than inline so there is no baseline gap
+   under the image, and the link box is exactly the artwork. */
+.hud-nav__mark {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  text-decoration: none;
+  transition: opacity 0.22s var(--ease-out-expo);
+}
+
+.hud-nav__mark:hover,
+.hud-nav__mark:focus-visible {
+  opacity: 0.75;
 }
 
 .hud-nav__links {
@@ -46,12 +52,12 @@
   position: relative;
   color: var(--color-muted);
   text-decoration: none;
-  padding-bottom: 2px;
-  transition: color 0.2s var(--ease-out-expo);
+  padding-bottom: 3px;
+  transition: color 0.22s var(--ease-out-expo);
 }
 
-/* The underline grows from the left on hover — a readout filling, not a link
-   highlighting. */
+/* The underline fills from the left — a readout completing, not a link
+   highlighting. This is where green belongs: interaction, nothing else. */
 .hud-nav__link::after {
   content: '';
   position: absolute;
@@ -67,7 +73,7 @@
 
 .hud-nav__link:hover,
 .hud-nav__link:focus-visible {
-  color: var(--color-signal);
+  color: var(--color-ink);
 }
 
 .hud-nav__link:hover::after,
@@ -75,33 +81,32 @@
   transform: scaleX(1);
 }
 
-.hud-nav__status {
+/* Right-hand cluster: clock, then the community mark. */
+.hud-nav__right {
   display: flex;
   align-items: center;
-  gap: 0.7ch;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  min-width: 0;
+}
+
+.hud-nav__time {
   margin: 0;
-  color: var(--color-signal);
+  color: var(--color-faint);
+  letter-spacing: 0.16em;
 }
 
-.hud-nav__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-signal);
-  box-shadow: 0 0 10px var(--color-signal);
-  animation: hud-blink 2s ease-in-out infinite;
-}
-
-/* Below the fold of a phone the status readout is the first thing to go — the
-   links are the part that has to survive. */
+/* On a phone the clock is the first thing to go — the links are the part that
+   has to survive. */
 @media (max-width: 40rem) {
-  .hud-nav__status {
-    display: none;
-  }
+  /* Right-hand cluster: clock, then the community mark. */
+.hud-nav__right {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  min-width: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hud-nav__dot {
-    animation: none;
+.hud-nav__time {
+    display: none;
   }
 }

@@ -55,10 +55,20 @@
   --color-danger-soft: #3a0d0d;
   --color-closed: #6d7484;
 
-  /* --- type --- */
-  --font-display: 'Orbitron', 'Rajdhani', system-ui, sans-serif;
-  --font-sans: 'Rajdhani', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  /* --- type ---
+     One typeface carries the whole site.
+
+     Space Grotesk is a modern grotesque with just enough character in its
+     letterforms — the angular terminals, the single-storey 'g' — to read as
+     technical without being a costume. It holds up at title size and at 14px in
+     a registration form, which is why there is no second sans: a display face
+     that cannot set body copy always drags a companion along behind it.
+
+     IBM Plex Mono is strictly for instrument readings — status, counts,
+     coordinates, timestamps. It is never a headline and never body text. --- */
+  --font-display: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 
   /* --- motion: one easing vocabulary for the whole site --- */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -91,13 +101,16 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Display and sans are the same family, so headings need no special casing —
+     only a tighter track, because Space Grotesk is spaced for text sizes and
+     reads loose as soon as type gets large. */
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: 0.01em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     text-wrap: balance;
     margin: 0;
   }
@@ -173,13 +186,14 @@
     color: var(--color-tech);
   }
 
-  /* Display type: wide, mechanical, unmistakably not web-default. */
+  /* Display type: large, tight and set in the same family as everything else.
+     At this scale tracking has to come IN — default spacing is drawn for text
+     sizes and looks loose the moment type gets big. */
   .type-display {
     font-family: var(--font-display);
-    font-weight: 900;
-    letter-spacing: 0.06em;
-    line-height: 0.92;
-    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
   }
 
   /* Restrained glow. Signal colour only, and only where something is live. */
@@ -202,11 +216,13 @@
   /* --- ambient surface texture. Static, very low contrast. These should read as
      material, never as a pattern you consciously notice. --- */
 
+  /* Neutral, not green. A tinted grid turns the accent into wallpaper and the
+     page reads as uniformly neon rather than as black with one live colour. */
   .surface-grid {
     background-image:
-      linear-gradient(to right, rgb(0 255 156 / 0.035) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(0 255 156 / 0.035) 1px, transparent 1px);
-    background-size: 64px 64px;
+      linear-gradient(to right, rgb(230 240 236 / 0.024) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(230 240 236 / 0.024) 1px, transparent 1px);
+    background-size: 72px 72px;
   }
 
   .surface-grid-fine {

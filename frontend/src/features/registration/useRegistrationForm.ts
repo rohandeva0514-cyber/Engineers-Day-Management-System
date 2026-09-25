@@ -3,14 +3,16 @@ import type { Event, ParticipantDraft, RegistrationReceipt, YearLevel } from '@/
 import {
   canAddMembers,
   canRemoveMembers,
-  duplicateRollNumbers,
+  duplicateEmails,
   emptyParticipant,
   initialRosterSize,
   isParticipantComplete,
+  isPhoneShapeValid,
   isRosterSizeValid,
   isSolo,
   isYearEligible,
 } from '@/domain/rules';
+import { isDivisionValidForYear } from '@/data/academics';
 import { submitRegistration } from '@/services/registrationsApi';
 import { ApiError } from '@/services/apiError';
 import { createIdempotencyKey } from '@/lib/idempotency';
@@ -79,7 +81,19 @@ export function useRegistrationForm(event: Event): RegistrationFormApi {
 
   const updateMember = useCallback((index: number, patch: Partial<ParticipantDraft>) => {
     setRoster((current) =>
-      current.map((member, i) => (i === index ? { ...member, ...patch } : member)),
+      current.map((member, i) => {
+        if (i !== index) return member;
+        const next = { ...member, ...patch };
+
+        // Divisions differ by year. Switching to a year that does not offer the
+        // division already chosen would otherwise leave an invalid value selected
+        // but invisible — the option is gone from the list, so the student sees a
+        // blank control and no reason for the rejection that follows.
+        if (!isDivisionValidForYear(next.division, next.yearLevel)) {
+          next.division = '';
+        }
+        return next;
+      }),
     );
   }, []);
 
@@ -112,9 +126,9 @@ export function useRegistrationForm(event: Event): RegistrationFormApi {
       errors['teamName'] = 'A team name is required for this event.';
     }
 
-    const duplicates = duplicateRollNumbers(roster);
+    const duplicates = duplicateEmails(roster);
     if (duplicates.length > 0) {
-      problems.push(`The same roll number appears more than once: ${duplicates.join(', ')}.`);
+      problems.push(`The same email address appears more than once: ${duplicates.join(', ')}.`);
     }
 
     roster.forEach((member, index) => {
@@ -132,6 +146,11 @@ export function useRegistrationForm(event: Event): RegistrationFormApi {
       if (member.rollNo.trim() !== '' && !/^[A-Za-z0-9/_-]+$/.test(member.rollNo.trim())) {
         errors[`${prefix}.rollNo`] =
           'Only letters, digits, hyphen, underscore and slash are allowed.';
+      }
+      // Shape only, and matched to the server's own rule so the form never
+      // rejects a number the backend would have accepted.
+      if (member.phone.trim() !== '' && !isPhoneShapeValid(member.phone)) {
+        errors[`${prefix}.phone`] = 'Enter a valid phone number.';
       }
     });
 
@@ -168,9 +187,14 @@ export function useRegistrationForm(event: Event): RegistrationFormApi {
 
     const participants = roster.map((member) => ({
       rollNo: member.rollNo.trim().toUpperCase(),
+      // Trimmed, but otherwise sent exactly as typed: this is the certificate
+      // name, and the student was told it would appear as they entered it.
       fullName: member.fullName.trim(),
       email: member.email.trim(),
       yearLevel: member.yearLevel as YearLevel,
+      phone: member.phone.trim(),
+      branch: member.branch.trim(),
+      division: member.division.trim(),
     }));
 
     const payloadSignature = JSON.stringify({ participants, teamName: teamName.trim() });

@@ -4,6 +4,10 @@ import { ButtonLink } from '@/components/Button';
 import { PageMessage } from '@/components/ErrorState';
 import { DataField, TechLabel } from '@/components/Panel';
 import { SITE, identityFor } from '@/data/siteContent';
+import {
+  EventDayIdentifier,
+  PostRegistrationNext,
+} from '@/features/registration/PostRegistrationNext';
 import { formatDateTime, pad2 } from '@/lib/format';
 
 /**
@@ -135,15 +139,23 @@ export function RegistrationSuccessPage() {
         </ul>
       </section>
 
-      <section aria-labelledby="next-heading" className="mt-8 border border-line bg-panel px-5 py-5 sm:px-6">
+      {/* The identifier first when an event needs one on the day — it is the most
+          consequential thing on this screen for those events. */}
+      <EventDayIdentifier receipt={receipt} />
+
+      {/* Then what the student can still do. One outcome, never a contradictory
+          pair of calls to action. */}
+      <PostRegistrationNext receipt={receipt} />
+
+      <section aria-labelledby="keep-heading" className="mt-8 border border-line bg-panel px-5 py-5 sm:px-6">
         <TechLabel className="mb-2">What happens next</TechLabel>
-        <h2 id="next-heading" className="text-lg text-ink">
+        <h2 id="keep-heading" className="text-lg text-ink">
           Keep your registration ID
         </h2>
         <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
           <li className="flex gap-3">
             <span className="text-signal" aria-hidden="true">
-              →
+              &rarr;
             </span>
             <span>
               Note your registration ID. You can find it again at any time under{' '}
@@ -152,7 +164,7 @@ export function RegistrationSuccessPage() {
           </li>
           <li className="flex gap-3">
             <span className="text-signal" aria-hidden="true">
-              →
+              &rarr;
             </span>
             <span>
               {isTeam
@@ -162,7 +174,7 @@ export function RegistrationSuccessPage() {
           </li>
           <li className="flex gap-3">
             <span className="text-signal" aria-hidden="true">
-              →
+              &rarr;
             </span>
             <span>
               Event workspaces open on the day, when the organisers start the event. There is
@@ -172,10 +184,9 @@ export function RegistrationSuccessPage() {
         </ul>
       </section>
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        <ButtonLink to="/my-registrations">My registrations</ButtonLink>
-        <ButtonLink to="/events" variant="secondary">
-          Register for another event
+      <div className="mt-8">
+        <ButtonLink to="/my-registrations" variant="ghost">
+          My registrations
         </ButtonLink>
       </div>
     </div>

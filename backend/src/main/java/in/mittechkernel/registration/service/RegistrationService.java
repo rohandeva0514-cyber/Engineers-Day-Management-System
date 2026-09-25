@@ -49,6 +49,9 @@ public class RegistrationService {
     private final TeamRepository teamRepository;
     private final RegistrationRepository registrationRepository;
     private final RegistrationRules rules;
+    private final RegistrationSlots slots;
+    private final RegistrationControlService control;
+    private final AccessCodeService accessCodes;
 
     public RegistrationService(EventService eventService,
                                EventRepository eventRepository,
@@ -56,7 +59,10 @@ public class RegistrationService {
                                ParticipantRepository participantRepository,
                                TeamRepository teamRepository,
                                RegistrationRepository registrationRepository,
-                               RegistrationRules rules) {
+                               RegistrationRules rules,
+                               RegistrationSlots slots,
+                               RegistrationControlService control,
+                               AccessCodeService accessCodes) {
         this.eventService = eventService;
         this.eventRepository = eventRepository;
         this.participantService = participantService;
@@ -64,6 +70,9 @@ public class RegistrationService {
         this.teamRepository = teamRepository;
         this.registrationRepository = registrationRepository;
         this.rules = rules;
+        this.slots = slots;
+        this.control = control;
+        this.accessCodes = accessCodes;
     }
 
     /**
@@ -92,36 +101,44 @@ public class RegistrationService {
             }
         }
 
-        // 1. Is the event accepting anyone at all? Cheapest check, clearest refusal.
+        // 1. Is the system accepting entries at all? The master switch beats every
+        //    per-event status, so it is checked before anything is created or claimed.
+        control.requireRegistrationOpen();
+
+        // 2. Is this event accepting anyone? Cheapest remaining check, clearest refusal.
         rules.validateRegistrationOpen(event);
 
-        // 2. Is the roster a legal shape for this event? Pure, no database work.
+        // 3. Is the roster a legal shape for this event? Pure, no database work.
         String teamName = request.normalisedTeamName();
         rules.validateRosterShape(event, teamName, request.participants());
 
-        // 3. Resolve roll numbers to real records, creating first-timers.
+        // 4. Resolve emails to real records, creating first-timers.
         List<Participant> roster = participantService.resolveAll(request.participants());
 
-        // 4. Eligibility, from the stored year rather than the submitted one.
+        // 5. Eligibility, from the stored year rather than the submitted one.
         rules.validateEligibility(event, roster);
 
-        // 5. Nobody on the roster may already hold a registration for this event.
+        // 6. Nobody on the roster may already hold a registration for this event.
         //    The UNIQUE constraint is the real guard; this is here to give a better message.
         rejectAlreadyRegistered(event, roster);
 
-        // 6. Team name uniqueness, same arrangement: index is authoritative, this is courtesy.
+        // 7. One main event per student. FIX IT carries slot OPEN so it never trips this,
+        //    and holding it never blocks anything - see RegistrationSlots.
+        slots.validateSlotAvailable(event, roster);
+
+        // 8. Team name uniqueness, same arrangement: index is authoritative, this is courtesy.
         rejectTakenTeamName(event, teamName);
 
-        // 7. Claim the seats. This is the only step that can lose a race, and it loses it
+        // 9. Claim the seats. This is the only step that can lose a race, and it loses it
         //    cleanly: the UPDATE either takes the seats or reports that it could not.
         int seatsRequired = event.seatsRequiredFor(roster.size());
         claimSeatsOrFail(event, seatsRequired);
 
-        // 8. The seat claim cleared the persistence context, so reload what we still need.
+        // 10. The seat claim cleared the persistence context, so reload what we still need.
         Event current = eventRepository.findById(eventId).orElseThrow();
         List<Participant> managedRoster = reattach(roster);
 
-        // 9. Write the team and one registration per person.
+        // 11. Write the team and one registration per person.
         Team team = current.isSolo()
                 ? null
                 : teamRepository.saveAndFlush(new Team(current, teamName, managedRoster));
@@ -129,14 +146,24 @@ public class RegistrationService {
         List<Registration> registrations = persistRegistrations(
                 current, managedRoster, team, idempotencyKey);
 
+        // 12. Issue event-day codes where the event asks for them. Inside the same
+        //     transaction, so a registration is never visible without its code and a
+        //     failure here takes the whole registration back with it.
+        accessCodes.issueFor(registrations);
+
         log.info("Registered {} participant(s) for event={} team={} seatsTaken={}/{}",
                 registrations.size(), eventId,
                 team == null ? "-" : team.getName(),
                 current.getSeatsTaken(),
                 current.getCapacity() == null ? "unlimited" : current.getCapacity());
 
+        // Reported from the captain's own rows, re-read inside this transaction so the
+        // registration just created is included.
+        Long captainId = managedRoster.get(0).getId();
         return new RegistrationOutcome(
-                RegistrationResponse.of(registrations, team, current.seatsRemaining()), true);
+                RegistrationResponse.of(registrations, team, current.seatsRemaining(),
+                        slots.stateFor(captainId)),
+                true);
     }
 
     // ------------------------------------------------------------------ reads
@@ -144,15 +171,16 @@ public class RegistrationService {
     @Transactional(readOnly = true)
     public ParticipantRegistrationsResponse getRegistrationsByParticipantId(Long participantId) {
         Participant participant = participantService.requireById(participantId);
-        return ParticipantRegistrationsResponse.of(
-                participant, registrationRepository.findAllByParticipantId(participantId));
+        List<Registration> held = registrationRepository.findAllByParticipantId(participantId);
+        return ParticipantRegistrationsResponse.of(participant, held, slots.stateFrom(held));
     }
 
     @Transactional(readOnly = true)
-    public ParticipantRegistrationsResponse getRegistrationsByRollNo(String rollNo) {
-        Participant participant = participantService.requireByRollNo(rollNo);
-        return ParticipantRegistrationsResponse.of(
-                participant, registrationRepository.findAllByParticipantId(participant.getId()));
+    public ParticipantRegistrationsResponse getRegistrationsByEmail(String email) {
+        Participant participant = participantService.requireByEmail(email);
+        List<Registration> held =
+                registrationRepository.findAllByParticipantId(participant.getId());
+        return ParticipantRegistrationsResponse.of(participant, held, slots.stateFrom(held));
     }
 
     // ------------------------------------------------------------------ steps
@@ -228,7 +256,8 @@ public class RegistrationService {
                     List<Registration> group = (team == null)
                             ? List.of(anchor)
                             : registrationRepository.findAllByTeamId(team.getId());
-                    return RegistrationResponse.of(group, team, event.seatsRemaining());
+                    return RegistrationResponse.of(group, team, event.seatsRemaining(),
+                            slots.stateFor(anchor.getParticipant().getId()));
                 });
     }
 }

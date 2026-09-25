@@ -49,6 +49,16 @@ public class Registration {
     private String idempotencyKey;
 
     /**
+     * Event-day access code, or null for events that do not issue one.
+     *
+     * <p>Assigned after the row is created, which is why this is the one field here
+     * that is updatable: the code is written in the same transaction, immediately
+     * after the insert, so it is never visible to anyone in a null state.
+     */
+    @Column(name = "access_code", length = 16)
+    private String accessCode;
+
+    /**
      * Set by PostgreSQL's {@code now()}, not by the JVM, so the timestamp on a registration
      * is the database's clock and is consistent across application instances.
      *
@@ -90,6 +100,14 @@ public class Registration {
 
     public String getIdempotencyKey() {
         return idempotencyKey;
+    }
+
+    public String getAccessCode() {
+        return accessCode;
+    }
+
+    public void setAccessCode(String accessCode) {
+        this.accessCode = accessCode;
     }
 
     public Instant getCreatedAt() {

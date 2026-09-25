@@ -1,0 +1,361 @@
+/* ===========================================================================
+   Operations panel.
+
+   Deliberately not the public site: no cinematic layer, no scroll timeline, no
+   backdrop. Dense tables, clear status words, generous hit targets. An organiser
+   should understand the whole registration situation in a few seconds.
+
+   It still reads as MIT TECH KERNEL — same near-black ground, same off-white
+   type, same restrained green — but the priority here is operations.
+   =========================================================================== */
+
+.admin {
+  min-height: 100dvh;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.admin--centred {
+  display: grid;
+  place-items: center;
+}
+
+.admin__eyebrow,
+.admin__label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.admin__title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.admin__muted {
+  color: var(--color-muted);
+}
+
+.admin__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.admin__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.admin__bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* --- controls ------------------------------------------------------------- */
+
+.admin__button {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--color-line-bright);
+  background: var(--color-panel);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.admin__button:hover:not(:disabled),
+.admin__button:focus-visible:not(:disabled) {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+.admin__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin__button--primary {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+.admin__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.admin__field > span {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.admin__field input,
+.admin__field select {
+  height: 2.25rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-void);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.admin__field input:focus,
+.admin__field select:focus {
+  border-color: var(--color-signal);
+  outline: none;
+}
+
+.admin__error {
+  margin: 1rem 0;
+  padding: 0.7rem 0.9rem;
+  border-left: 2px solid var(--color-danger);
+  background: var(--color-danger-soft);
+  color: var(--color-ink);
+  font-size: 0.85rem;
+}
+
+/* --- sign in -------------------------------------------------------------- */
+
+.admin__signin {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(24rem, 100%);
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.admin__signin-marks {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+
+.admin__signin-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.admin__signin-note {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+/* --- master switch -------------------------------------------------------- */
+
+.admin__master {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--color-line-bright);
+  border-left: 3px solid var(--color-closed);
+  background: var(--color-panel);
+}
+
+.admin__master[data-open='true'] {
+  border-left-color: var(--color-signal);
+}
+
+.admin__master-status {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.35rem 0;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: var(--color-closed);
+}
+
+.admin__master[data-open='true'] .admin__master-status {
+  color: var(--color-signal);
+}
+
+.admin__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+/* --- stats ---------------------------------------------------------------- */
+
+.admin__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1px;
+  margin-bottom: 2rem;
+  background: var(--color-line);
+  border: 1px solid var(--color-line);
+}
+
+.admin__stat {
+  padding: 0.9rem 1rem;
+  background: var(--color-panel);
+}
+
+.admin__stat-value {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  color: var(--color-ink);
+}
+
+/* --- tables --------------------------------------------------------------- */
+
+.admin__section-title {
+  margin: 2rem 0 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Wide tables scroll inside their own box rather than the page. */
+.admin__table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+}
+
+.admin__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin__table th,
+.admin__table td {
+  padding: 0.65rem 0.8rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-line);
+  white-space: nowrap;
+}
+
+.admin__table--dense th,
+.admin__table--dense td {
+  padding: 0.45rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.admin__table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-raised);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.admin__table tbody tr:hover {
+  background: var(--color-panel);
+}
+
+.admin__table tbody th {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.admin__event-name {
+  display: block;
+}
+
+.admin__event-id,
+.admin__note {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+}
+
+.admin__note {
+  margin-top: 0.3rem;
+  color: var(--color-orange);
+}
+
+/* Status always carries a word as well as a colour — this is read fast, in a
+   bright hall, sometimes by someone who cannot separate the hues. */
+.admin__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid currentColor;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+}
+
+.admin__badge[data-tone='open'] {
+  color: var(--color-signal);
+}
+
+.admin__badge[data-tone='full'] {
+  color: var(--color-orange);
+}
+
+.admin__badge[data-tone='closed'] {
+  color: var(--color-closed);
+}
+
+.admin__full {
+  color: var(--color-orange);
+}
+
+.admin__filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin__empty {
+  padding: 2rem;
+  text-align: center;
+}
+
+/* The event-day access code: monospace and tracked, because an organiser reads it
+   back to a student or checks it against one they were given. */
+.admin__code {
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--color-orange);
+}

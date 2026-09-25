@@ -1,4 +1,5 @@
 import { NavLink, Link } from 'react-router-dom';
+import { BrandLogo } from '@/components/BrandLogo';
 import { SITE } from '@/data/siteContent';
 import { cn } from '@/lib/cn';
 
@@ -30,33 +31,54 @@ export function SiteHeader() {
       </div>
 
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3.5 sm:px-6">
-        <Link to="/" className="group min-w-0 shrink">
-          <span className="block font-display text-base font-700 leading-none tracking-tight text-ink transition-colors group-hover:text-signal sm:text-lg">
-            ENGINEERS&rsquo; DAY
-            <span className="text-signal"> 2026</span>
+        {/* Institute mark on the left, community mark on the right, with the
+            event name and navigation between them. The two flank the header
+            rather than stacking, so neither reads as subordinate to the other. */}
+        <Link to="/" className="group flex min-w-0 shrink items-center gap-3 sm:gap-4">
+          <BrandLogo mark="institute" size="md" decorative className="shrink-0 transition-opacity group-hover:opacity-80" />
+
+          {/* First thing to go when space is tight; the marks alone still
+              identify the site. */}
+          <span className="hidden h-14 w-px shrink-0 bg-line lg:block" aria-hidden="true" />
+          <span className="hidden min-w-0 lg:block">
+            <span className="block truncate font-display text-sm font-600 leading-none tracking-tight text-ink transition-colors group-hover:text-signal">
+              ENGINEERS&rsquo; DAY
+              <span className="text-signal"> 2026</span>
+            </span>
           </span>
-          <span className="label-tech mt-1 hidden sm:block">{SITE.org}</span>
         </Link>
 
-        <nav aria-label="Main">
-          <ul className="flex items-center gap-1 sm:gap-2">
-            {NAV.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  className={({ isActive }) =>
-                    cn(
-                      'block px-2.5 py-2 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors sm:px-3',
-                      isActive ? 'text-signal' : 'text-muted hover:text-ink',
-                    )
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+          <nav aria-label="Main">
+            <ul className="flex items-center gap-1 sm:gap-2">
+              {NAV.map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      cn(
+                        'block px-2.5 py-2 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors sm:px-3',
+                        isActive ? 'text-signal' : 'text-muted hover:text-ink',
+                      )
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <span className="hidden h-14 w-px shrink-0 bg-line sm:block" aria-hidden="true" />
+          <Link to="/" className="group shrink-0" aria-label="MIT Tech Kernel">
+            <BrandLogo
+              mark="kernel"
+              size="md"
+              decorative
+              className="transition-opacity group-hover:opacity-80"
+            />
+          </Link>
+        </div>
       </div>
     </header>
   );

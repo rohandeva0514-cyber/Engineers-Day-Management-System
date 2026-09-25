@@ -32,6 +32,34 @@ export const YEAR_LEVELS: readonly YearLevel[] = [1, 2] as const;
  */
 export type ParticipationType = 'SOLO' | 'TEAM';
 
+/**
+ * Which registration slot an event consumes.
+ *
+ * PRIMARY uses up the student's single main-event slot. OPEN can be held
+ * alongside it. Sent per event, so nothing here names FIX IT — opening a second
+ * event later is a backend data change and this type already covers it.
+ */
+export type RegistrationSlot = 'PRIMARY' | 'OPEN';
+
+/**
+ * What a student may still register for, as decided by the server.
+ *
+ * A report of a decision already made, never an input to one: the backend
+ * re-validates every registration regardless, so a client that ignores this
+ * gains nothing. It exists purely so the UI does not have to re-derive the rule
+ * and risk disagreeing with the server about it.
+ */
+export interface RegistrationState {
+  hasPrimaryEvent: boolean;
+  primaryEventId: EventId | null;
+  primaryEventName: string | null;
+  hasOpenEvent: boolean;
+  openEventId: EventId | null;
+  openEventName: string | null;
+  canRegisterPrimaryEvent: boolean;
+  canRegisterOpenEvent: boolean;
+}
+
 /** What a single seat of capacity counts. Sent by the backend per event. */
 export type CapacityUnit = 'PARTICIPANT' | 'TEAM';
 
@@ -61,6 +89,10 @@ export interface Event {
   seatsRemaining: number | null;
   registrationStatus: RegistrationStatus;
   registrationOpen: boolean;
+  /** PRIMARY consumes the student's one main-event slot; OPEN does not. */
+  registrationSlot: RegistrationSlot;
+  /** True when registering issues an event-day access code. */
+  requiresAccessCode: boolean;
 }
 
 /** A person, as returned by the API. Created implicitly on first registration. */
@@ -70,6 +102,10 @@ export interface Participant {
   fullName: string;
   email: string;
   yearLevel: YearLevel;
+  /** Null only for participants created before these were collected (see V3). */
+  phone: string | null;
+  branch: string | null;
+  division: string | null;
 }
 
 /** Present on team registrations, `null` on solo ones. */
@@ -84,6 +120,13 @@ export interface Team {
 export interface RegistrationEntry {
   registrationId: number;
   participant: Participant;
+  /**
+   * Event-day access code, or null for events that issue none.
+   *
+   * Server-generated and persisted. Never derived, defaulted or regenerated on
+   * the client — the value a student saves is the value the backend stored.
+   */
+  accessCode: string | null;
 }
 
 /** `POST /api/registrations` success body. */
@@ -95,6 +138,8 @@ export interface RegistrationReceipt {
   registrations: RegistrationEntry[];
   seatsRemaining: number | null;
   registeredAt: string;
+  /** What the first participant on the roster may still register for. */
+  registrationState: RegistrationState;
 }
 
 /** One row of `GET /api/registrations/{participantId}`. */
@@ -112,6 +157,7 @@ export interface RegistrationSummary {
 export interface ParticipantRegistrations {
   participant: Participant;
   registrations: RegistrationSummary[];
+  registrationState: RegistrationState;
 }
 
 /* ---------------------------------------------------------------- requests */
@@ -119,10 +165,14 @@ export interface ParticipantRegistrations {
 /** One roster entry, exactly as `POST /api/registrations` expects it. */
 export interface ParticipantDraft {
   rollNo: string;
+  /** Printed on the certificate exactly as entered. */
   fullName: string;
   email: string;
   /** Sent as a number. `null` only while the form is incomplete. */
   yearLevel: YearLevel | null;
+  phone: string;
+  branch: string;
+  division: string;
 }
 
 /**
@@ -148,3 +198,20 @@ export interface RegistrationRequest {
  * opinion here could only ever disagree with it.
  */
 export type EventAvailability = 'OPEN' | 'CLOSED' | 'SOLD_OUT';
+
+/**
+ * `GET /api/verify?code=` — what a marshal sees at event-day check-in.
+ *
+ * Six fields, deliberately. No email, no phone, no roll number, no internal id:
+ * the endpoint is public, so anything here is effectively public to anyone
+ * holding a code, and none of those are needed to check someone in.
+ */
+export interface AccessCodeVerification {
+  fullName: string;
+  branch: string | null;
+  division: string | null;
+  yearLevel: YearLevel;
+  eventId: EventId;
+  eventName: string;
+  registrationStatus: string;
+}

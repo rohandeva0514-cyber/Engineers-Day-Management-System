@@ -28,7 +28,7 @@ export function MyRegistrationsPage() {
   const [data, setData] = useState<ParticipantRegistrations | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [rollNo, setRollNo] = useState('');
+  const [email, setEmail] = useState('');
 
   const remembered = identitySession.current();
 
@@ -56,12 +56,12 @@ export function MyRegistrationsPage() {
 
   async function handleLookup(formEvent: React.FormEvent) {
     formEvent.preventDefault();
-    if (rollNo.trim() === '') return;
+    if (email.trim() === '') return;
 
     setIsLoading(true);
     setError(null);
     try {
-      const result = await identitySession.lookupByRollNo(rollNo);
+      const result = await identitySession.lookupByEmail(email);
       setData(result);
     } catch (cause) {
       setData(null);
@@ -75,7 +75,7 @@ export function MyRegistrationsPage() {
     identitySession.clear();
     setData(null);
     setError(null);
-    setRollNo('');
+    setEmail('');
   }
 
   return (
@@ -104,15 +104,17 @@ export function MyRegistrationsPage() {
 
           <form onSubmit={handleLookup} className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end">
             <TextField
-              label="Roll number"
-              value={rollNo}
-              onChange={(e) => setRollNo(e.target.value)}
+              label="Email address"
+              type="email"
+              inputMode="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="1MS24CS001"
               autoComplete="off"
               spellCheck={false}
               wrapperClassName="sm:max-w-xs sm:flex-1"
             />
-            <Button type="submit" disabled={isLoading || rollNo.trim() === ''}>
+            <Button type="submit" disabled={isLoading || email.trim() === ''}>
               {isLoading ? 'Looking up…' : 'Look up'}
             </Button>
           </form>

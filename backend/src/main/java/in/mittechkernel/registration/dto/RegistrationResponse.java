@@ -26,17 +26,34 @@ public record RegistrationResponse(
         TeamResponse team,
         List<Entry> registrations,
         Integer seatsRemaining,
-        Instant registeredAt) {
+        Instant registeredAt,
+        /**
+         * What the FIRST participant on the roster may still register for.
+         *
+         * <p>The first entry is the captain for a team event and the sole entrant for a
+         * solo one - in both cases the person holding the device that submitted this, and
+         * so the one whose next step the success screen is about to describe.
+         */
+        RegistrationStateResponse registrationState) {
 
-    public record Entry(Long registrationId, ParticipantResponse participant) {
+    /**
+     * @param accessCode the event-day code, or null for events that issue none.
+     *                   Per entry rather than per response because it authorises
+     *                   one person for one event.
+     */
+    public record Entry(Long registrationId, ParticipantResponse participant, String accessCode) {
     }
 
     public static RegistrationResponse of(List<Registration> registrations,
                                           Team team,
-                                          Integer seatsRemaining) {
+                                          Integer seatsRemaining,
+                                          RegistrationStateResponse registrationState) {
         Registration first = registrations.get(0);
         List<Entry> entries = registrations.stream()
-                .map(reg -> new Entry(reg.getId(), ParticipantResponse.from(reg.getParticipant())))
+                .map(reg -> new Entry(
+                        reg.getId(),
+                        ParticipantResponse.from(reg.getParticipant()),
+                        reg.getAccessCode()))
                 .toList();
 
         return new RegistrationResponse(
@@ -46,6 +63,7 @@ public record RegistrationResponse(
                 team == null ? null : TeamResponse.from(team),
                 entries,
                 seatsRemaining,
-                first.getCreatedAt());
+                first.getCreatedAt(),
+                registrationState);
     }
 }

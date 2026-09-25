@@ -72,10 +72,14 @@ public class RegistrationController {
      * <p>Exists because a student returning on a different device knows their roll number and
      * not their numeric id. A query parameter rather than a second path so there is one
      * resource here, addressed two ways.
+     *
+     * <p>Addressed by email rather than roll number since V7: roll numbers repeat, so a
+     * roll-number lookup on an unauthenticated endpoint could hand one student another's
+     * registrations.
      */
-    @GetMapping(params = "rollNo")
-    public ResponseEntity<ParticipantRegistrationsResponse> getByRollNo(
-            @RequestParam String rollNo) {
-        return ResponseEntity.ok(registrationService.getRegistrationsByRollNo(rollNo));
+    @GetMapping(params = "email")
+    public ResponseEntity<ParticipantRegistrationsResponse> getByEmail(
+            @RequestParam String email) {
+        return ResponseEntity.ok(registrationService.getRegistrationsByEmail(email));
     }
 }

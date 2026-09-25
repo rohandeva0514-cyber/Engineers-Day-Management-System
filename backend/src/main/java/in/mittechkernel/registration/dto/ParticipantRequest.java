@@ -35,7 +35,27 @@ public record ParticipantRequest(
         @NotNull(message = "year level is required")
         @Min(value = 1, message = "year level must be 1 or 2")
         @Max(value = 2, message = "year level must be 1 or 2")
-        Short yearLevel) {
+        Short yearLevel,
+
+        /*
+         * Deliberately permissive: digits, with an optional country code, after
+         * separators are stripped. Anything stricter starts refusing real numbers -
+         * the pattern accepts 7 to 15 digits, which is the E.164 range and therefore
+         * every valid number on earth. Confirming the number is a delivery problem,
+         * not a regex problem.
+         */
+        @NotBlank(message = "phone number is required")
+        @Pattern(regexp = "^\\+?[0-9][0-9 ()-]{5,22}[0-9]$",
+                 message = "must be a valid phone number")
+        String phone,
+
+        @NotBlank(message = "branch is required")
+        @Size(max = 64, message = "branch must be at most 64 characters")
+        String branch,
+
+        @NotBlank(message = "division is required")
+        @Size(max = 16, message = "division must be at most 16 characters")
+        String division) {
 
     /** Roll numbers are compared and stored upper-cased; emails are stored as typed. */
     public String normalisedRollNo() {
@@ -48,5 +68,23 @@ public record ParticipantRequest(
 
     public String normalisedFullName() {
         return fullName == null ? null : fullName.trim();
+    }
+
+    /**
+     * Separators are dropped so "+91 98765 43210" and "+919876543210" are one number.
+     *
+     * <p>Stored canonically for the same reason roll numbers are upper-cased: the same
+     * person typing it two different ways must not become two different records.
+     */
+    public String normalisedPhone() {
+        return phone == null ? null : phone.replaceAll("[^0-9+]", "");
+    }
+
+    public String normalisedBranch() {
+        return branch == null ? null : branch.trim();
+    }
+
+    public String normalisedDivision() {
+        return division == null ? null : division.trim().toUpperCase(java.util.Locale.ROOT);
     }
 }

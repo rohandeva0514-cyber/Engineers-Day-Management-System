@@ -8,7 +8,11 @@ public record ParticipantResponse(
         String rollNo,
         String fullName,
         String email,
-        short yearLevel) {
+        short yearLevel,
+        /** Null for participants created before these were collected. */
+        String phone,
+        String branch,
+        String division) {
 
     public static ParticipantResponse from(Participant participant) {
         return new ParticipantResponse(
@@ -16,6 +20,9 @@ public record ParticipantResponse(
                 participant.getRollNo(),
                 participant.getFullName(),
                 participant.getEmail(),
-                participant.getYearLevel());
+                participant.getYearLevel(),
+                participant.getPhone(),
+                participant.getBranch(),
+                participant.getDivision());
     }
 }

@@ -36,7 +36,7 @@ public class RegistrationRules {
      * may change who is on it.
      */
     public void validateRosterShape(Event event, String teamName, List<ParticipantRequest> roster) {
-        rejectDuplicateRollNumbers(roster);
+        rejectDuplicateEmails(roster);
 
         if (event.isSolo()) {
             validateSoloShape(event, teamName, roster);
@@ -92,18 +92,28 @@ public class RegistrationRules {
                 + event.getMaxTeamSize() + " members. You submitted " + submitted + ".";
     }
 
-    private void rejectDuplicateRollNumbers(List<ParticipantRequest> roster) {
+    /**
+     * The same student may not appear twice on one roster.
+     *
+     * <p>Keyed on email, because that is the identity. Two teammates who happen to share a
+     * roll number are two people and must both be accepted; the same person entered twice
+     * under two roll numbers is one person and must not be.
+     */
+    private void rejectDuplicateEmails(List<ParticipantRequest> roster) {
         Set<String> seen = new HashSet<>();
         Set<String> duplicates = new LinkedHashSet<>();
         for (ParticipantRequest participant : roster) {
-            if (!seen.add(participant.normalisedRollNo())) {
-                duplicates.add(participant.normalisedRollNo());
+            String email = participant.normalisedEmail() == null
+                    ? ""
+                    : participant.normalisedEmail().toLowerCase(java.util.Locale.ROOT);
+            if (!seen.add(email)) {
+                duplicates.add(email);
             }
         }
         if (!duplicates.isEmpty()) {
             throw new ApiException(ApiErrorCode.DUPLICATE_PARTICIPANT_IN_ROSTER,
                     "The same participant appears more than once: " + String.join(", ", duplicates) + ".",
-                    Map.of("rollNos", List.copyOf(duplicates)));
+                    Map.of("emails", List.copyOf(duplicates)));
         }
     }
 

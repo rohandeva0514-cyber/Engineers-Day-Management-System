@@ -1,0 +1,85 @@
+/* ===========================================================================
+   Hero environment.
+
+   Two depth planes plus a fragment layer, separated by opacity alone. Nothing
+   here exceeds 9% — the schematic exists to give the black some structure, not
+   to be looked at.
+   =========================================================================== */
+
+.env {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--color-ink);
+  pointer-events: none;
+}
+
+/* --- far plane: the floor --- */
+.env__deep {
+  opacity: 0.05;
+}
+
+/* --- mid plane: survey circle and sightlines --- */
+.env__mid {
+  opacity: 0.075;
+}
+
+/* --- fragments: readable if you go looking, invisible otherwise --- */
+.env__fragments text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  fill: currentColor;
+  stroke: none;
+  opacity: 0.2;
+}
+
+/* ===========================================================================
+   Atmosphere.
+
+   One broad bloom lifting the centre off the ground, and one slow scan. Both
+   are near the threshold of visible, which is the point — the earlier pass put
+   glitch columns and a full-frame interference tear here and the title had to
+   fight them.
+   =========================================================================== */
+
+.env-bloom {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 58% 44% at 50% 44%, rgb(0 255 156 / 0.05), transparent 70%),
+    radial-gradient(ellipse 86% 52% at 50% 106%, rgb(0 255 156 / 0.045), transparent 68%);
+}
+
+/* A single soft bar crossing every 18 seconds. The long gap is deliberate:
+   something that never stops moving stops registering as an event. */
+.env-scan {
+  position: absolute;
+  z-index: 2;
+  inset-inline: 0;
+  top: 0;
+  height: 22vh;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgb(230 240 236 / 0.035) 52%, transparent);
+  animation: env-scan 18s linear infinite;
+}
+
+@keyframes env-scan {
+  0% {
+    transform: translate3d(0, -24vh, 0);
+  }
+  38%,
+  100% {
+    transform: translate3d(0, 124vh, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .env-scan {
+    display: none;
+  }
+}

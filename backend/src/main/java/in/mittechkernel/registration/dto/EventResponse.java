@@ -32,7 +32,14 @@ public record EventResponse(
         Integer seatsTaken,
         Integer seatsRemaining,
         RegistrationStatus registrationStatus,
-        boolean registrationOpen) {
+        boolean registrationOpen,
+        /**
+         * PRIMARY consumes the student's single main-event slot; OPEN does not.
+         *
+         * <p>Sent per event so the client never needs to know which event is the open
+         * one. Presentation only - the rule is enforced server-side on every submit.
+         */
+        String registrationSlot) {
 
     public static EventResponse from(Event event) {
         return new EventResponse(
@@ -48,6 +55,7 @@ public record EventResponse(
                 event.hasCapacityLimit() ? event.getSeatsTaken() : null,
                 event.seatsRemaining(),
                 event.effectiveRegistrationStatus(),
-                event.isOpenForRegistration());
+                event.isOpenForRegistration(),
+                event.getRegistrationSlot().name());
     }
 }

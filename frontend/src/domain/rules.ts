@@ -138,7 +138,15 @@ export function isScarce(event: Event): boolean {
 /* ------------------------------------------------------------------ roster */
 
 export function emptyParticipant(): ParticipantDraft {
-  return { rollNo: '', fullName: '', email: '', yearLevel: null };
+  return {
+    rollNo: '',
+    fullName: '',
+    email: '',
+    yearLevel: null,
+    phone: '',
+    branch: '',
+    division: '',
+  };
 }
 
 export function isParticipantComplete(draft: ParticipantDraft): boolean {
@@ -146,22 +154,42 @@ export function isParticipantComplete(draft: ParticipantDraft): boolean {
     draft.rollNo.trim() !== '' &&
     draft.fullName.trim() !== '' &&
     draft.email.trim() !== '' &&
-    draft.yearLevel !== null
+    draft.yearLevel !== null &&
+    draft.phone.trim() !== '' &&
+    draft.branch.trim() !== '' &&
+    draft.division.trim() !== ''
   );
 }
 
 /**
- * Roll numbers duplicated within one roster, upper-cased for comparison.
+ * Shape-only phone check, mirroring the server's.
  *
- * The backend refuses these outright, but catching it in the form avoids a
+ * Deliberately permissive: separators are ignored and 7-15 digits are accepted,
+ * which is the full E.164 range. A stricter rule here — ten digits, say — would
+ * start refusing real numbers, and the server would accept what the form had
+ * already rejected.
+ */
+export function isPhoneShapeValid(phone: string): boolean {
+  const digits = phone.replace(/[^0-9]/g, '');
+  return /^[+]?[0-9 ()-]+$/.test(phone.trim()) && digits.length >= 7 && digits.length <= 15;
+}
+
+/**
+ * Emails duplicated within one roster, lower-cased for comparison.
+ *
+ * Keyed on email because that is the student identity — two teammates may share
+ * a roll number and are two different people, while the same email twice is the
+ * same person listed twice.
+ *
+ * The backend refuses these outright; catching it in the form avoids a
  * round-trip that ends in a rejection the student could have seen immediately.
  */
-export function duplicateRollNumbers(roster: ParticipantDraft[]): string[] {
+export function duplicateEmails(roster: ParticipantDraft[]): string[] {
   const seen = new Set<string>();
   const duplicates = new Set<string>();
 
   for (const draft of roster) {
-    const key = draft.rollNo.trim().toUpperCase();
+    const key = draft.email.trim().toLowerCase();
     if (key === '') continue;
     if (seen.has(key)) duplicates.add(key);
     seen.add(key);

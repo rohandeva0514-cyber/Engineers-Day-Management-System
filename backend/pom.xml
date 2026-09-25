@@ -45,6 +45,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+    <!-- Admin endpoints are authenticated. Hiding /admin in the SPA is not security;
+         this is what actually refuses an unauthenticated caller. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
     <!-- Health endpoint only: used to verify the service and its database are actually up. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

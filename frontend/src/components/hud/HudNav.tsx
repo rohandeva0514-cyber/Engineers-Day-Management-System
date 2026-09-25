@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { BrandLogo } from '@/components/BrandLogo';
+import { SystemClock } from './SystemClock';
 import '@/styles/hud-nav.css';
 
 const LINKS = [
@@ -18,12 +20,19 @@ const LINKS = [
  * not exist then, but because the boot screen is itself a focus context with its
  * own single action, and two competing tab stops on a black screen is worse than
  * one.
+ *
+ * No bar, no border, no blur panel. Over a title sequence, chrome like that
+ * announces "web page" before the title gets a chance to announce anything, so
+ * the nav simply floats in the margin.
  */
 export function HudNav() {
   return (
     <nav className="hud-nav" aria-label="Primary">
-      <Link to="/" className="hud-nav__mark">
-        MTK<span aria-hidden="true">//</span>ED26
+      {/* The logo replaces the MTK//ED26 text mark. Small, in the margin, and
+          deliberately not in the centre: the hero's own title is the brand
+          moment on this route and the logo must not compete with it. */}
+      <Link to="/" className="hud-nav__mark" aria-label="Engineers&rsquo; Day 2026, home">
+        <BrandLogo mark="institute" size="md" decorative />
       </Link>
 
       <ul className="hud-nav__links">
@@ -36,10 +45,15 @@ export function HudNav() {
         ))}
       </ul>
 
-      <p className="hud-nav__status">
-        <span className="hud-nav__dot" aria-hidden="true" />
-        ONLINE
-      </p>
+      {/* Right cluster: the clock, then the community mark. The clock is not a
+          status light — the hero already reports SYS.STATUS at the bottom edge,
+          and two live indicators on one screen is one too many. */}
+      <div className="hud-nav__right">
+        <p className="hud-nav__time" aria-hidden="true">
+          <SystemClock />
+        </p>
+        <BrandLogo mark="kernel" size="md" decorative />
+      </div>
     </nav>
   );
 }

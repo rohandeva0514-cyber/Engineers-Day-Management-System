@@ -14,7 +14,8 @@ final class TestRequests {
 
     static ParticipantRequest participant(String rollNo, short year) {
         return new ParticipantRequest(rollNo, "Student " + rollNo,
-                rollNo.toLowerCase() + "@mit.example.edu", year);
+                rollNo.toLowerCase() + "@mit.example.edu", year,
+                "9876543210", "Computer Engineering", "A");
     }
 
     /** A roster of {@code count} distinct students, all in the given year. */

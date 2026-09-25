@@ -40,6 +40,23 @@ public class Participant {
     @Column(name = "year_level", nullable = false)
     private short yearLevel;
 
+    /**
+     * Contact number, branch and division.
+     *
+     * <p>Nullable in the schema because participants created before V3 do not have them.
+     * New submissions are required to carry all three - {@link
+     * in.mittechkernel.registration.dto.ParticipantRequest} enforces that - so a null here
+     * means "registered before these were collected", never "optional".
+     */
+    @Column(name = "phone", length = 24)
+    private String phone;
+
+    @Column(name = "branch", length = 64)
+    private String branch;
+
+    @Column(name = "division", length = 16)
+    private String division;
+
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private Instant createdAt;
 
@@ -47,11 +64,46 @@ public class Participant {
         // for JPA
     }
 
-    public Participant(String rollNo, String fullName, String email, short yearLevel) {
+    public Participant(String rollNo, String fullName, String email, short yearLevel,
+                       String phone, String branch, String division) {
         this.rollNo = Objects.requireNonNull(rollNo, "rollNo");
         this.fullName = Objects.requireNonNull(fullName, "fullName");
         this.email = Objects.requireNonNull(email, "email");
         this.yearLevel = yearLevel;
+        this.phone = phone;
+        this.branch = branch;
+        this.division = division;
+    }
+
+    /**
+     * Fill in details this record does not have yet.
+     *
+     * <p>Only writes where the stored value is absent, so a record created before V3
+     * completes itself the next time the student registers - without a later submission
+     * being able to overwrite details already on file. Identity fields (roll number, email,
+     * year) are not touched here; those are verified, never merged.
+     *
+     * @return true if anything changed, so the caller knows whether a save is needed
+     */
+    public boolean fillMissingProfile(String phone, String branch, String division) {
+        boolean changed = false;
+        if (isBlank(this.phone) && !isBlank(phone)) {
+            this.phone = phone;
+            changed = true;
+        }
+        if (isBlank(this.branch) && !isBlank(branch)) {
+            this.branch = branch;
+            changed = true;
+        }
+        if (isBlank(this.division) && !isBlank(division)) {
+            this.division = division;
+            changed = true;
+        }
+        return changed;
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     public Long getId() {
@@ -72,6 +124,18 @@ public class Participant {
 
     public short getYearLevel() {
         return yearLevel;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public String getDivision() {
+        return division;
     }
 
     public Instant getCreatedAt() {

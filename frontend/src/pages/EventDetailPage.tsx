@@ -3,6 +3,7 @@ import { useEvent } from '@/hooks/useEvents';
 import { ErrorState, PageMessage } from '@/components/ErrorState';
 import { Spinner } from '@/components/Spinner';
 import { Button, ButtonLink } from '@/components/Button';
+import { SlotAwareAction } from '@/features/registration/SlotAwareAction';
 import { DataField, TechLabel } from '@/components/Panel';
 import { StatusBadge } from '@/components/StatusBadge';
 import { CapacityMeter } from '@/features/events/CapacityMeter';
@@ -169,14 +170,7 @@ function EventDetail({ event, onReload }: { event: Event; onReload: () => void }
           is not available, the reason is stated and a way onward is offered. */}
       <section className="py-8">
         {isOpen ? (
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <ButtonLink to={`/register/${event.eventId}`} size="lg">
-              Register for {event.name}
-            </ButtonLink>
-            <p className="text-xs text-faint sm:max-w-xs">
-              Eligibility, team size and capacity are verified by the server when you submit.
-            </p>
-          </div>
+          <SlotAwareAction event={event} />
         ) : (
           <div className="border border-line bg-panel p-6">
             <TechLabel className="mb-2">Registration unavailable</TechLabel>

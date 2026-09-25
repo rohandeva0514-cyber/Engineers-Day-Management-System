@@ -28,8 +28,8 @@
    screen reads as a lit environment rather than an empty div. --- */
 .backdrop__wash {
   background:
-    radial-gradient(ellipse 90% 60% at 50% 110%, rgb(0 255 156 / 0.09), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 82% -10%, rgb(34 211 238 / 0.06), transparent 62%),
+    radial-gradient(ellipse 100% 70% at 50% 118%, rgb(0 255 156 / 0.045), transparent 62%),
+    radial-gradient(ellipse 80% 55% at 50% -12%, rgb(230 240 236 / 0.035), transparent 64%),
     var(--color-void);
 }
 
@@ -42,9 +42,9 @@
   background: linear-gradient(
     to right,
     transparent,
-    rgb(0 255 156 / 0.28) 22%,
-    rgb(34 211 238 / 0.22) 54%,
-    transparent 88%
+    rgb(230 240 236 / 0.16) 26%,
+    rgb(0 255 156 / 0.18) 52%,
+    transparent 86%
   );
   opacity: 0;
   filter: blur(0.4px);

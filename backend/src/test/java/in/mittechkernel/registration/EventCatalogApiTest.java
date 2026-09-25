@@ -41,7 +41,8 @@ class EventCatalogApiTest extends PostgresIntegrationTest {
     @CsvSource(nullValues = "null", value = {
             // eventId,        type, min, max, capacity, eligibleYears
             "chess,            SOLO,  1,  1,  null, '1,2'",
-            "tech-debate,      TEAM, 10, 10,  null, '1,2'",
+            // Temporarily SOLO - see V4__tech_debate_solo.sql.
+            "tech-debate,      SOLO,  1,  1,  null, '1,2'",
             "fix-it,           TEAM,  1,  4,  null, '1,2'",
             "ideathon,         TEAM,  1,  4,    40, '1,2'",
             "buildx,           SOLO,  1,  1,    30, '1'",

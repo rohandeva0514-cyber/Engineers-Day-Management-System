@@ -1,331 +1,256 @@
 /* ===========================================================================
    Hero — the title screen.
 
-   Typography is the entire composition. The schematic, brackets, rules and HUD
-   are frame, and the frame stays quiet.
+   Centred, generous, and quiet. The title is the only large thing; the
+   schematic sits under 9% opacity, the instruments are 10px, and green appears
+   exactly twice.
 
-   Type sizes are clamped against BOTH vw and vh. Width alone is the usual
-   mistake: it looks right on a 27" monitor and then overflows a 13" laptop,
-   where the viewport is wide but only ~700px tall.
+   Type is clamped against BOTH vw and vh. Width alone is the usual mistake: it
+   looks right on a 27" monitor and then overflows a 13" laptop, where the
+   viewport is wide but only ~700px tall.
    =========================================================================== */
 
 .hero {
   position: relative;
   z-index: 10;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: clamp(5rem, 11vh, 7.5rem) clamp(1.25rem, 5vw, 4rem) clamp(5.5rem, 12vh, 8rem);
+  overflow: hidden;
+  text-align: center;
+}
+
+.hero__stage {
+  position: relative;
+  z-index: 4;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 100dvh;
-  padding: clamp(4.5rem, 9vh, 7rem) clamp(1.25rem, 6vw, 5rem);
-  overflow: hidden;
-}
-
-.hero__inner {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 78rem;
-  margin: 0 auto;
-}
-
-/* --- schematic ------------------------------------------------------------ */
-.hero__schematic {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  right: clamp(-8rem, -4vw, 0rem);
-  width: clamp(24rem, 46vw, 46rem);
-  aspect-ratio: 1;
-  transform: translateY(-50%);
-  color: var(--color-signal);
-  opacity: 0.08;
-  pointer-events: none;
-}
-
-/* Under ~64rem the schematic would sit behind the copy instead of beside it,
-   and an 8% blueprint under body text is just noise. */
-@media (max-width: 64rem) {
-  .hero__schematic {
-    opacity: 0.05;
-    right: -30%;
-    width: 30rem;
-  }
-}
-
-/* --- hairline frame ------------------------------------------------------- */
-.hero__rule {
-  position: absolute;
-  left: clamp(1.25rem, 6vw, 5rem);
-  right: clamp(1.25rem, 6vw, 5rem);
-  height: 1px;
-  background: linear-gradient(to right, var(--color-signal), var(--color-line) 42%, transparent);
-  transform-origin: left center;
-}
-
-.hero__rule--top {
-  top: clamp(2.5rem, 6vh, 4rem);
-}
-
-.hero__rule--bottom {
-  bottom: clamp(2.5rem, 6vh, 4rem);
-  background: linear-gradient(to left, var(--color-tech), var(--color-line) 42%, transparent);
-  transform-origin: right center;
-}
-
-/* --- eyebrow -------------------------------------------------------------- */
-.hero__eyebrow {
-  display: flex;
   align-items: center;
-  gap: 0.85ch;
-  margin: 0 0 clamp(1.25rem, 3.5vh, 2.25rem);
+  width: 100%;
+  max-width: 62rem;
+}
+
+/* --- kernel line ---------------------------------------------------------- */
+.hero__kernel {
+  margin: 0 0 clamp(1.5rem, 4vh, 2.5rem);
   font-family: var(--font-mono);
-  font-size: clamp(0.6rem, 1.4vw, 0.72rem);
-  letter-spacing: 0.34em;
+  font-size: clamp(0.58rem, 1.2vw, 0.7rem);
+  font-weight: 400;
+  letter-spacing: 0.5em;
+  /* Letter-spacing adds trailing space after the last glyph, which pulls
+     centred text visibly off-axis. The indent puts it back. */
+  text-indent: 0.5em;
   text-transform: uppercase;
   color: var(--color-muted);
-  /* The scramble writes random glyphs of varying width; without a reserved
-     minimum the whole line jitters as it resolves. */
+  /* The scramble writes glyphs of varying width; a reserved line stops the
+     column jumping as it resolves. */
   min-height: 1.4em;
 }
 
-.hero__eyebrow-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  background: var(--color-signal);
-  box-shadow: 0 0 12px var(--color-signal);
-  animation: hud-blink 2.4s ease-in-out infinite;
-}
+/* ===========================================================================
+   Title
+   =========================================================================== */
 
-/* --- title ---------------------------------------------------------------- */
 .hero__title {
-  display: flex;
-  flex-direction: column;
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 900;
+  line-height: 0.96;
   text-transform: uppercase;
-  line-height: 0.88;
 }
 
-.hero__title-line {
-  position: relative;
-  display: block;
-  font-size: clamp(2.1rem, min(8.4vw, 11.5vh), 6.75rem);
-  letter-spacing: 0.01em;
-  color: var(--color-ink);
-  will-change: clip-path, transform;
-}
-
-.hero__title-line--year {
-  font-size: clamp(2.7rem, min(11.5vw, 15vh), 9rem);
-  letter-spacing: 0.06em;
-  /* Outlined, not filled: the year is structure, the name is the statement. */
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--color-signal);
-  text-shadow: 0 0 50px rgb(0 255 156 / 0.28);
-}
-
-/* Chromatic split, off by default. `.is-hit` is applied for a single frame as
-   the title lands — see the hero timeline. */
-.hero__title-line::before,
-.hero__title-line::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.hero__title.is-hit .hero__title-line::before {
-  opacity: 0.75;
-  color: var(--color-magenta);
-  -webkit-text-stroke: 0;
-  transform: translate3d(-4px, 2px, 0);
-}
-
-.hero__title.is-hit .hero__title-line::after {
-  opacity: 0.75;
-  color: var(--color-tech);
-  -webkit-text-stroke: 0;
-  transform: translate3d(4px, -2px, 0);
-}
-
-/* --- statement ------------------------------------------------------------ */
-.hero__statement {
-  margin: clamp(1.5rem, 4vh, 2.75rem) 0 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.05rem, min(3vw, 4.2vh), 1.9rem);
-  line-height: 1.08;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-signal);
-  text-shadow: 0 0 34px rgb(0 255 156 / 0.25);
-}
-
-/* Each row clips its own words, so `yPercent` slides them up from behind the
-   line above instead of through it. */
-.hero__word-row {
+/* Each line clips its own reveal, so the type rises from behind the line above
+   rather than sliding across it. */
+.hero__title-row {
   display: block;
   overflow: hidden;
+  /* Uppercase Space Grotesk leaves no descender, so the default line box clips
+     visibly tight at the baseline. A little padding gives it room. */
+  padding-bottom: 0.06em;
 }
 
-.hero__word {
-  display: inline-block;
+.hero__title-name,
+.hero__title-year {
+  display: block;
+  font-size: clamp(2.4rem, min(9.2vw, 12.5vh), 7.25rem);
+  /* Tracking comes IN at this scale. Default spacing is drawn for text sizes
+     and reads loose the moment type gets large. */
+  letter-spacing: -0.035em;
+  will-change: transform;
 }
 
-.hero__sub {
-  margin: clamp(0.75rem, 2vh, 1.1rem) 0 0;
-  font-family: var(--font-mono);
-  font-size: clamp(0.62rem, 1.5vw, 0.76rem);
+.hero__title-name {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* Secondary by weight and tone rather than by size — the year stays large, so
+   the two lines still read as one lockup. */
+.hero__title-year {
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: rgb(230 240 236 / 0.42);
+}
+
+/* The one structural accent. Short, centred, and the only green in the middle
+   of the composition. */
+.hero__rule {
+  width: clamp(3.5rem, 8vw, 6rem);
+  height: 1px;
+  margin: clamp(1.75rem, 4.5vh, 2.75rem) 0 0;
+  background: linear-gradient(to right, transparent, var(--color-signal), transparent);
+  opacity: 0.7;
+}
+
+/* --- supporting lines ----------------------------------------------------- */
+
+.hero__statement {
+  margin: clamp(1.75rem, 4.5vh, 2.75rem) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, min(2.6vw, 3.6vh), 1.65rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+.hero__creed {
+  margin: clamp(0.65rem, 1.8vh, 1rem) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.7rem, 1.5vw, 0.84rem);
+  font-weight: 400;
   letter-spacing: 0.3em;
+  text-indent: 0.3em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: var(--color-faint);
 }
 
 /* --- call to action ------------------------------------------------------- */
 .hero__actions {
-  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  margin-top: clamp(2.25rem, 6vh, 3.5rem);
 }
 
 .hero__cta {
   display: inline-flex;
-  align-items: center;
-  gap: 0.6ch;
-  padding: 0.8rem 1.5rem;
-  border: 1px solid var(--color-signal);
-  font-family: var(--font-mono);
-  font-size: clamp(0.66rem, 1.5vw, 0.78rem);
-  font-weight: 700;
-  letter-spacing: 0.22em;
+  align-items: baseline;
+  gap: 0.85ch;
+  padding: 0.55rem 0.9rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.72rem, 1.6vw, 0.85rem);
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
   text-transform: uppercase;
   text-decoration: none;
-  color: var(--color-signal);
-  background: rgb(0 255 156 / 0.04);
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  transition:
-    background-color 0.22s var(--ease-out-expo),
-    color 0.22s var(--ease-out-expo),
-    box-shadow 0.22s var(--ease-out-expo);
+  color: var(--color-ink);
+  transition: color 0.25s var(--ease-out-expo);
 }
 
-/* The scramble swaps in glyphs of different widths; a fixed min-width stops the
-   button resizing under the cursor. */
+/* No border, no fill, no glow — the brackets are the button. */
+.hero__cta-bracket {
+  color: var(--color-faint);
+  text-indent: 0;
+  transition:
+    color 0.25s var(--ease-out-expo),
+    transform 0.25s var(--ease-out-expo);
+}
+
 .hero__cta-label {
+  /* The scramble swaps in glyphs of different widths; a reserved measure stops
+     the brackets breathing in and out under the cursor. */
   display: inline-block;
-  min-width: 15ch;
+  min-width: 6ch;
 }
 
 .hero__cta:hover,
-.hero__cta:focus-visible {
-  background: var(--color-signal);
-  color: var(--color-void);
-  box-shadow: 0 0 36px -8px var(--color-signal);
-}
-
-/* --- HUD readout ---------------------------------------------------------- */
-.hero__hud {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8.5rem, max-content));
-  gap: clamp(1rem, 3.5vw, 3rem);
-  margin: clamp(2rem, 5.5vh, 3.75rem) 0 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-line);
-}
-
-.hero__hud-cell dt {
-  margin-bottom: 0.35rem;
-}
-
-.hero__hud-value {
-  display: flex;
-  align-items: center;
-  gap: 0.7ch;
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: clamp(0.8rem, 1.8vw, 0.98rem);
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  color: var(--color-ink);
-  white-space: nowrap;
-}
-
-.hero__hud-value[data-kind='live'] {
+.hero__cta:focus-visible,
+.hero__cta:hover .hero__cta-bracket,
+.hero__cta:focus-visible .hero__cta-bracket {
   color: var(--color-signal);
 }
 
-/* Orange, not red: the deadline is a countdown, not a failure. */
-.hero__hud-value[data-kind='warn'] {
-  color: var(--color-orange);
+.hero__cta:hover .hero__cta-bracket:first-child,
+.hero__cta:focus-visible .hero__cta-bracket:first-child {
+  transform: translateX(-4px);
 }
 
-.hero__hud-pulse {
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-signal);
-  box-shadow: 0 0 10px var(--color-signal);
-  animation: hud-blink 2s ease-in-out infinite;
+.hero__cta:hover .hero__cta-bracket:last-child,
+.hero__cta:focus-visible .hero__cta-bracket:last-child {
+  transform: translateX(4px);
 }
 
-/* --- vertical metadata rail ----------------------------------------------- */
-.hero__rail {
+/* ===========================================================================
+   Instruments — bottom edge, well clear of the title.
+   =========================================================================== */
+
+.hero__readouts {
   position: absolute;
-  right: clamp(1.25rem, 3vw, 2.25rem);
-  top: 50%;
+  bottom: clamp(1.4rem, 3.5vh, 2.5rem);
+  z-index: 4;
   display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  transform: translateY(-50%) rotate(90deg);
-  transform-origin: right center;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--color-faint);
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.hero__rail-sep {
-  width: 2rem;
-  height: 1px;
-  background: var(--color-line-bright);
-}
-
-/* Rotated text needs horizontal room the moment the layout narrows, and the
-   rail carries nothing the page does not already say. */
-@media (max-width: 80rem) {
-  .hero__rail {
-    display: none;
-  }
-}
-
-/* --- scroll hint ---------------------------------------------------------- */
-.hero__scroll-hint {
-  position: absolute;
-  bottom: clamp(0.9rem, 2.5vh, 1.5rem);
-  left: 50%;
-  transform: translateX(-50%);
+  flex-direction: column;
+  gap: 0.3rem;
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.4em;
-  text-indent: 0.4em;
-  color: var(--color-faint);
-  animation: hint-breathe 3.4s ease-in-out infinite;
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
-@keyframes hint-breathe {
-  0%,
-  100% {
-    opacity: 0.35;
+.hero__readouts--left {
+  left: clamp(1.25rem, 4vw, 3.25rem);
+  text-align: left;
+}
+
+.hero__readouts--right {
+  right: clamp(1.25rem, 4vw, 3.25rem);
+  text-align: right;
+}
+
+.hero__readout {
+  display: flex;
+  gap: 1.1ch;
+  white-space: nowrap;
+}
+
+.hero__readouts--right .hero__readout {
+  justify-content: flex-end;
+}
+
+.hero__readout dt {
+  color: var(--color-faint);
+}
+
+.hero__readout dd {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.hero__readout-live {
+  display: flex;
+  align-items: center;
+  gap: 0.8ch;
+  color: var(--color-ink);
+}
+
+/* Green, the second and last time it appears. */
+.hero__pulse {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-signal);
+  animation: hud-blink 2.6s ease-in-out infinite;
+}
+
+/* Under ~44rem the two clusters meet in the middle. */
+@media (max-width: 44rem) {
+  .hero__readouts {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
   }
-  50% {
-    opacity: 0.9;
+
+  .hero__readouts--right .hero__readout:last-child {
+    display: none;
   }
 }
 
@@ -333,10 +258,7 @@
    Reduced motion — the composition is identical, it simply does not assemble.
    =========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  .hero__eyebrow-dot,
-  .hero__hud-pulse,
-  .hero__scroll-hint {
+  .hero__pulse {
     animation: none;
-    opacity: 1;
   }
 }

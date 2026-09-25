@@ -49,25 +49,93 @@ export interface EventIdentity {
   codename: string;
   /** Short phrase for the grid; the full description comes from the API. */
   kicker: string;
+  /**
+   * Which track an event belongs to in the first-year view.
+   *
+   * Presentation only. The backend has no opinion on "tech" versus "non-tech" —
+   * it is how the programme is announced to students, not a rule it enforces.
+   * The second-year view does not use this at all: there, the split is COMMON
+   * versus EXCLUSIVE, which IS derivable from the API's `eligibleYears`.
+   */
+  discipline: 'NON_TECH' | 'TECH';
+  /**
+   * Whether this event's participants need to carry an identifier on the day.
+   *
+   * Presentation metadata, not a rule: it only decides whether the confirmation
+   * screen puts the participant id front and centre with a copy control. The id
+   * itself always comes from the backend.
+   */
+  eventDayIdRequired?: boolean;
+  /**
+   * Sort order within a track.
+   *
+   * Only the relative order matters. Display order from the API orders the full
+   * catalogue; this orders events inside a track, which is a presentation
+   * decision the API cannot make because tracks do not exist server-side.
+   */
+  rank: number;
 }
 
 const DEFAULT_IDENTITY: EventIdentity = {
   accent: '#43C9D6',
   codename: 'SECTOR',
   kicker: 'Event',
+  discipline: 'TECH',
+  rank: 99,
 };
 
 const IDENTITIES: Record<string, EventIdentity> = {
-  chess: { accent: '#C9CEDA', codename: 'THE BOARD', kicker: 'Classical, over the board' },
-  'tech-debate': { accent: '#F0B429', codename: 'THE ARENA', kicker: 'Ten voices, one motion' },
-  'fix-it': { accent: '#E0533D', codename: 'THE EXCHANGE', kicker: 'Turn the business around' },
-  ideathon: { accent: '#9D7BEA', codename: 'THE LATTICE', kicker: 'Problem to pitch' },
-  buildx: { accent: '#43C9D6', codename: 'THE YARD', kicker: 'Receive a theme. Build anything.' },
-  debugging: { accent: '#45C98A', codename: 'THE STACK', kicker: 'Find the fault. Fix it fast.' },
+  chess: {
+    accent: '#C9CEDA',
+    codename: 'THE BOARD',
+    kicker: 'Classical, over the board',
+    discipline: 'NON_TECH',
+    rank: 1,
+  },
+  'tech-debate': {
+    accent: '#F0B429',
+    codename: 'THE ARENA',
+    kicker: 'Ten voices, one motion',
+    discipline: 'NON_TECH',
+    rank: 2,
+  },
+  ideathon: {
+    accent: '#9D7BEA',
+    codename: 'THE LATTICE',
+    kicker: 'Problem to pitch',
+    discipline: 'TECH',
+    rank: 3,
+  },
+  buildx: {
+    accent: '#43C9D6',
+    codename: 'THE YARD',
+    kicker: 'Receive a theme. Build anything.',
+    discipline: 'TECH',
+    rank: 4,
+  },
+  debugging: {
+    accent: '#45C98A',
+    codename: 'THE STACK',
+    kicker: 'Find the fault. Fix it fast.',
+    discipline: 'TECH',
+    rank: 5,
+    // Debugging is run against a live judge on the day; the participant is
+    // identified by this id rather than by name at the terminal.
+    eventDayIdRequired: true,
+  },
+  'fix-it': {
+    accent: '#E0533D',
+    codename: 'THE EXCHANGE',
+    kicker: 'Turn the business around',
+    discipline: 'TECH',
+    rank: 6,
+  },
   'rapid-research': {
     accent: '#5B9DE8',
     codename: 'THE ARCHIVE',
     kicker: 'Research under the clock',
+    discipline: 'TECH',
+    rank: 7,
   },
 };
 

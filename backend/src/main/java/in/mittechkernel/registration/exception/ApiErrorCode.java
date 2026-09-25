@@ -31,14 +31,41 @@ public enum ApiErrorCode {
     EVENT_NOT_FOUND(HttpStatus.NOT_FOUND),
     PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND),
 
+    /**
+     * The access code presented at check-in matches no registration.
+     *
+     * <p>Deliberately says nothing about WHY - whether the code never existed, was
+     * for a different event, or was mistyped. A verification endpoint that
+     * distinguishes those cases tells someone probing it when they are close.
+     */
+    ACCESS_CODE_INVALID(HttpStatus.NOT_FOUND),
+
     /** The event is not accepting registrations (operator-closed). */
     REGISTRATION_CLOSED(HttpStatus.CONFLICT),
+
+    /**
+     * The master switch is off, so nothing is being accepted for any event.
+     *
+     * <p>Separate from REGISTRATION_CLOSED so a student is not told "this event is
+     * closed" when in fact the whole system is paused, and so the panel can tell the
+     * two apart at a glance.
+     */
+    REGISTRATION_SYSTEM_CLOSED(HttpStatus.CONFLICT),
 
     /** No seats left. BuildX at 30, or Ideathon at its configured capacity. */
     CAPACITY_FULL(HttpStatus.CONFLICT),
 
     /** At least one person on the roster already holds a registration for this event. */
     DUPLICATE_REGISTRATION(HttpStatus.CONFLICT),
+
+    /**
+     * The student already holds a primary event and asked for another one.
+     *
+     * <p>Distinct from DUPLICATE_REGISTRATION on purpose: that one means "you are
+     * already in this event", this one means "you are already in a different one".
+     * The student needs to be told which, and that FIX IT is still open to them.
+     */
+    PRIMARY_EVENT_ALREADY_TAKEN(HttpStatus.CONFLICT),
 
     /** Another team in this event already uses that name. */
     TEAM_NAME_TAKEN(HttpStatus.CONFLICT),

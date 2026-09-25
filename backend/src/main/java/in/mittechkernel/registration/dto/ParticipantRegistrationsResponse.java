@@ -14,7 +14,9 @@ import java.util.List;
  */
 public record ParticipantRegistrationsResponse(
         ParticipantResponse participant,
-        List<Item> registrations) {
+        List<Item> registrations,
+        /** What this student may still register for. Lets the UI avoid re-deriving it. */
+        RegistrationStateResponse registrationState) {
 
     public record Item(
             Long registrationId,
@@ -27,7 +29,8 @@ public record ParticipantRegistrationsResponse(
     }
 
     public static ParticipantRegistrationsResponse of(Participant participant,
-                                                      List<Registration> registrations) {
+                                                      List<Registration> registrations,
+                                                      RegistrationStateResponse state) {
         List<Item> items = registrations.stream()
                 .map(reg -> new Item(
                         reg.getId(),
@@ -40,6 +43,6 @@ public record ParticipantRegistrationsResponse(
                 .toList();
 
         return new ParticipantRegistrationsResponse(
-                ParticipantResponse.from(participant), items);
+                ParticipantResponse.from(participant), items, state);
     }
 }

@@ -1,0 +1,747 @@
+/* ===========================================================================
+   Mission select.
+
+   Same language as the hero: near-black, off-white type, hairline rules,
+   clipped corners, green reserved for what is live. Panels are flat — no
+   shadow, no blur, no radius, no glow.
+   =========================================================================== */
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 7vh, 4.5rem);
+  width: 100%;
+  text-align: left;
+}
+
+/* ===========================================================================
+   Year selector
+   =========================================================================== */
+
+.years {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.years__set {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Visually hidden, still announced. The legend is the group's accessible name. */
+.years__legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.years__options {
+  display: flex;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.years__option {
+  position: relative;
+  padding-bottom: 0.7rem;
+}
+
+/*
+  Clipped away rather than `display: none`.
+
+  A `display: none` input is removed from the tab order entirely, which would
+  take the arrow-key navigation and the focus ring with it — the exact things
+  native radios were chosen for.
+*/
+.years__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.years__label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9ch;
+  cursor: pointer;
+  color: var(--color-faint);
+  transition: color 0.22s var(--ease-out-expo);
+}
+
+.years__code {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+}
+
+.years__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 3vw, 1.85rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.years__option[data-selected='true'] .years__label {
+  color: var(--color-ink);
+}
+
+.years__option:hover .years__label {
+  color: var(--color-ink);
+}
+
+/* Each option carries its own underline, scaled in when selected — no measuring
+   of a shared indicator, so it cannot drift out of register at any width. */
+.years__underline {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.32s var(--ease-out-expo);
+}
+
+.years__option[data-selected='true'] .years__underline {
+  transform: scaleX(1);
+}
+
+/* The focus ring belongs on the label, since the input itself is clipped. */
+.years__input:focus-visible + .years__label {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 4px;
+}
+
+.years__readout {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2ch;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.years__readout-key {
+  color: var(--color-faint);
+}
+
+.years__readout-value {
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+}
+
+/* ===========================================================================
+   Grid
+   =========================================================================== */
+
+.board__grid {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vh, 4rem);
+}
+
+/* Sweeps the board when the year changes. */
+.board__scan {
+  position: absolute;
+  inset-inline: 0;
+  top: -0.5rem;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--color-signal), transparent);
+  opacity: 0;
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.board__track-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: clamp(1.25rem, 3vh, 2rem);
+}
+
+.board__track-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.78rem, 1.7vw, 0.92rem);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.board__track-note {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--color-faint);
+}
+
+.board__track-rule {
+  height: 1px;
+  background: var(--color-line);
+  transform-origin: left center;
+}
+
+.board__track-count {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: var(--color-faint);
+}
+
+/* Twelve columns, so the 7/5/5/7 rhythm has something to land on. */
+.board__missions {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(0.75rem, 1.6vw, 1.25rem);
+}
+
+.board__aside {
+  grid-column: span 5;
+  display: flex;
+  align-items: center;
+  gap: 1.2ch;
+  margin: 0;
+  padding-left: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.board__aside-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+
+/* ===========================================================================
+   Mission panel
+   =========================================================================== */
+
+.mission {
+  position: relative;
+  grid-column: span var(--span, 6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1.1rem, 2.4vw, 1.6rem);
+  border: 1px solid var(--color-line);
+  background: linear-gradient(to bottom, rgb(230 240 236 / 0.016), transparent 60%);
+  /* One cut corner, bottom-right. Angular, and never a radius. */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  transition:
+    border-color 0.25s var(--ease-out-expo),
+    background-color 0.25s var(--ease-out-expo);
+}
+
+.mission[data-featured='true'] {
+  gap: 1.1rem;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+}
+
+.mission:hover,
+.mission:focus-within {
+  border-color: var(--color-line-bright);
+  background-color: rgb(230 240 236 / 0.022);
+}
+
+/* The activation line: draws in from the left across the panel's top edge. */
+.mission__edge {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  height: 1px;
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.mission:hover .mission__edge,
+.mission:focus-within .mission__edge {
+  transform: scaleX(1);
+}
+
+.mission__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.mission__index {
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  color: var(--color-faint);
+  transition: color 0.25s var(--ease-out-expo);
+}
+
+.mission:hover .mission__index,
+.mission:focus-within .mission__index {
+  color: var(--color-signal);
+}
+
+.mission__codename {
+  color: var(--color-faint);
+  opacity: 0.6;
+  transition: opacity 0.25s var(--ease-out-expo);
+}
+
+.mission:hover .mission__codename,
+.mission:focus-within .mission__codename {
+  opacity: 1;
+}
+
+.mission__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.mission[data-featured='true'] .mission__name {
+  font-size: clamp(1.6rem, 4vw, 2.75rem);
+}
+
+.mission__line {
+  margin: 0;
+  max-width: 48ch;
+  font-family: var(--font-display);
+  font-size: clamp(0.82rem, 1.7vw, 0.92rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.mission__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.75rem;
+  margin: 0.15rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mission__meta dt {
+  margin-bottom: 0.25rem;
+  color: var(--color-faint);
+  opacity: 0.7;
+  transition: opacity 0.25s var(--ease-out-expo);
+}
+
+.mission:hover .mission__meta dt,
+.mission:focus-within .mission__meta dt {
+  opacity: 1;
+}
+
+.mission__meta dd {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.mission__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.mission__action {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.7ch;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.25s var(--ease-out-expo);
+}
+
+/* Extends the button's hit area over the whole panel for pointer users, while
+   the keyboard still gets one properly labelled stop. */
+.mission__action::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.mission:hover .mission__action,
+.mission__action:focus-visible {
+  color: var(--color-signal);
+}
+
+.mission__action:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 4px;
+}
+
+.mission__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7ch;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+/* Status is never colour alone — the label is always present beside the dot. */
+.mission__status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-closed);
+}
+
+.mission__status[data-availability='OPEN'] {
+  color: var(--color-muted);
+}
+
+.mission__status[data-availability='OPEN'] .mission__status-dot {
+  background: var(--color-signal);
+}
+
+.mission__status[data-availability='SOLD_OUT'] .mission__status-dot {
+  background: var(--color-danger);
+}
+
+/* ===========================================================================
+   Responsive
+
+   Not a shrink: the 12-column rhythm collapses to a single column, because
+   asymmetric spans below ~64rem produce panels too narrow to read an event
+   name in.
+   =========================================================================== */
+
+@media (max-width: 64rem) {
+  .mission {
+    grid-column: span 12;
+  }
+
+  .board__aside {
+    grid-column: span 12;
+  }
+}
+
+/* ===========================================================================
+   Briefing dialog
+   =========================================================================== */
+
+.brief {
+  width: min(46rem, calc(100vw - 2rem));
+  max-height: min(86vh, 54rem);
+  padding: 0;
+  border: 1px solid var(--color-line-bright);
+  background: var(--color-panel);
+  color: var(--color-ink);
+  overflow: auto;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+}
+
+.brief::backdrop {
+  background: rgb(2 4 8 / 0.82);
+  backdrop-filter: blur(3px);
+}
+
+.brief__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.brief__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brief__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1ch;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.brief__close {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-line);
+  background: none;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.2s var(--ease-out-expo),
+    border-color 0.2s var(--ease-out-expo);
+}
+
+.brief__close:hover,
+.brief__close:focus-visible {
+  color: var(--color-ink);
+  border-color: var(--color-line-bright);
+}
+
+.brief__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.brief__description {
+  margin: 0;
+  max-width: 56ch;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.brief__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 0;
+  padding: 1.1rem 0;
+  border-block: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.brief__facts dt {
+  margin-bottom: 0.35rem;
+  color: var(--color-faint);
+}
+
+.brief__facts dd {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--color-ink);
+}
+
+.brief__facts dd[data-availability='OPEN'] {
+  color: var(--color-signal);
+}
+
+.brief__facts dd[data-availability='SOLD_OUT'] {
+  color: var(--color-danger);
+}
+
+.brief__pending {
+  padding: 1rem 1.15rem;
+  border-left: 2px solid var(--color-line-bright);
+  background: rgb(230 240 236 / 0.018);
+}
+
+.brief__pending-title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.brief__pending-body {
+  margin: 0;
+  max-width: 54ch;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.brief__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.75rem;
+}
+
+.brief__cta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6ch;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--color-signal);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-signal);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
+  transition:
+    background-color 0.22s var(--ease-out-expo),
+    color 0.22s var(--ease-out-expo);
+}
+
+.brief__cta:hover,
+.brief__cta:focus-visible {
+  background: var(--color-signal);
+  color: var(--color-void);
+}
+
+.brief__cta--off {
+  border-color: var(--color-line-bright);
+  color: var(--color-closed);
+  cursor: not-allowed;
+}
+
+.brief__cta--off:hover {
+  background: none;
+  color: var(--color-closed);
+}
+
+.brief__secondary {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  text-underline-offset: 4px;
+}
+
+.brief__secondary:hover,
+.brief__secondary:focus-visible {
+  color: var(--color-ink);
+}
+
+/* ===========================================================================
+   Registration protocol
+
+   The rule stated once, above the board, in the same instrument voice as the
+   readouts. A strip, not a banner: it informs before anyone starts, and it must
+   not compete with the missions underneath it.
+   =========================================================================== */
+
+.protocol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem clamp(1.25rem, 4vw, 2.5rem);
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.protocol__label {
+  margin: 0;
+  color: var(--color-faint);
+}
+
+.protocol__slots {
+  display: flex;
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 0;
+}
+
+.protocol__slot {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9ch;
+}
+
+.protocol__slot dt {
+  color: var(--color-faint);
+}
+
+.protocol__slot dd {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7ch;
+  margin: 0;
+  color: var(--color-muted);
+}
+
+/* A filled slot is the one fact worth raising out of the strip. */
+.protocol__slot[data-filled='true'] dd {
+  color: var(--color-signal);
+}
+
+.protocol__mark {
+  color: var(--color-line-bright);
+}
+
+.protocol__slot[data-filled='true'] .protocol__mark {
+  color: var(--color-signal);
+}
+
+.protocol__note {
+  flex: 1 1 18rem;
+  margin: 0;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  color: var(--color-faint);
+}
+
+@media (max-width: 40rem) {
+  .protocol {
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+  }
+}

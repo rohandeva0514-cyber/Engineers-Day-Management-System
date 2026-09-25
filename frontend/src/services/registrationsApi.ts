@@ -42,12 +42,17 @@ export function fetchRegistrationsByParticipantId(
   );
 }
 
-/** `GET /api/registrations?rollNo=` */
-export function fetchRegistrationsByRollNo(
-  rollNo: string,
+/**
+ * `GET /api/registrations?email=`
+ *
+ * By email, not roll number: roll numbers repeat, so they cannot address one
+ * student. Email is the identity the backend keys on.
+ */
+export function fetchRegistrationsByEmail(
+  email: string,
   signal?: AbortSignal,
 ): Promise<ParticipantRegistrations> {
-  const search = new URLSearchParams({ rollNo: rollNo.trim().toUpperCase() });
+  const search = new URLSearchParams({ email: email.trim() });
   return apiRequest<ParticipantRegistrations>(
     `/registrations?${search.toString()}`,
     signal ? { signal } : {},

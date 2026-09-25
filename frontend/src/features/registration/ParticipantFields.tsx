@@ -3,6 +3,7 @@ import { SelectField, TextField } from '@/components/Field';
 import { Button } from '@/components/Button';
 import { TechLabel } from '@/components/Panel';
 import { YEAR_LEVELS } from '@/domain/types';
+import { BRANCHES, divisionsForYear } from '@/data/academics';
 import { ordinalYear } from '@/domain/rules';
 import { pad2 } from '@/lib/format';
 
@@ -72,15 +73,34 @@ export function ParticipantFields({
       </div>
 
       <div className="grid grid-cols-1 gap-4 px-4 py-4 sm:grid-cols-2 sm:px-5 sm:py-5">
-        <TextField
-          label="Full name"
-          required
-          autoComplete={isCaptain ? 'name' : 'off'}
-          value={value.fullName}
-          onChange={(e) => onChange({ fullName: e.target.value })}
-          error={errorFor('fullName')}
-          placeholder="As it appears on college records"
-        />
+        {/*
+          The certificate name.
+
+          Spans the full row and carries a marked notice rather than a quiet hint,
+          because this is the one field on the form whose mistakes are permanent:
+          everything else can be corrected by the organisers before the day, and a
+          misspelt name is discovered after the certificate is printed.
+        */}
+        <div className="sm:col-span-2">
+          <TextField
+            label="Full name"
+            required
+            autoComplete={isCaptain ? 'name' : 'off'}
+            value={value.fullName}
+            onChange={(e) => onChange({ fullName: e.target.value })}
+            error={errorFor('fullName')}
+            placeholder="NAME FATHER NAME SURNAME"
+          />
+          <p className="mt-2 flex items-start gap-2.5 border-l-2 border-signal bg-signal-soft/40 px-3 py-2">
+            <span aria-hidden="true" className="label-tech label-tech-bright mt-0.5 shrink-0">
+              CERT
+            </span>
+            <span className="text-xs leading-relaxed text-muted">
+              This name will be printed on your certificate. Enter it exactly as you
+              want it to appear.
+            </span>
+          </p>
+        </div>
 
         <TextField
           label="Roll number"
@@ -90,12 +110,10 @@ export function ParticipantFields({
           value={value.rollNo}
           onChange={(e) => onChange({ rollNo: e.target.value })}
           error={errorFor('rollNo')}
-          hint="Stored in upper case"
-          placeholder="1MS24CS001"
         />
 
         <TextField
-          label="College email"
+          label="Email address"
           type="email"
           required
           inputMode="email"
@@ -103,8 +121,54 @@ export function ParticipantFields({
           value={value.email}
           onChange={(e) => onChange({ email: e.target.value })}
           error={errorFor('email')}
-          placeholder="name@college.edu"
+          placeholder="you@example.com"
         />
+
+        <TextField
+          label="Phone number"
+          type="tel"
+          required
+          inputMode="tel"
+          autoComplete={isCaptain ? 'tel' : 'off'}
+          value={value.phone}
+          onChange={(e) => onChange({ phone: e.target.value })}
+          error={errorFor('phone')}
+          placeholder="9876543210"
+          hint="Used only to reach you about this event"
+        />
+
+        <SelectField
+          label="Branch"
+          required
+          value={value.branch}
+          onChange={(e) => onChange({ branch: e.target.value })}
+          error={errorFor('branch')}
+        >
+          <option value="">Select branch…</option>
+          {BRANCHES.map((branch) => (
+            <option key={branch} value={branch}>
+              {branch}
+            </option>
+          ))}
+        </SelectField>
+
+        <SelectField
+          label="Division"
+          required
+          value={value.division}
+          onChange={(e) => onChange({ division: e.target.value })}
+          error={errorFor('division')}
+        >
+          <option value="">Select division…</option>
+          {/* Narrows once a year is selected — the first year has an E division
+              and the second year does not. Choosing a year that drops the
+              current division clears it, in useRegistrationForm. */}
+          {divisionsForYear(value.yearLevel).map((division) => (
+            <option key={division} value={division}>
+              {division}
+            </option>
+          ))}
+        </SelectField>
 
         <SelectField
           label="Year"

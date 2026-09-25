@@ -12,9 +12,11 @@ export type ApiErrorCode =
   | 'MALFORMED_REQUEST'
   | 'EVENT_NOT_FOUND'
   | 'PARTICIPANT_NOT_FOUND'
+  | 'ACCESS_CODE_INVALID'
   | 'REGISTRATION_CLOSED'
   | 'CAPACITY_FULL'
   | 'DUPLICATE_REGISTRATION'
+  | 'PRIMARY_EVENT_ALREADY_TAKEN'
   | 'TEAM_NAME_TAKEN'
   | 'PARTICIPANT_IDENTITY_CONFLICT'
   | 'INELIGIBLE_YEAR'
@@ -106,9 +108,11 @@ export const ERROR_TITLES: Record<ApiErrorCode, string> = {
   MALFORMED_REQUEST: 'That request could not be read',
   EVENT_NOT_FOUND: 'Event not found',
   PARTICIPANT_NOT_FOUND: 'No registration found',
+  ACCESS_CODE_INVALID: 'Code not recognised',
   REGISTRATION_CLOSED: 'Registration is closed',
   CAPACITY_FULL: 'This event is full',
   DUPLICATE_REGISTRATION: 'Already registered',
+  PRIMARY_EVENT_ALREADY_TAKEN: 'You already have a main event',
   TEAM_NAME_TAKEN: 'That team name is taken',
   PARTICIPANT_IDENTITY_CONFLICT: 'Those details do not match our records',
   INELIGIBLE_YEAR: 'Not eligible for this event',
@@ -132,5 +136,7 @@ export const ERROR_HINTS: Partial<Record<ApiErrorCode, string>> = {
   PARTICIPANT_IDENTITY_CONFLICT:
     'This roll number is already on record with a different email address or year. Use the same details you registered with, or contact the organisers.',
   DUPLICATE_REGISTRATION: 'You can only register once per event.',
+  PRIMARY_EVENT_ALREADY_TAKEN:
+    'Each student takes one main event. FIX IT is open as an additional event and can still be entered alongside it.',
   TEAM_NAME_TAKEN: 'Pick a different team name and submit again.',
 };

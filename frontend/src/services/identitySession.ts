@@ -18,7 +18,7 @@
 import type { Participant, ParticipantRegistrations } from '@/domain/types';
 import {
   fetchRegistrationsByParticipantId,
-  fetchRegistrationsByRollNo,
+  fetchRegistrationsByEmail,
 } from './registrationsApi';
 
 /** The minimum we keep about "who is using this browser". Not a credential. */
@@ -45,14 +45,14 @@ export interface IdentitySession {
   loadOwnRegistrations(signal?: AbortSignal): Promise<ParticipantRegistrations | null>;
 
   /**
-   * Look a participant up by roll number.
+   * Look a participant up by email address.
    *
    * TEMPORARY. This endpoint is unauthenticated, so this is a lookup, not an
    * authenticated read. It exists because a student who registered on another
    * device has no other way back to their own record. Replace with an OTP
    * challenge before launch.
    */
-  lookupByRollNo(rollNo: string, signal?: AbortSignal): Promise<ParticipantRegistrations>;
+  lookupByEmail(email: string, signal?: AbortSignal): Promise<ParticipantRegistrations>;
 }
 
 const STORAGE_KEY = 'mtk.identity.v1';
@@ -112,8 +112,8 @@ class DeviceLocalIdentitySession implements IdentitySession {
     return fetchRegistrationsByParticipantId(identity.participantId, signal);
   }
 
-  lookupByRollNo(rollNo: string, signal?: AbortSignal): Promise<ParticipantRegistrations> {
-    return fetchRegistrationsByRollNo(rollNo, signal);
+  lookupByEmail(email: string, signal?: AbortSignal): Promise<ParticipantRegistrations> {
+    return fetchRegistrationsByEmail(email, signal);
   }
 }
 

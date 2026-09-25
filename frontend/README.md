@@ -2,9 +2,15 @@
 
 The practical event discovery and registration site for MIT TECH KERNEL's Engineers' Day 2026.
 
-This milestone is the **foundation and practical shell**. There is no cinematic layer yet —
-no Three.js, no scroll-driven city, no car. The architecture is arranged so that layer can be
-added later as a sibling route without touching anything here.
+**Zero 3D.** No Three.js, no WebGL, no models. The cyberpunk experience layer is built
+entirely from DOM, CSS and SVG, choreographed with GSAP + ScrollTrigger and smoothed by
+Lenis. Every effect — scanlines, grain, chromatic split, glitch, CRT sweep — is a composited
+2D layer, which is why the whole thing holds 60fps on hardware that would stall on a scene
+graph.
+
+The site is two layers that meet at the router: the **experience** (boot sequence, hero, and
+the scroll campaign that follows) and the **practical platform** (event discovery,
+eligibility, registration). The second works completely without the first.
 
 ---
 
@@ -43,27 +49,30 @@ CORS never enters the development loop. Point it elsewhere with `VITE_API_TARGET
 
 ## Architecture
 
-The organising rule, carried over from the platform architecture: **the cinematic layer may
-depend on the practical one, never the reverse.** Deleting a future `src/cinematic/` must
-leave a working, registerable site.
+The organising rule: **the experience layer may depend on the practical one, never the
+reverse.** Deleting `boot/` and `sections/` must leave a working, registerable site.
 
 ```
 src/
-  app/          shell — layout, header, footer, router
+  app/          shell — layout, header, footer, router, experience route
+  boot/         initialization sequence
+  sections/     experience-layer sections (hero, and the campaign to follow)
+  animations/   GSAP setup and reusable motion helpers
   pages/        one file per route, thin
   features/     composed product surfaces (events, registration)
   components/   design-system primitives, zero domain knowledge
   domain/       PURE TypeScript — types + presentation rules. No React, no fetch.
   services/     the HTTP boundary. The only place fetch() appears.
   hooks/        async state
-  data/         static content: site copy, per-event visual identity
+  data/         static content: site copy, boot log, per-event visual identity
   lib/          framework-agnostic helpers
+  styles/       design tokens and per-surface stylesheets
   styles/       design tokens + base layer
 ```
 
 **`domain/` imports nothing.** It holds the types mirroring the API wire format and the
 derived helpers (`teamSizeLabel`, `availabilityOf`, `hasPublishedCapacity`). It is importable
-by the future cinematic layer without dragging any UI along with it.
+by the experience layer without dragging any UI along with it.
 
 **`services/` is the only module that calls `fetch`.** Everything failure-shaped — a 422, a
 502, a dropped connection, an HTML error page from a misconfigured proxy — becomes one
@@ -86,13 +95,17 @@ One `EventCard`, one `RegistrationForm`, one `ParticipantFields` — all driven 
 the API returns. Adding an eighth event is a backend migration plus one entry in
 `data/siteContent.ts` for its accent colour.
 
+The seven are Chess, Tech Debate, FIX IT, Ideathon, BuildX, Debugging and Rapid Research —
+six open to first years, five to second years, with FIX IT common to both and Rapid Research
+exclusive to second year.
+
 ---
 
 ## Routes
 
 | Route | Page |
 |---|---|
-| `/` | Landing — identity, actions, live event index |
+| `/` | Experience — boot sequence, then the hero and scroll campaign |
 | `/events` | Discovery grid with year and entry filters (filter state in the URL) |
 | `/events/:eventId` | Full detail, requirements, availability, register action |
 | `/register/:eventId` | Registration form — solo or team |
@@ -100,14 +113,10 @@ the API returns. Adding an eighth event is a backend migration plus one entry in
 | `/my-registrations` | A participant's own registrations |
 | `*` | Not found |
 
-The cinematic experience lands later as a sibling branch in `app/router.tsx`:
-
-```ts
-{ path: '/drive', lazy: () => import('@/cinematic/DriveRoute') }
-```
-
-Nothing else in the router changes. The drive links back into the practical site through
-plain `/events/:eventId` URLs.
+`/` is the only route outside the practical shell: the experience owns the full viewport and
+carries its own HUD navigation instead of the standard header. It links into the practical
+site through plain `/events/:eventId` URLs, so the two layers never share state — only
+routes.
 
 ---
 
@@ -115,7 +124,7 @@ plain `/events/:eventId` URLs.
 
 | Endpoint | Used by |
 |---|---|
-| `GET /api/events` | Landing index, events grid |
+| `GET /api/events` | Events grid |
 | `GET /api/events/{eventId}` | Event detail, registration page |
 | `POST /api/registrations` | Registration form |
 | `GET /api/registrations/{participantId}` | My registrations (remembered device) |

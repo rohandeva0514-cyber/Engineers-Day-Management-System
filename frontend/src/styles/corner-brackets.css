@@ -1,0 +1,43 @@
+/* ===========================================================================
+   Corner reticle marks.
+   =========================================================================== */
+
+.brackets {
+  position: absolute;
+  inset: clamp(0.75rem, 2.5vw, 1.75rem);
+  pointer-events: none;
+  color: var(--color-signal);
+  opacity: 0.55;
+}
+
+.brackets__mark {
+  position: absolute;
+  width: clamp(18px, 2.4vw, 28px);
+  height: clamp(18px, 2.4vw, 28px);
+  overflow: visible;
+}
+
+/* One shape, rotated into each corner — the alternative is four hand-drawn
+   path variants that drift apart the first time the shape changes. */
+.brackets__mark[data-corner='tl'] {
+  top: 0;
+  left: 0;
+}
+
+.brackets__mark[data-corner='tr'] {
+  top: 0;
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.brackets__mark[data-corner='bl'] {
+  bottom: 0;
+  left: 0;
+  transform: scaleY(-1);
+}
+
+.brackets__mark[data-corner='br'] {
+  bottom: 0;
+  right: 0;
+  transform: scale(-1);
+}

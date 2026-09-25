@@ -1,9 +1,18 @@
+FROM eclipse-temurin:21-jdk AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN chmod +x mvnw
+RUN ./mvnw clean package -DskipTests
+
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY target/registration-service-0.1.0-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/registration-service-0.1.0-SNAPSHOT.jar app.jar
 
-EXPOSE 8080
+EXPOSE 10000
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]

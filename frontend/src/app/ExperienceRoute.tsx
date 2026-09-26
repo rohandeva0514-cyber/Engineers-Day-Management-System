@@ -5,6 +5,7 @@ import { BootScreen } from '@/boot/BootScreen';
 import { HudNav } from '@/components/hud/HudNav';
 import { ProgressRail } from '@/components/hud/ProgressRail';
 import { SystemBackdrop } from '@/components/hud/SystemBackdrop';
+import { Colophon } from '@/sections/Colophon';
 import { Events } from '@/sections/Events';
 import { Hero } from '@/sections/Hero';
 
@@ -83,6 +84,11 @@ export function ExperienceRoute() {
           <Hero active={!booting} />
           <Events />
         </main>
+
+        {/* Outside <main>: it is the page's footer, not a section of the
+            campaign, and it is where the three marks and the credit live on
+            this route — the HUD can only carry them as chrome. */}
+        <Colophon />
       </div>
 
       {booting && <BootScreen onComplete={handleBootComplete} />}

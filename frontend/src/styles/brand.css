@@ -1,0 +1,155 @@
+/* ===========================================================================
+   Brand lockup and authorship credit.
+
+   Two small pieces that appear wherever the site signs its name: the bottom of
+   every practical page, and the closing frame of the cinematic route.
+
+   The lockup is a hierarchy, not a row of equals — MIT TECH KERNEL runs the
+   day and is set largest, with the institute and E Cell marks at a supporting
+   scale. That ranking lives in BrandLogo's per-mark size table; this file only
+   groups, spaces and separates them.
+   =========================================================================== */
+
+.brand-lockup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 2.75rem);
+}
+
+/* --- split: the college at one end, the two communities at the other -------
+   Full measure, so the band spans the footer rather than bunching at the left
+   margin. Once it wraps there is only one group per line and space-between has
+   nothing left to distribute, which is exactly right — the groups stack, each
+   aligned to the gutter. --- */
+.brand-lockup--split {
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* Hairline between the college and the two communities. It is the only thing
+   saying "these are separate organisations", so it disappears rather than
+   stacking awkwardly when the lockup wraps to two lines. */
+.brand-lockup__rule {
+  align-self: stretch;
+  width: 1px;
+  min-height: 2.5rem;
+  background: linear-gradient(to bottom, transparent, var(--color-line-bright) 22%, var(--color-line-bright) 78%, transparent);
+}
+
+@media (max-width: 30rem) {
+  .brand-lockup {
+    gap: 1.25rem 1.5rem;
+  }
+
+  .brand-lockup__rule {
+    display: none;
+  }
+}
+
+/* The supporting pair stays together when the row wraps: the institute and the
+   cell break to a new line as one group, never one mark per line. */
+.brand-lockup__partners {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(1.25rem, 3.5vw, 2.25rem);
+}
+
+/* ===========================================================================
+   Credit
+
+   A signature, so it is set like one: a quiet label, a name at display size,
+   and a role in the instrument voice. The name is the only thing here at a
+   readable size — everything around it is 10px mono, which is what makes one
+   line of type read as a signature rather than as another paragraph.
+   =========================================================================== */
+
+.credit {
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+/* One hairline rail, green at the top and fading out. Same grammar as the nav
+   underline and the status dots: green marks the live thing, and on this block
+   the live thing is the person. */
+.credit::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--color-signal), var(--color-line) 65%, transparent);
+}
+
+.credit__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+/* Cyan, not green: this is the interface labelling itself, which is the one
+   job cyan has on this site. */
+.credit__tag {
+  color: var(--color-tech);
+  letter-spacing: 0;
+}
+
+.credit__name {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.6vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+}
+
+.credit__role {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.credit__sep {
+  color: var(--color-signal);
+}
+
+/* --- feature: the closing frame of the cinematic route ---------------------
+   Centred, with the rail rotated to a short tick dropping into the name from
+   above. Nothing is bigger here than in the inline version except the name —
+   the block earns its weight from the space around it, not from scale. --- */
+.credit--feature {
+  padding-left: 0;
+  padding-top: 2.25rem;
+  text-align: center;
+}
+
+.credit--feature::before {
+  left: 50%;
+  top: 0;
+  bottom: auto;
+  height: 1.5rem;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, transparent, var(--color-signal));
+}
+
+.credit--feature .credit__label {
+  justify-content: center;
+}
+
+.credit--feature .credit__name {
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+}

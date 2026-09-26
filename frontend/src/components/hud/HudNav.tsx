@@ -45,14 +45,20 @@ export function HudNav() {
         ))}
       </ul>
 
-      {/* Right cluster: the clock, then the community mark. The clock is not a
-          status light — the hero already reports SYS.STATUS at the bottom edge,
-          and two live indicators on one screen is one too many. */}
+      {/* Right cluster: the clock, the community mark, then E Cell. The clock is
+          not a status light — the hero already reports SYS.STATUS at the bottom
+          edge, and two live indicators on one screen is one too many.
+
+          The community mark is the largest thing in this bar by a clear margin;
+          E Cell sits beside it at chrome scale. Both are marks, not links: the
+          left-hand mark is already the route home, and a second link to the same
+          place is a tab stop that goes nowhere new. */}
       <div className="hud-nav__right">
         <p className="hud-nav__time" aria-hidden="true">
           <SystemClock />
         </p>
         <BrandLogo mark="kernel" size="md" decorative />
+        <BrandLogo mark="ecell" size="md" />
       </div>
     </nav>
   );

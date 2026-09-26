@@ -30,26 +30,32 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Institute mark on the left, community mark on the right, with the event
-          name and navigation between them. The two flank the header rather than
-          stacking, so neither reads as subordinate to the other.
+      {/* Institute mark on the left; the community mark and E Cell on the right,
+          with the event name and navigation between them. The marks flank the
+          header rather than stacking.
 
-          Below `sm` the three cannot share a line: the navigation needs 171px and
-          the community mark another 130px, against 188px of room at 320px. The
-          navigation was the piece that lost, squeezed to a 50px box that its own
-          labels then overflowed - which is how "MY REGISTRATIONS" came to be
-          painted across the logo. So the row wraps and the navigation takes a line
-          of its own, at full size, with both marks still flanking the row above it.
+          The right-hand pair is a ranked group, not two equals: MIT TECH KERNEL
+          runs the day and is set a step larger than everything else in the row,
+          with E Cell beside it at chrome scale. Both are tucked inside one
+          cluster so they travel together when the row wraps.
 
-          The mobile gap is 12px, not 16: the two marks measure 143px and 130px
-          against 288px of content width at 320px, and at 16px they missed sharing
-          a line by a single pixel - which sent the community mark onto a third row
-          of its own. Desktop keeps its 16px.
+          Below `sm` the marks and the navigation cannot share a line: the
+          navigation alone needs 171px against 288px of content width at 320px.
+          The navigation was the piece that lost, squeezed to a 50px box that its
+          own labels then overflowed - which is how "MY REGISTRATIONS" came to be
+          painted across the logo. So the row wraps and the navigation takes a
+          line of its own, at full size, with the marks still flanking the row
+          above it.
+
+          The mobile budget is what fixes the gaps: at 320px the three marks
+          measure 102px, 112px and 45px, which leaves 29px for two gaps. Hence
+          12px between the institute mark and the cluster and 10px inside it.
+          Desktop, with room to spare, opens back up to 16px.
 
           `mr-auto` on the institute mark, rather than `justify-between`, is what
           keeps this from disturbing the desktop header: the navigation and the
-          community mark stay adjacent on the right at their existing 16px, instead
-          of being spread across the row as a third evenly-spaced item. */}
+          right-hand cluster stay adjacent instead of being spread across the row
+          as evenly-spaced items. */}
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3.5 sm:flex-nowrap sm:gap-x-4 sm:px-6">
         <Link to="/" className="group mr-auto flex min-w-0 shrink items-center gap-3 sm:gap-4">
           <BrandLogo mark="institute" size="md" decorative className="shrink-0 transition-opacity group-hover:opacity-80" />
@@ -87,7 +93,7 @@ export function SiteHeader() {
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+        <div className="flex shrink-0 items-center gap-2.5 sm:gap-4">
           <span className="hidden h-14 w-px shrink-0 bg-line sm:block" aria-hidden="true" />
           <Link to="/" className="group shrink-0" aria-label="MIT Tech Kernel">
             <BrandLogo
@@ -97,6 +103,10 @@ export function SiteHeader() {
               className="transition-opacity group-hover:opacity-80"
             />
           </Link>
+
+          {/* Not decorative and not a link: nothing on this site is E Cell's to
+              navigate to, but the mark still has to announce whose it is. */}
+          <BrandLogo mark="ecell" size="md" className="shrink-0" />
         </div>
       </div>
     </header>

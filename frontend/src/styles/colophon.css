@@ -1,0 +1,96 @@
+/* ===========================================================================
+   Colophon — the closing frame of the cinematic route.
+
+   The drive ends somewhere. Without this the campaign simply stops at the last
+   mission bay, which reads as a page that ran out rather than a sequence that
+   finished. So: a hairline, the marks at full size, and a signature.
+
+   Centred and still. Everything above it moves; this is the one frame that does
+   not, which is what makes it read as the end rather than as another beat.
+   =========================================================================== */
+
+.colophon {
+  position: relative;
+  z-index: 10;
+  padding: clamp(4rem, 12vh, 7rem) clamp(1.25rem, 5vw, 4rem) clamp(3.5rem, 9vh, 5.5rem);
+  text-align: center;
+}
+
+/* A single rule, brightest in the middle, fading to nothing at both ends — the
+   horizon line the sequence comes to rest on. */
+.colophon__rule {
+  width: min(100%, 62rem);
+  height: 1px;
+  margin: 0 auto clamp(2.5rem, 7vh, 4rem);
+  background: linear-gradient(to right, transparent, var(--color-line-bright) 30%, var(--color-line-bright) 70%, transparent);
+}
+
+.colophon__eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  text-indent: 0.32em;
+}
+
+/* The last live indicator on the page, on the same blink rhythm as every other
+   one in the HUD. */
+.colophon__dot {
+  width: 5px;
+  height: 5px;
+  background: var(--color-signal);
+  animation: hud-blink 1.05s steps(1) infinite;
+}
+
+.colophon__title {
+  margin: clamp(1rem, 3vh, 1.5rem) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.colophon__year {
+  color: var(--color-signal);
+}
+
+.colophon__label {
+  margin: clamp(2.75rem, 8vh, 4.5rem) 0 clamp(1.25rem, 3.5vh, 2rem);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  text-indent: 0.24em;
+}
+
+/* The lockup is left-aligned everywhere else; here it centres with the rest of
+   the frame. */
+.colophon__marks {
+  justify-content: center;
+}
+
+.colophon__legal {
+  margin: clamp(2.5rem, 7vh, 3.75rem) auto 0;
+  max-width: 44rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.8;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.colophon__legal span {
+  color: var(--color-line-bright);
+  margin: 0 0.5rem;
+}

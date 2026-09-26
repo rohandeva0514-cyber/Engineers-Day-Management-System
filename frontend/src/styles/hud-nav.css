@@ -95,18 +95,28 @@
   letter-spacing: 0.16em;
 }
 
-/* On a phone the clock is the first thing to go — the links are the part that
-   has to survive. */
-@media (max-width: 40rem) {
-  /* Right-hand cluster: clock, then the community mark. */
-.hud-nav__right {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.75rem, 2vw, 1.5rem);
-  min-width: 0;
-}
+/* --- phone ----------------------------------------------------------------
+   Three marks and two links cannot share one line at 320px: the marks alone
+   take 271px of the 280px available, and the links need another 151px. So the
+   bar wraps and the links take a row of their own underneath, at full size —
+   the same resolution the practical header reached for the same reason.
 
-.hud-nav__time {
+   The clock goes entirely. It is the one thing here that is decoration, and a
+   fixed bar over a title sequence should cost as few rows as it can. --- */
+@media (max-width: 40rem) {
+  .hud-nav {
+    flex-wrap: wrap;
+    gap: 0.55rem 0.75rem;
+  }
+
+  .hud-nav__links {
+    /* Last in the visual order, and full width so the marks above it keep their
+       flanking positions rather than being pulled apart around it. */
+    order: 3;
+    width: 100%;
+  }
+
+  .hud-nav__time {
     display: none;
   }
 }

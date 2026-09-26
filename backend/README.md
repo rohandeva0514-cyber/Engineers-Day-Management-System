@@ -359,7 +359,7 @@ an event or changing a team size is a migration.
 | Ideathon | 1, 2 | Team | 1–4 | **40 teams** (configurable) |
 | BuildX | **1 only** | Solo | 1 | **30 participants** (hard) |
 | Debugging | **1 only** | Solo | 1 | Manual closure |
-| Rapid Research | **2 only** | Team | 1–4 | Manual closure |
+| Rapid Research | **2 only** | Team | 1–2 | Manual closure |
 
 A solo event is stored as a team of exactly one (`min = max = 1`), so the roster validator
 has one code path instead of a special case. Tech Debate's "exactly 10" is `min = max = 10`.

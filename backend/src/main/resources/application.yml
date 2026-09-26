@@ -2,6 +2,22 @@ spring:
   application:
     name: registration-service
 
+  config:
+    # Load backend/.env for local development, as a properties file.
+    #
+    # Spring Boot does not read .env on its own: it is an environment file, and
+    # nothing puts it into the JVM's environment. `mvnw spring-boot:run` in a clean
+    # shell therefore saw no DB_PASSWORD and fell through to the empty default
+    # below, which Postgres rejects with "the server requested SCRAM-based
+    # authentication, but no password was provided". docker-compose auto-loads the
+    # same file, so the container and the application now read one set of values.
+    #
+    # `optional:` is what keeps this local-only. Nothing else changes: the deployed
+    # image copies just the jar, so there is no .env beside it and the platform's
+    # real environment variables win as before. Environment variables also outrank
+    # an imported file, so exporting DB_PASSWORD still overrides it.
+    import: optional:file:.env[.properties]
+
   datasource:
     # Credentials come from the environment. Nothing secret is committed.
     url: ${DB_URL:jdbc:postgresql://localhost:55432/engineers_day}

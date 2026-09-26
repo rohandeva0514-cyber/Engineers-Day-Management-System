@@ -39,7 +39,7 @@ Debugging: solo
 Tech Debate: exactly 10
 FIX IT: 1–4
 Ideathon: 1–4
-Rapid Research: 1–4
+Rapid Research: 1–2
 ## TEAM REGISTRATION
 Team-based events require server-side team validation. The system must enforce the exact team-size rules and prevent invalid registration states.
 ## BUILDX
@@ -83,7 +83,7 @@ They analyze the situation, identify core problems, create a turnaround strategy
 ## IDEATHON
 Ideathon is available to first- and second-year participants in teams of 1–4. It has a configurable limited capacity.
 ## RAPID RESEARCH
-Rapid Research is a second-year-only team event with 1–4 members.
+Rapid Research is a second-year-only team event with 1–2 members.
 Participants receive a problem statement, receive a limited preparation window, prepare a research paper, and submit it. Papers are evaluated, selected teams present, and one winner is determined.
 The actual workspace becomes available only after an administrator starts the event.
 ## TECH DEBATE

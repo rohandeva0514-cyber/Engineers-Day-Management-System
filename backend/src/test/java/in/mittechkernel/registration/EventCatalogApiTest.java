@@ -47,7 +47,8 @@ class EventCatalogApiTest extends PostgresIntegrationTest {
             "ideathon,         TEAM,  1,  4,    40, '1,2'",
             "buildx,           SOLO,  1,  1,    30, '1'",
             "debugging,        SOLO,  1,  1,  null, '1'",
-            "rapid-research,   TEAM,  1,  4,  null, '2'"
+            // Capped at two - see V10__rapid_research_max_two.sql.
+            "rapid-research,   TEAM,  1,  2,  null, '2'"
     })
     @DisplayName("each event matches the rules in CLAUDE.md")
     void eventRulesMatchSpecification(String eventId, String participationType,

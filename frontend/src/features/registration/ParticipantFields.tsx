@@ -160,9 +160,9 @@ export function ParticipantFields({
           error={errorFor('division')}
         >
           <option value="">Select division…</option>
-          {/* Narrows once a year is selected — the first year has an E division
-              and the second year does not. Choosing a year that drops the
-              current division clears it, in useRegistrationForm. */}
+          {/* Narrows once a year is selected — the first year has E and F
+              divisions and the second year does not. Choosing a year that drops
+              the current division clears it, in useRegistrationForm. */}
           {divisionsForYear(value.yearLevel).map((division) => (
             <option key={division} value={division}>
               {division}

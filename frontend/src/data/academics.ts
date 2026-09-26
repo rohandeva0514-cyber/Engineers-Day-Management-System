@@ -16,14 +16,15 @@ export const BRANCHES: readonly string[] = [
 ] as const;
 
 /**
- * Divisions, which differ by year: the first year runs an extra division.
+ * Divisions, which differ by year: the first year runs two divisions the second
+ * year does not.
  *
  * Keyed by the participant's own year rather than by the event, because an event
  * open to both years has students of both sitting in it — the division a person
  * belongs to follows them, not the event they entered.
  */
 const DIVISIONS_BY_YEAR: Record<YearLevel, readonly string[]> = {
-  1: ['A', 'B', 'C', 'D', 'E'],
+  1: ['A', 'B', 'C', 'D', 'E', 'F'],
   2: ['A', 'B', 'C', 'D'],
 };
 
@@ -32,7 +33,7 @@ const DIVISIONS_BY_YEAR: Record<YearLevel, readonly string[]> = {
  * someone filling the form top to bottom. Picking a year then narrows it, and
  * `useRegistrationForm` clears a division that the new year does not have.
  */
-const DIVISIONS_COMMON: readonly string[] = ['A', 'B', 'C', 'D', 'E'];
+const DIVISIONS_COMMON: readonly string[] = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 export function divisionsForYear(year: YearLevel | null): readonly string[] {
   return year === null ? DIVISIONS_COMMON : DIVISIONS_BY_YEAR[year];

@@ -2,142 +2,149 @@ import { useState } from 'react';
 import { ButtonLink } from '@/components/Button';
 import { TechLabel } from '@/components/Panel';
 import { useEvents } from '@/hooks/useEvents';
-import type { RegistrationReceipt } from '@/domain/types';
+import { eventsInSlot, freeSlots } from '@/domain/rules';
+import type { Event, RegistrationReceipt, SlotState } from '@/domain/types';
 
 /**
  * What the student can still do, immediately after registering.
  *
- * The rule is one main event plus FIX IT, and this is the moment it either
- * becomes obvious or stays a mystery. Three outcomes, and only ever one shown:
+ * A student takes three events, one from each registration group, and this is
+ * the moment the remaining two either become obvious or stay a mystery. Two
+ * outcomes:
  *
- *   main event taken, FIX IT free  -> offer FIX IT
- *   FIX IT taken, main event free  -> offer the event list
- *   both taken                     -> say so, and offer nothing
+ *   every group used   -> confirm all three, and offer nothing further
+ *   groups still free  -> name them, and show the events in each
  *
  * The state is read from `receipt.registrationState`, which the server computed
  * from the rows it had just written. Nothing here re-derives the rule, so this
  * panel cannot contradict what the backend would actually accept — and there is
  * no path where it offers something that would then be refused.
  *
- * Restrained on purpose: a bordered panel and a link. No modal, no confetti.
+ * Restrained on purpose: a bordered panel and a list of links. No modal, no
+ * confetti.
  */
 export function PostRegistrationNext({ receipt }: { receipt: RegistrationReceipt }) {
-  const state = receipt.registrationState;
+  const free = freeSlots(receipt.registrationState);
 
-  // Which slot did this registration just fill? Answered by comparing ids the
-  // server sent, so no event is named here.
-  const justRegisteredOpen = receipt.eventId === state.openEventId;
+  if (free.length === 0) {
+    return <AllSlotsFilled receipt={receipt} />;
+  }
 
-  if (state.hasPrimaryEvent && state.hasOpenEvent) {
-    return (
-      <section
-        aria-labelledby="next-heading"
-        className="clip-notch-tr mt-8 border border-ok/40 bg-ok-soft/30 px-5 py-6 sm:px-6"
-      >
-        <TechLabel className="mb-2 text-ok">Registration complete</TechLabel>
-        <h2 id="next-heading" className="font-display text-xl text-ink sm:text-2xl">
-          You&rsquo;re all set
-        </h2>
+  return <RemainingSlots free={free} />;
+}
 
-        <dl className="mt-4 space-y-2">
-          <div className="flex items-baseline gap-3">
-            <dt className="label-tech w-24 shrink-0">Main event</dt>
-            <dd className="text-[15px] text-ink">{state.primaryEventName}</dd>
+/** Every group used. The three events are listed back as a receipt. */
+function AllSlotsFilled({ receipt }: { receipt: RegistrationReceipt }) {
+  return (
+    <section
+      aria-labelledby="next-heading"
+      className="clip-notch-tr mt-8 border border-ok/40 bg-ok-soft/30 px-5 py-6 sm:px-6"
+    >
+      <TechLabel className="mb-2 text-ok">Registration complete</TechLabel>
+      <h2 id="next-heading" className="font-display text-xl text-ink sm:text-2xl">
+        You&rsquo;re all set
+      </h2>
+
+      <dl className="mt-4 space-y-2">
+        {receipt.registrationState.slots.map((slot) => (
+          <div key={slot.slot} className="flex items-baseline gap-3">
+            <dt className="label-tech w-24 shrink-0">{slot.label}</dt>
+            <dd className="text-[15px] text-ink">{slot.eventName}</dd>
           </div>
-          <div className="flex items-baseline gap-3">
-            <dt className="label-tech w-24 shrink-0">Additional</dt>
-            <dd className="text-[15px] text-ink">{state.openEventName}</dd>
-          </div>
-        </dl>
+        ))}
+      </dl>
 
-        <p className="mt-4 max-w-prose text-sm leading-relaxed text-muted">
-          You have reached the maximum number of registrations. There is nothing further
-          to enter.
-        </p>
+      <p className="mt-4 max-w-prose text-sm leading-relaxed text-muted">
+        You have reached the maximum number of registrations. There is nothing further
+        to enter.
+      </p>
 
-        <div className="mt-5">
-          <ButtonLink to="/my-registrations">View my registrations</ButtonLink>
-        </div>
-      </section>
-    );
-  }
-
-  if (justRegisteredOpen && state.canRegisterPrimaryEvent) {
-    return (
-      <section
-        aria-labelledby="next-heading"
-        className="clip-notch-tr mt-8 border border-signal/40 bg-signal-soft/30 px-5 py-6 sm:px-6"
-      >
-        <TechLabel className="mb-2 label-tech-bright">One slot still open</TechLabel>
-        <h2 id="next-heading" className="font-display text-xl text-ink sm:text-2xl">
-          You can still register for one event
-        </h2>
-        <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted">
-          {state.openEventName} does not use your main-event slot. You can still choose
-          one event from the list.
-        </p>
-        <div className="mt-5">
-          <ButtonLink to="/events">View events</ButtonLink>
-        </div>
-      </section>
-    );
-  }
-
-  if (state.canRegisterOpenEvent) {
-    return <OpenEventInvitation />;
-  }
-
-  return null;
+      <div className="mt-5">
+        <ButtonLink to="/my-registrations">View my registrations</ButtonLink>
+      </div>
+    </section>
+  );
 }
 
 /**
- * The FIX IT invitation.
+ * The groups still open, each with the events it contains.
  *
- * Shown after a student takes their primary event, when the open slot is still
- * free. Phrased as what it is — a second event that does not compete with the one
- * they just chose — and it names FIX IT rather than saying "one more event",
- * because a student cannot in fact register for any second event.
+ * Showing the actual events rather than "one slot remaining" is the point: the
+ * choice is between named events, and a student who has to go back to the
+ * catalogue and work out which ones compete has been told nothing useful.
  *
- * The target is resolved from the event catalogue by SLOT, not from the student's
- * own registrations. That matters: `registrationState.openEventId` is only
- * populated once someone already holds the open event, so reading it here meant
- * this never rendered for the case it exists for. Looking it up by
- * `registrationSlot === 'OPEN'` also keeps the component free of a hardcoded
- * 'fix-it' slug, so a future change to which event is open needs no edit here.
- *
- * Renders nothing if the catalogue is unavailable. A student seeing no panel is
- * better than one sent to a link that may not resolve.
+ * The events come from the catalogue grouped by `registrationSlot`, so nothing
+ * here names BuildX, Ideathon or any other event. If the catalogue is
+ * unavailable the panel still renders with the group names and a link to the
+ * events page — degraded, but never empty and never wrong.
  */
-function OpenEventInvitation() {
+function RemainingSlots({ free }: { free: SlotState[] }) {
   const events = useEvents();
-
-  if (events.status !== 'success') return null;
-
-  const openEvent = events.data.find((event) => event.registrationSlot === 'OPEN');
-  if (openEvent === undefined) return null;
+  const catalogue = events.status === 'success' ? events.data : [];
 
   return (
     <section
       aria-labelledby="next-heading"
       className="clip-notch-tr mt-8 border border-signal/40 bg-signal-soft/30 px-5 py-6 sm:px-6"
     >
-      <TechLabel className="mb-2 label-tech-bright">Special open event</TechLabel>
+      <TechLabel className="mb-2 label-tech-bright">
+        {free.length === 1 ? 'One slot still open' : `${free.length} slots still open`}
+      </TechLabel>
       <h2 id="next-heading" className="font-display text-xl text-ink sm:text-2xl">
-        You can still register for {openEvent.name}
+        {free.length === 1
+          ? 'You can still register for one more event'
+          : `You can still register for ${free.length} more events`}
       </h2>
       <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted">
-        {openEvent.name} is available as an additional event alongside your primary
-        event.
+        Each student takes one event from every group. These are still yours to claim &mdash;
+        one event from each.
       </p>
-      <div className="mt-5 flex flex-wrap gap-3">
-        <ButtonLink to={`/events/${openEvent.eventId}`}>
-          Register for {openEvent.name} &rarr;
-        </ButtonLink>
+
+      <ul className="mt-5 space-y-4">
+        {free.map((slot) => (
+          <li key={slot.slot}>
+            <TechLabel className="mb-1.5">{slot.label}</TechLabel>
+            <SlotChoices options={eventsInSlot(catalogue, slot.slot)} />
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <ButtonLink to="/events">View all events</ButtonLink>
         <ButtonLink to="/my-registrations" variant="ghost">
-          View my registration
+          View my registrations
         </ButtonLink>
       </div>
     </section>
+  );
+}
+
+/**
+ * The events in one open group, as direct links.
+ *
+ * Events the organisers have closed are still listed, unlinked: a student
+ * comparing their options should see that the group has four events and that one
+ * of them is shut, rather than a short list they cannot account for.
+ */
+function SlotChoices({ options }: { options: Event[] }) {
+  if (options.length === 0) return null;
+
+  return (
+    <ul className="flex flex-wrap gap-x-4 gap-y-2">
+      {options.map((event) => (
+        <li key={event.eventId} className="text-[15px]">
+          {event.registrationOpen ? (
+            <ButtonLink to={`/events/${event.eventId}`} variant="ghost">
+              {event.name}
+            </ButtonLink>
+          ) : (
+            <span className="clip-notch-sm inline-flex h-10 items-center border border-line px-5 font-mono text-[13px] uppercase tracking-[0.14em] text-faint line-through">
+              {event.name}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
 

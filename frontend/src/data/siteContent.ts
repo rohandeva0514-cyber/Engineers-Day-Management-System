@@ -17,7 +17,7 @@ export const SITE = {
   event: "ENGINEERS' DAY 2026",
   tagline: 'Seven events. One day. Built by engineers, for engineers.',
   intro:
-    'Seven events across both years — from over-the-board chess to a timed debugging sprint. Check what you are eligible for, assemble a team where one is needed, and claim your place.',
+    'Seven events across both years — from over-the-board chess to a timed debugging sprint. Every student takes three: FIX IT, one build event and one challenge. Check what you are eligible for, assemble a team where one is needed, and claim your place.',
   registrationDeadlineLabel: '29 SEP 2026',
   /** IST. Used for the closing countdown in the hero readout. */
   registrationDeadline: '2026-09-29T23:59:59+05:30',
@@ -31,11 +31,11 @@ export const SITE = {
    * the API, the API is right and these are stale copy.
    *
    *   first year  Chess, Tech Debate, FIX IT, Ideathon, BuildX, Debugging
-   *   second year Chess, Tech Debate, FIX IT, Ideathon, Rapid Research
+   *   second year all of the above, plus Rapid Research
    */
   eventCount: 7,
   firstYearEventCount: 6,
-  secondYearEventCount: 5,
+  secondYearEventCount: 7,
 } as const;
 
 /**

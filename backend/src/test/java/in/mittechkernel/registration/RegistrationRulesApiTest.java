@@ -72,33 +72,82 @@ class RegistrationRulesApiTest extends PostgresIntegrationTest {
     }
 
     @Test
-    @DisplayName("a participant may hold one primary event plus the open event")
-    void onePrimaryPlusOpenIsAllowed() {
+    @DisplayName("a participant may hold one event from each of the three slots")
+    void oneEventPerSlotIsAllowed() {
         ParticipantRequest student = TestRequests.participant("1MS24CS050", (short) 1);
 
-        // One primary event, plus the open event. A second primary is refused - see
-        // RegistrationSlots and V6__event_registration_slot.sql.
+        // One from each group: CHALLENGE, CORE, BUILD - see RegistrationSlots and
+        // V11__three_registration_slots.sql.
         assertThat(register(new RegistrationRequest("chess", null, List.of(student), null))
                 .getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(register(TestRequests.team("fix-it", "Turnaround 050",
                 List.of(student))).getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(register(new RegistrationRequest("buildx", null, List.of(student), null))
-                .getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+                .getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         // Looked up by email: roll numbers repeat, so they cannot address a student.
         ResponseEntity<JsonNode> mine = http.getForEntity(
                 "/api/registrations?email=1ms24cs050@mit.example.edu", JsonNode.class);
         assertThat(mine.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(mine.getBody()).isNotNull();
-        assertThat(mine.getBody().get("registrations")).hasSize(2);
+        assertThat(mine.getBody().get("registrations")).hasSize(3);
+
+        JsonNode slots = mine.getBody().get("registrationState").get("slots");
+        assertThat(slots).hasSize(3);
+        slots.forEach(slot -> {
+            assertThat(slot.get("taken").asBoolean()).isTrue();
+            assertThat(slot.get("canRegister").asBoolean()).isFalse();
+        });
+    }
+
+    @ParameterizedTest(name = "{0} blocks a later entry to {1}")
+    @CsvSource({
+            "buildx,    ideathon",       // both BUILD
+            "ideathon,  buildx",         // both BUILD
+            "chess,     debugging",      // both CHALLENGE
+            "debugging, tech-debate"     // both CHALLENGE
+    })
+    @DisplayName("a second event from the same slot is refused")
+    void secondEventInTheSameSlotIsRefused(String held, String requested) {
+        String rollNo = "SLOT" + held.toUpperCase().charAt(0) + requested.length();
+        ParticipantRequest student = TestRequests.participant(rollNo, (short) 1);
+
+        assertThat(register(soloOrTeam(held, student)).getStatusCode())
+                .isEqualTo(HttpStatus.CREATED);
+
+        ResponseEntity<JsonNode> response = register(soloOrTeam(requested, student));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(codeOf(response)).isEqualTo("EVENT_SLOT_ALREADY_TAKEN");
+        assertThat(detailsOf(response).get("heldEventId").asText()).isEqualTo(held);
+        assertThat(countRegistrations(requested)).isZero();
+    }
+
+    /** Ideathon is the only team event in these pairs; everything else enters solo. */
+    private RegistrationRequest soloOrTeam(String eventId, ParticipantRequest student) {
+        return "ideathon".equals(eventId)
+                ? new RegistrationRequest(eventId, "Team " + student.rollNo(),
+                        List.of(student), null)
+                : new RegistrationRequest(eventId, null, List.of(student), null);
+    }
+
+    @Test
+    @DisplayName("FIX IT is never blocked by an entry in another slot")
+    void fixItIsAlwaysAvailableAlongside() {
+        ParticipantRequest student = TestRequests.participant("1MS24CS051", (short) 1);
+
+        assertThat(register(new RegistrationRequest("ideathon", "Idea 051",
+                List.of(student), null)).getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(register(TestRequests.team("fix-it", "Turnaround 051",
+                List.of(student))).getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     // ------------------------------------------------------------ eligibility
 
     @ParameterizedTest(name = "{0} rejects a year {1} student")
     @CsvSource({
-            "buildx, 2",          // first year only
-            "debugging, 2",       // first year only
+            // BuildX and Debugging were first-year-only until V11 opened them to
+            // both years; Rapid Research is the one remaining year-restricted event.
             "rapid-research, 1"   // second year only
     })
     @DisplayName("an ineligible year is refused")
@@ -121,8 +170,9 @@ class RegistrationRulesApiTest extends PostgresIntegrationTest {
         assertThat(register(TestRequests.solo("chess", "1MS23IS009", (short) 2)).getStatusCode())
                 .isEqualTo(HttpStatus.CREATED);
 
-        // Same email, now claiming a different year to reach BuildX. Matched by email,
-        // so the stored record wins whatever roll number is submitted.
+        // Same email, now claiming a different year. Matched by email, so the stored
+        // record wins whatever roll number is submitted - and the mismatch is refused
+        // before eligibility is even consulted.
         ResponseEntity<JsonNode> response = register(
                 new RegistrationRequest("buildx", null,
                         List.of(new ParticipantRequest("1MS23IS009", "Student 1MS23IS009",

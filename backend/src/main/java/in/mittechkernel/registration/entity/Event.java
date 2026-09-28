@@ -47,9 +47,10 @@ public class Event {
     private ParticipationType participationType;
 
     /**
-     * Whether entering this event uses up the student's one primary-event slot.
+     * Which of the three registration groups this event belongs to.
      *
-     * <p>Data, not a code branch: see V6__event_registration_slot.sql for why.
+     * <p>A student may hold at most one registration per slot. Data, not a code
+     * branch: see V11__three_registration_slots.sql for why.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "registration_slot", length = 16, nullable = false)
@@ -145,16 +146,6 @@ public class Event {
 
     public boolean isSolo() {
         return participationType == ParticipationType.SOLO;
-    }
-
-    /** True when this event can be held alongside a primary one without consuming it. */
-    public boolean isOpenSlot() {
-        return registrationSlot == RegistrationSlot.OPEN;
-    }
-
-    /** True when entering this event uses up the student's single primary slot. */
-    public boolean isPrimarySlot() {
-        return registrationSlot == RegistrationSlot.PRIMARY;
     }
 
     /** True when the event requires a team of one fixed size, e.g. Tech Debate's exactly 10. */

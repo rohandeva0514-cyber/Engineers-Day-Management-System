@@ -11,7 +11,7 @@ import { identitySession } from '@/services/identitySession';
  *
  * The state itself is computed by the server and read straight off the API
  * response. Nothing here re-derives the rule, which is the point: there is one
- * implementation of "one main event plus FIX IT", it lives in
+ * implementation of "one event per registration group", it lives in
  * `RegistrationSlots` on the backend, and this only reports it.
  *
  * Never authoritative. Every refusal shown on the strength of this is confirmed

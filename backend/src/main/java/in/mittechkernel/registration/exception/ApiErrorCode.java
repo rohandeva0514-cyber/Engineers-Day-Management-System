@@ -59,13 +59,14 @@ public enum ApiErrorCode {
     DUPLICATE_REGISTRATION(HttpStatus.CONFLICT),
 
     /**
-     * The student already holds a primary event and asked for another one.
+     * The student already holds an event in this one's registration group.
      *
      * <p>Distinct from DUPLICATE_REGISTRATION on purpose: that one means "you are
-     * already in this event", this one means "you are already in a different one".
-     * The student needs to be told which, and that FIX IT is still open to them.
+     * already in this event", this one means "you are already in a different event
+     * that competes with it". The student needs to be told which, and that the
+     * other groups are untouched.
      */
-    PRIMARY_EVENT_ALREADY_TAKEN(HttpStatus.CONFLICT),
+    EVENT_SLOT_ALREADY_TAKEN(HttpStatus.CONFLICT),
 
     /** Another team in this event already uses that name. */
     TEAM_NAME_TAKEN(HttpStatus.CONFLICT),

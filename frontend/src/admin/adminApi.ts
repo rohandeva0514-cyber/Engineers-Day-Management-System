@@ -31,7 +31,7 @@ export interface AdminEventRow {
   capacity: number | null;
   capacityUnit: string;
   participationType: string;
-  registrationSlot: 'PRIMARY' | 'OPEN';
+  registrationSlot: 'CORE' | 'BUILD' | 'CHALLENGE';
   eligibleYears: number[];
 }
 

@@ -1,31 +1,35 @@
 package in.mittechkernel.registration.service;
 
 import in.mittechkernel.registration.dto.RegistrationStateResponse;
+import in.mittechkernel.registration.dto.RegistrationStateResponse.SlotState;
 import in.mittechkernel.registration.entity.Event;
 import in.mittechkernel.registration.entity.Participant;
 import in.mittechkernel.registration.entity.Registration;
+import in.mittechkernel.registration.entity.RegistrationSlot;
 import in.mittechkernel.registration.exception.ApiErrorCode;
 import in.mittechkernel.registration.exception.ApiException;
 import in.mittechkernel.registration.repository.RegistrationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * The one place the "one primary event, plus FIX IT" rule lives.
+ * The one place the "one event per slot" rule lives.
  *
- * <p>The whole rule is two slots:
+ * <p>The whole rule is a single sentence applied to every group alike:
  *
  * <pre>
- *   PRIMARY  at most one registration for an event marked PRIMARY
- *   OPEN     at most one registration for an event marked OPEN
+ *   at most one registration per {@link RegistrationSlot}
  * </pre>
  *
- * <p>Which slot an event uses is read from the event row, so nothing here names FIX IT
- * or any other event. Opening a second event alongside FIX IT, or closing FIX IT back
- * into the primary pool, is a data change - see V6__event_registration_slot.sql.
+ * <p>Which slot an event belongs to is read from the event row, so nothing here names
+ * FIX IT, BuildX or any other event, and nothing here knows that CORE currently holds a
+ * single event. Moving an event between groups, or adding a fourth group, is a data
+ * change plus an enum constant - see V11__three_registration_slots.sql.
  *
  * <p>Deliberately one class rather than checks scattered through the controller, the
  * service and the form. There is exactly one function that decides whether a slot is
@@ -34,8 +38,10 @@ import java.util.Map;
  * looked.
  *
  * <p>Duplicate registration for the <em>same</em> event is NOT this class's job. That is
- * still the UNIQUE (event_id, participant_id) index and the check that reads it, which
- * is what lets a student hold a primary event and FIX IT at the same time.
+ * still the UNIQUE (event_id, participant_id) index and the check that reads it. Keeping
+ * them apart is what makes the messages accurate: "you are already in this event" and
+ * "you are already in a different event in this group" are different problems with
+ * different fixes.
  */
 @Service
 public class RegistrationSlots {
@@ -47,23 +53,18 @@ public class RegistrationSlots {
     }
 
     /**
-     * Refuse the request if any member of the roster has no free slot for this event.
+     * Refuse the request if any member of the roster has already used this event's slot.
      *
      * <p>Checked per member, not just for the captain: a team registration writes a row
-     * for every person on it, so one member who already holds a primary event must stop
-     * the whole submission rather than silently gaining a second one.
-     *
-     * <p>Only PRIMARY events can exhaust a slot this way. An OPEN event is refused only
-     * when it is already held, and that refusal belongs to the duplicate check.
+     * for every person on it, so one member who has already spent the slot must stop the
+     * whole submission rather than silently gaining a second event in the same group.
      */
     @Transactional(readOnly = true)
     public void validateSlotAvailable(Event event, List<Participant> roster) {
-        if (event.isOpenSlot()) {
-            return;
-        }
+        RegistrationSlot slot = event.getRegistrationSlot();
 
         for (Participant participant : roster) {
-            Registration held = firstPrimaryRegistration(participant.getId());
+            Registration held = heldInSlot(participant.getId(), slot);
             if (held == null) {
                 continue;
             }
@@ -74,12 +75,13 @@ public class RegistrationSlots {
                 continue;
             }
 
-            throw new ApiException(ApiErrorCode.PRIMARY_EVENT_ALREADY_TAKEN,
+            throw new ApiException(ApiErrorCode.EVENT_SLOT_ALREADY_TAKEN,
                     participant.getRollNo() + " is already registered for "
-                            + held.getEvent().getName()
-                            + ". Only one main event is allowed per student, but FIX IT can "
-                            + "still be entered alongside it.",
+                            + held.getEvent().getName() + ". Only one "
+                            + slot.label() + " event is allowed per student.",
                     Map.of("rollNo", participant.getRollNo(),
+                           "slot", slot.name(),
+                           "slotLabel", slot.label(),
                            "requestedEventId", event.getId(),
                            "heldEventId", held.getEvent().getId(),
                            "heldEventName", held.getEvent().getName()));
@@ -100,31 +102,34 @@ public class RegistrationSlots {
      * confusion about what is actually visible.
      */
     public RegistrationStateResponse stateFrom(List<Registration> registrations) {
-        Registration primary = null;
-        Registration open = null;
-
+        Map<RegistrationSlot, Registration> held = new EnumMap<>(RegistrationSlot.class);
         for (Registration registration : registrations) {
-            if (registration.getEvent().isOpenSlot()) {
-                if (open == null) open = registration;
-            } else if (primary == null) {
-                primary = registration;
-            }
+            held.putIfAbsent(registration.getEvent().getRegistrationSlot(), registration);
         }
 
-        return new RegistrationStateResponse(
-                primary != null,
-                primary == null ? null : primary.getEvent().getId(),
-                primary == null ? null : primary.getEvent().getName(),
-                open != null,
-                open == null ? null : open.getEvent().getId(),
-                open == null ? null : open.getEvent().getName(),
-                primary == null,
-                open == null);
+        // Every slot is reported, free ones included, in declaration order. The client
+        // renders the strip straight from this rather than reconciling it against the
+        // catalogue.
+        List<SlotState> slots = Arrays.stream(RegistrationSlot.values())
+                .map(slot -> toSlotState(slot, held.get(slot)))
+                .toList();
+
+        return new RegistrationStateResponse(slots);
     }
 
-    private Registration firstPrimaryRegistration(Long participantId) {
+    private SlotState toSlotState(RegistrationSlot slot, Registration held) {
+        return new SlotState(
+                slot.name(),
+                slot.label(),
+                held != null,
+                held == null ? null : held.getEvent().getId(),
+                held == null ? null : held.getEvent().getName(),
+                held == null);
+    }
+
+    private Registration heldInSlot(Long participantId, RegistrationSlot slot) {
         return registrationRepository.findAllByParticipantId(participantId).stream()
-                .filter(registration -> registration.getEvent().isPrimarySlot())
+                .filter(registration -> registration.getEvent().getRegistrationSlot() == slot)
                 .findFirst()
                 .orElse(null);
     }

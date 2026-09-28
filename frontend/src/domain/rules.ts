@@ -15,8 +15,11 @@
 import type {
   Event,
   EventAvailability,
+  EventId,
   ParticipantDraft,
+  RegistrationState,
   RegistrationStatus,
+  SlotState,
   YearLevel,
 } from './types';
 
@@ -37,6 +40,58 @@ export const AVAILABILITY_LABEL: Record<EventAvailability, string> = {
   CLOSED: 'CLOSED',
   SOLD_OUT: 'SOLD OUT',
 };
+
+/* ------------------------------------------------------------------ slots */
+
+/*
+ * Reading the server's slot report.
+ *
+ * A student takes three events: one per registration group. The grouping is the
+ * server's, sent per event as `registrationSlot` and reported back per slot in
+ * `RegistrationState.slots` — so none of these functions names an event, and none
+ * of them decides anything. They are lookups over what the server already said.
+ *
+ * `state` is nullable throughout because an unrecognised device has no state, and
+ * unknown must never read as blocked: every helper here answers "yes, go ahead"
+ * when it does not know, and the server refuses on submit if that was wrong.
+ */
+
+/** The student's standing in one group, or null when the state is unknown. */
+export function slotStateFor(
+  state: RegistrationState | null,
+  slot: Event['registrationSlot'],
+): SlotState | null {
+  return state?.slots.find((entry) => entry.slot === slot) ?? null;
+}
+
+/** Groups the student can still enter. Empty when everything is taken. */
+export function freeSlots(state: RegistrationState | null): SlotState[] {
+  return state?.slots.filter((entry) => entry.canRegister) ?? [];
+}
+
+/** True when the student already holds this exact event. */
+export function isRegisteredFor(state: RegistrationState | null, eventId: EventId): boolean {
+  return state?.slots.some((entry) => entry.eventId === eventId) ?? false;
+}
+
+/**
+ * True when this event's group is already spent on a *different* event.
+ *
+ * The "different" matters: holding the event itself is not a slot clash, it is
+ * simply being registered, and the two need different words on screen.
+ */
+export function isSlotBlocked(state: RegistrationState | null, event: Event): boolean {
+  const entry = slotStateFor(state, event.registrationSlot);
+  return entry !== null && entry.taken && entry.eventId !== event.eventId;
+}
+
+/** Every event in one group, in catalogue order. Used to show the choice itself. */
+export function eventsInSlot(
+  events: readonly Event[],
+  slot: Event['registrationSlot'],
+): Event[] {
+  return events.filter((event) => event.registrationSlot === slot);
+}
 
 /* ------------------------------------------------------------------ teams */
 

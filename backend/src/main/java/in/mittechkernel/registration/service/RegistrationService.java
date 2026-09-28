@@ -122,8 +122,8 @@ public class RegistrationService {
         //    The UNIQUE constraint is the real guard; this is here to give a better message.
         rejectAlreadyRegistered(event, roster);
 
-        // 7. One main event per student. FIX IT carries slot OPEN so it never trips this,
-        //    and holding it never blocks anything - see RegistrationSlots.
+        // 7. One event per registration group. Which group this event belongs to is on
+        //    the event row, so nothing here names an event - see RegistrationSlots.
         slots.validateSlotAvailable(event, roster);
 
         // 8. Team name uniqueness, same arrangement: index is authoritative, this is courtesy.

@@ -22,15 +22,15 @@ First Year / Freshers:
 - Non-tech: Chess, Tech Debate, FIX IT
 - Tech: Ideathon, BuildX, Debugging
 Second Year:
-- Common: Chess, Tech Debate, FIX IT, Ideathon
+- Common: Chess, Tech Debate, FIX IT, Ideathon, BuildX, Debugging
 - Exclusive: Rapid Research
 ## EVENT ELIGIBILITY
 Chess: 1st + 2nd
 Tech Debate: 1st + 2nd
 FIX IT: 1st + 2nd
 Ideathon: 1st + 2nd
-BuildX: 1st only
-Debugging: 1st only
+BuildX: 1st + 2nd
+Debugging: 1st + 2nd
 Rapid Research: 2nd only
 ## EVENT PARTICIPATION TYPES
 Chess: solo
@@ -43,13 +43,13 @@ Rapid Research: 1–2
 ## TEAM REGISTRATION
 Team-based events require server-side team validation. The system must enforce the exact team-size rules and prevent invalid registration states.
 ## BUILDX
-BuildX is a first-year-only solo event. Participants receive a theme and can build anything they want locally in VS Code or their own environment.
+BuildX is a solo event open to both years. Participants receive a theme and can build anything they want locally in VS Code or their own environment.
 The website provides registration, event-control, theme, instructions, and submission functionality. It is not a replacement for the participant's IDE.
 ## BUILDX CAPACITY
 Hard maximum: 30 seats.
 Capacity must be enforced server-side.
 ## DEBUGGING COMPETITION
-Debugging is a first-year-only solo competition involving intentionally broken code/problems.
+Debugging is a solo competition, open to both years, involving intentionally broken code/problems.
 The system should eventually support:
 - start/end time
 - problem assignment
@@ -115,6 +115,12 @@ The platform should give registered participants a persistent Engineer identity/
 Registered participants should receive event-specific passes/credentials suitable for event-day access and operational verification.
 ## MULTI-EVENT REGISTRATION
 Participants can register for multiple eligible events, subject to each event's rules and capacity. The backend must validate each registration independently.
+## REGISTRATION SLOTS
+A participant may hold at most three registrations, one from each of three slots:
+- CORE: FIX IT
+- BUILD: exactly one of BuildX or Ideathon
+- CHALLENGE: exactly one of Chess, Debugging, Tech Debate, Rapid Research
+The slot an event belongs to is stored per event (event.registration_slot), not branched on in code. The rule is uniform: at most one registration per slot, enforced server-side in RegistrationSlots. Eligibility, capacity and team-size rules still apply independently on top of it.
 ## CINEMATIC WORLD
 Events are physical locations/districts in a cyberpunk city.
 Scrolling should feel like travelling through the city rather than scrolling through a list of cards.

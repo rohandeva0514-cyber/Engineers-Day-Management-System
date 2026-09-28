@@ -34,12 +34,18 @@ public record EventResponse(
         RegistrationStatus registrationStatus,
         boolean registrationOpen,
         /**
-         * PRIMARY consumes the student's single main-event slot; OPEN does not.
+         * The registration group this event belongs to: a student may hold at most one
+         * registration per group.
          *
-         * <p>Sent per event so the client never needs to know which event is the open
-         * one. Presentation only - the rule is enforced server-side on every submit.
+         * <p>Sent per event so the client never needs to know which events compete with
+         * which. Grouping the catalogue by this value is enough to show a student the
+         * choice they are actually making. Presentation only - the rule is enforced
+         * server-side on every submit.
          */
-        String registrationSlot) {
+        String registrationSlot,
+
+        /** How that group is named to a student, e.g. "Build". */
+        String registrationSlotLabel) {
 
     public static EventResponse from(Event event) {
         return new EventResponse(
@@ -56,6 +62,7 @@ public record EventResponse(
                 event.seatsRemaining(),
                 event.effectiveRegistrationStatus(),
                 event.isOpenForRegistration(),
-                event.getRegistrationSlot().name());
+                event.getRegistrationSlot().name(),
+                event.getRegistrationSlot().label());
     }
 }

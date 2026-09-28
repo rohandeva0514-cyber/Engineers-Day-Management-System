@@ -33,13 +33,31 @@ export const YEAR_LEVELS: readonly YearLevel[] = [1, 2] as const;
 export type ParticipationType = 'SOLO' | 'TEAM';
 
 /**
- * Which registration slot an event consumes.
+ * Which registration group an event belongs to.
  *
- * PRIMARY uses up the student's single main-event slot. OPEN can be held
- * alongside it. Sent per event, so nothing here names FIX IT — opening a second
- * event later is a backend data change and this type already covers it.
+ * A student holds at most one registration per slot, so these three are also the
+ * three events a student ends up with: FIX IT, one of BuildX/Ideathon, and one of
+ * Chess/Debugging/Tech Debate/Rapid Research.
+ *
+ * Nothing in the frontend decides the mapping — `Event.registrationSlot` is sent
+ * per event, so moving an event between groups is a backend data change and this
+ * type already covers it. The union is kept as a type rather than a set of
+ * constants for the same reason: it describes what the server sends, it does not
+ * define it.
  */
-export type RegistrationSlot = 'PRIMARY' | 'OPEN';
+export type RegistrationSlot = 'CORE' | 'BUILD' | 'CHALLENGE';
+
+/** One registration group, and whether this student has used it. */
+export interface SlotState {
+  slot: RegistrationSlot;
+  /** How the group is named to a student, e.g. "Build". Sent by the server. */
+  label: string;
+  taken: boolean;
+  /** The event held in this slot, or null when it is still free. */
+  eventId: EventId | null;
+  eventName: string | null;
+  canRegister: boolean;
+}
 
 /**
  * What a student may still register for, as decided by the server.
@@ -48,16 +66,11 @@ export type RegistrationSlot = 'PRIMARY' | 'OPEN';
  * re-validates every registration regardless, so a client that ignores this
  * gains nothing. It exists purely so the UI does not have to re-derive the rule
  * and risk disagreeing with the server about it.
+ *
+ * Every slot is present, free ones included, in the order the server lists them.
  */
 export interface RegistrationState {
-  hasPrimaryEvent: boolean;
-  primaryEventId: EventId | null;
-  primaryEventName: string | null;
-  hasOpenEvent: boolean;
-  openEventId: EventId | null;
-  openEventName: string | null;
-  canRegisterPrimaryEvent: boolean;
-  canRegisterOpenEvent: boolean;
+  slots: SlotState[];
 }
 
 /** What a single seat of capacity counts. Sent by the backend per event. */
@@ -89,8 +102,10 @@ export interface Event {
   seatsRemaining: number | null;
   registrationStatus: RegistrationStatus;
   registrationOpen: boolean;
-  /** PRIMARY consumes the student's one main-event slot; OPEN does not. */
+  /** The registration group this event belongs to — one entry per group allowed. */
   registrationSlot: RegistrationSlot;
+  /** How that group is named to a student, e.g. "Build". */
+  registrationSlotLabel: string;
   /** True when registering issues an event-day access code. */
   requiresAccessCode: boolean;
 }

@@ -27,7 +27,7 @@ import java.util.Map;
  * <p>Reads only, apart from one thing: changing an event's registration status.
  * Notably it does NOT create, edit or delete registrations. The panel is a control
  * surface over the same rules students are subject to, not a way around them - so
- * there is no admin path that could hand someone a second primary event or a
+ * there is no admin path that could hand someone a second event in one slot or a
  * thirty-first seat.
  *
  * <p>Capacity is not editable here either. Reopening a full event is allowed and

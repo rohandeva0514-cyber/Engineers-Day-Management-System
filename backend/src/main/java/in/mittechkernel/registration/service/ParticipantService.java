@@ -41,11 +41,12 @@ public class ParticipantService {
      *
      * <p>Existing participants are matched by EMAIL and the stored record wins. The
      * submitted year must agree with it, otherwise the request is refused: without that
-     * check a returning student could flip themselves to "year 1" and walk into BuildX.
+     * check a returning student could flip their year and walk into an event their own
+     * year is not eligible for.
      *
      * <p>Matching on email is what makes the registration limits hold. A student who
      * resubmits with a different roll number resolves to the same row, so changing it
-     * cannot buy a second primary event.
+     * cannot buy a second event in a slot they have already used.
      *
      * <p>Emails are looked up in one query rather than one per member, which matters for
      * a ten-member roster.

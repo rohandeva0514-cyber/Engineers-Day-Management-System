@@ -35,18 +35,47 @@ const KNOWN_CODES = new Set<string>([
   'SOLO_EVENT_REJECTS_TEAM',
   'TEAM_NAME_REQUIRED',
   'DUPLICATE_PARTICIPANT_IN_ROSTER',
+  'ARENA_TRANSITION_INVALID',
+  'ARENA_OFFLINE',
+  'ARENA_ENDED',
+  'ARENA_SESSION_INVALID',
+  'ARENA_LANGUAGE_LOCKED',
+  'ATTEMPT_ALREADY_STARTED',
+  'ATTEMPT_ALREADY_FINALIZED',
+  'LANGUAGE_NOT_SUPPORTED',
+  'ATTEMPT_NOT_STARTED',
+  'PROBLEM_NOT_FOUND',
+  'DRAFT_STALE',
+  'DRAFT_TOO_LARGE',
+  'PROBLEM_ALREADY_SUBMITTED',
+  'EXECUTION_UNAVAILABLE',
   'INTERNAL_ERROR',
 ]);
 
 interface RequestOptions {
-  method?: 'GET' | 'POST';
+  method?: 'GET' | 'POST' | 'PUT';
   body?: unknown;
   signal?: AbortSignal;
   timeoutMs?: number;
+  /**
+   * Arena session token, sent as `Authorization: Bearer`.
+   *
+   * Attached here rather than by the calling module so that this stays the only
+   * place in the public application that builds a request. It is never put in a
+   * path or a query string: URLs reach browser history, proxy logs and referrer
+   * headers, and this value authorises a whole mission.
+   */
+  bearerToken?: string;
 }
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, signal, timeoutMs = DEFAULT_TIMEOUT_MS } = options;
+  const {
+    method = 'GET',
+    body,
+    signal,
+    timeoutMs = DEFAULT_TIMEOUT_MS,
+    bearerToken,
+  } = options;
 
   // Own timeout, combined with any caller abort (route change, unmount).
   const timeoutController = new AbortController();
@@ -62,6 +91,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
       headers: {
         Accept: 'application/json',
         ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        ...(bearerToken === undefined ? {} : { Authorization: `Bearer ${bearerToken}` }),
       },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       signal: combinedSignal,
@@ -123,8 +153,17 @@ function toApiError(response: Response, payload: unknown): ApiError {
   if (response.status >= 500 || response.status === 0) {
     return new ApiError('UNAVAILABLE', 'The registration service is unavailable.', response.status);
   }
+  // A 404 with no recognised code in the body is not a missing EVENT - it is an
+  // endpoint the server does not have. Mapping it to EVENT_NOT_FOUND used to put
+  // "Event not found" in front of a participant whose submission had hit a backend
+  // that predated the endpoint, which sent them looking in exactly the wrong place.
+  //
+  // Real event 404s are unaffected: the backend always sends `code`, so they take the
+  // KNOWN_CODES branch above and never reach here.
   if (response.status === 404) {
-    return new ApiError('EVENT_NOT_FOUND', 'That resource does not exist.', 404);
+    return new ApiError('UNAVAILABLE',
+      'That request did not reach the service. It may be running an older version — '
+      + 'tell an organiser.', 404);
   }
   return new ApiError('UNKNOWN', body.message ?? 'The request was refused.', response.status);
 }

@@ -102,6 +102,24 @@ public class AccessCodeService {
      */
     @Transactional(readOnly = true)
     public AccessCodeVerificationResponse verify(String rawCode) {
+        return AccessCodeVerificationResponse.from(resolve(rawCode));
+    }
+
+    /**
+     * Resolve a presented code to the registration it belongs to.
+     *
+     * <p>Extracted from {@link #verify} so the Debugging Arena can reuse exactly this
+     * lookup and exactly this refusal rather than growing a second, subtly different
+     * one. Two places deciding independently what "a valid code" means is how they
+     * come to disagree, and the one that disagrees more loosely is the one that
+     * matters.
+     *
+     * <p>Returns the entity rather than a DTO because callers need different views of
+     * it: a marshal sees six fields, the arena needs the event and participant to
+     * open a session.
+     */
+    @Transactional(readOnly = true)
+    public Registration resolve(String rawCode) {
         String code = AccessCodeGenerator.normalise(rawCode);
 
         if (code == null || code.isBlank()) {
@@ -118,10 +136,18 @@ public class AccessCodeService {
             throw invalid();
         }
 
-        return AccessCodeVerificationResponse.from(registration);
+        return registration;
     }
 
-    private static ApiException invalid() {
+    /**
+     * The one refusal.
+     *
+     * <p>Shared with the arena deliberately. Every failure - no such code, a code for
+     * another event, a mistyped code - produces this same message, because a
+     * verification endpoint that distinguishes them tells someone probing it when
+     * they are close.
+     */
+    public static ApiException invalid() {
         return new ApiException(ApiErrorCode.ACCESS_CODE_INVALID,
                 "That access code was not recognised. Check it and try again.",
                 Map.of());

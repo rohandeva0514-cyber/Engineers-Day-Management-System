@@ -14,8 +14,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import in.mittechkernel.registration.arena.security.ArenaSessionFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
@@ -86,7 +88,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           CorsConfigurationSource corsConfigurationSource)
+                                           CorsConfigurationSource corsConfigurationSource,
+                                           ArenaSessionFilter arenaSessionFilter)
             throws Exception {
         return http
                 // The one policy from WebCorsConfig, injected rather than discovered,
@@ -109,8 +112,25 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
+                        // The arena gate and check-in: public by necessity. A student
+                        // stands at a terminal with a code and no account, and the
+                        // waiting screen has to be able to ask whether the arena has
+                        // opened before anyone has identified themselves.
+                        .requestMatchers("/api/arena/status", "/api/arena/access").permitAll()
+
+                        // Everything else in the arena needs a live session. Stated as
+                        // a prefix rather than a list so an endpoint added in a later
+                        // phase is protected by default rather than by someone
+                        // remembering to protect it.
+                        .requestMatchers("/api/arena/**").hasRole("ARENA_PARTICIPANT")
+
                         // Everything the students use, plus the health probe.
                         .anyRequest().permitAll())
+
+                // Resolves an arena bearer token before Basic gets a look. The two
+                // schemes never overlap: this filter ignores every path outside
+                // /api/arena/**, and Basic is what guards /api/admin/**.
+                .addFilterBefore(arenaSessionFilter, BasicAuthenticationFilter.class)
 
                 .httpBasic(Customizer.withDefaults())
 

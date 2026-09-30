@@ -1,0 +1,921 @@
+{
+  "bank_name": "Engineers Day 2026 Debugging Arena - Python Problem Bank",
+  "language": "Python",
+  "total_problems": 12,
+  "distribution": {
+    "EASY": 4,
+    "MEDIUM": 4,
+    "HARD": 4
+  },
+  "validation": {
+    "method": "In-process Python 3 execution",
+    "all_corrected_tests_passed": true,
+    "every_buggy_program_failed_at_least_one_hidden_test": true,
+    "details": [
+      {
+        "id": "PY-E-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 5
+      },
+      {
+        "id": "PY-E-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 3
+      },
+      {
+        "id": "PY-E-003",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 5
+      },
+      {
+        "id": "PY-E-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 3
+      },
+      {
+        "id": "PY-M-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 2
+      },
+      {
+        "id": "PY-M-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 3
+      },
+      {
+        "id": "PY-M-003",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 2
+      },
+      {
+        "id": "PY-M-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      },
+      {
+        "id": "PY-H-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      },
+      {
+        "id": "PY-H-002",
+        "corrected_tests_passed": 10,
+        "buggy_hidden_failures": 7
+      },
+      {
+        "id": "PY-H-003",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      },
+      {
+        "id": "PY-H-004",
+        "corrected_tests_passed": 10,
+        "buggy_hidden_failures": 7
+      }
+    ]
+  },
+  "problems": [
+    {
+      "id": "PY-E-001",
+      "title": "Average of Three Marks",
+      "language": "Python",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "input",
+        "arithmetic",
+        "variables"
+      ],
+      "problem_statement": "Read three marks and print their average rounded to two decimal places.",
+      "input_format": "Three space-separated integers representing marks.",
+      "output_format": "Print the average with exactly two digits after the decimal point.",
+      "constraints": "0 <= each mark <= 100",
+      "buggy_code": "marks = list(map(int, input().split()))\naverage = (marks[0] + marks[1] + marks[2]) / 2\nprint(f\"{average:.2f}\")",
+      "bugs": [
+        {
+          "location": "Line 2",
+          "description": "The sum of the three marks is divided by 2 instead of 3.",
+          "why_wrong": "An average of three values must divide their total by the number of values, which is 3."
+        }
+      ],
+      "corrected_code": "marks = list(map(int, input().split()))\naverage = (marks[0] + marks[1] + marks[2]) / 3\nprint(f\"{average:.2f}\")",
+      "visible_tests": [
+        {
+          "input": "60 70 80",
+          "expected_output": "70.00"
+        },
+        {
+          "input": "90 75 81",
+          "expected_output": "82.00"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "0 0 0",
+          "expected_output": "0.00"
+        },
+        {
+          "input": "100 100 100",
+          "expected_output": "100.00"
+        },
+        {
+          "input": "1 2 3",
+          "expected_output": "2.00"
+        },
+        {
+          "input": "50 51 52",
+          "expected_output": "51.00"
+        },
+        {
+          "input": "25 75 100",
+          "expected_output": "66.67"
+        },
+        {
+          "input": "10 20 30",
+          "expected_output": "20.00"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "PY-E-002",
+      "title": "Count Positive Numbers",
+      "language": "Python",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "lists",
+        "loop",
+        "condition",
+        "counter"
+      ],
+      "problem_statement": "Read N integers and count how many of them are strictly positive.",
+      "input_format": "First line contains N. Second line contains N integers.",
+      "output_format": "Print the number of positive integers.",
+      "constraints": "1 <= N <= 100; -1000 <= each integer <= 1000",
+      "buggy_code": "n = int(input())\nnumbers = list(map(int, input().split()))\ncount = 0\n\nfor number in numbers:\n    if number >= 0:\n        count += 1\n\nprint(count)",
+      "bugs": [
+        {
+          "location": "Line 6",
+          "description": "The condition includes zero as a positive number.",
+          "why_wrong": "The problem asks for strictly positive numbers, so the condition must be greater than zero."
+        }
+      ],
+      "corrected_code": "n = int(input())\nnumbers = list(map(int, input().split()))\ncount = 0\n\nfor number in numbers:\n    if number > 0:\n        count += 1\n\nprint(count)",
+      "visible_tests": [
+        {
+          "input": "5\n-2 4 0 7 -1",
+          "expected_output": "2"
+        },
+        {
+          "input": "4\n3 8 1 9",
+          "expected_output": "4"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n0",
+          "expected_output": "0"
+        },
+        {
+          "input": "1\n5",
+          "expected_output": "1"
+        },
+        {
+          "input": "5\n-1 -2 -3 -4 -5",
+          "expected_output": "0"
+        },
+        {
+          "input": "6\n1 0 2 0 3 0",
+          "expected_output": "3"
+        },
+        {
+          "input": "3\n-5 2 8",
+          "expected_output": "2"
+        },
+        {
+          "input": "7\n0 0 0 1 -1 2 -2",
+          "expected_output": "2"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "PY-E-003",
+      "title": "Discounted Price",
+      "language": "Python",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "input",
+        "percentage",
+        "arithmetic"
+      ],
+      "problem_statement": "Read a product price and discount percentage. Print the final price after applying the discount.",
+      "input_format": "Two numbers: price and discount percentage.",
+      "output_format": "Print the final price with two digits after the decimal point.",
+      "constraints": "0 <= price <= 100000; 0 <= discount <= 100",
+      "buggy_code": "price, discount = map(float, input().split())\ndiscount_amount = price * discount\nfinal_price = price - discount_amount\nprint(f\"{final_price:.2f}\")",
+      "bugs": [
+        {
+          "location": "Line 2",
+          "description": "The discount percentage is used directly instead of converting it to a fraction.",
+          "why_wrong": "For example, a 20 percent discount means multiplying by 20/100, not by 20."
+        }
+      ],
+      "corrected_code": "price, discount = map(float, input().split())\ndiscount_amount = price * discount / 100\nfinal_price = price - discount_amount\nprint(f\"{final_price:.2f}\")",
+      "visible_tests": [
+        {
+          "input": "1000 10",
+          "expected_output": "900.00"
+        },
+        {
+          "input": "2500 20",
+          "expected_output": "2000.00"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "100 0",
+          "expected_output": "100.00"
+        },
+        {
+          "input": "500 100",
+          "expected_output": "0.00"
+        },
+        {
+          "input": "999 10",
+          "expected_output": "899.10"
+        },
+        {
+          "input": "80 25",
+          "expected_output": "60.00"
+        },
+        {
+          "input": "1500 5",
+          "expected_output": "1425.00"
+        },
+        {
+          "input": "75.50 20",
+          "expected_output": "60.40"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "PY-E-004",
+      "title": "Multiples of Five",
+      "language": "Python",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "loop",
+        "range",
+        "modulo"
+      ],
+      "problem_statement": "Read N and print all numbers from 1 through N that are divisible by 5, separated by spaces.",
+      "input_format": "One integer N.",
+      "output_format": "Print the matching numbers in increasing order separated by spaces. Print an empty line if there are none.",
+      "constraints": "1 <= N <= 100",
+      "buggy_code": "n = int(input())\n\nfor i in range(1, n):\n    if i % 5 == 0:\n        print(i, end=\" \")",
+      "bugs": [
+        {
+          "location": "Line 3",
+          "description": "The loop stops at n-1 instead of including n.",
+          "why_wrong": "The required range is from 1 through N, so N must be considered."
+        }
+      ],
+      "corrected_code": "n = int(input())\n\nfor i in range(1, n + 1):\n    if i % 5 == 0:\n        print(i, end=\" \")",
+      "visible_tests": [
+        {
+          "input": "20",
+          "expected_output": "5 10 15 20 "
+        },
+        {
+          "input": "12",
+          "expected_output": "5 10 "
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1",
+          "expected_output": ""
+        },
+        {
+          "input": "5",
+          "expected_output": "5 "
+        },
+        {
+          "input": "6",
+          "expected_output": "5 "
+        },
+        {
+          "input": "10",
+          "expected_output": "5 10 "
+        },
+        {
+          "input": "24",
+          "expected_output": "5 10 15 20 "
+        },
+        {
+          "input": "25",
+          "expected_output": "5 10 15 20 25 "
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "PY-M-001",
+      "title": "Second Largest Number",
+      "language": "Python",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "lists",
+        "loop",
+        "comparison",
+        "maximum"
+      ],
+      "problem_statement": "Read N distinct integers and print the second largest number.",
+      "input_format": "First line contains N. Second line contains N distinct integers.",
+      "output_format": "Print the second largest integer.",
+      "constraints": "2 <= N <= 100; all numbers are distinct and between -10000 and 10000.",
+      "buggy_code": "n = int(input())\nnumbers = list(map(int, input().split()))\n\nlargest = numbers[0]\nsecond = numbers[1]\n\nfor number in numbers[2:]:\n    if number > largest:\n        largest = number\n    if number > second and number != largest:\n        second = number\n\nprint(second)",
+      "bugs": [
+        {
+          "location": "Lines 7-10",
+          "description": "The program updates largest before deciding whether the same number should become second, so a new largest can prevent the previous largest from becoming second.",
+          "why_wrong": "When a new largest is found, the old largest should move into second before largest is replaced."
+        }
+      ],
+      "corrected_code": "n = int(input())\nnumbers = list(map(int, input().split()))\n\nlargest = max(numbers[0], numbers[1])\nsecond = min(numbers[0], numbers[1])\n\nfor number in numbers[2:]:\n    if number > largest:\n        second = largest\n        largest = number\n    elif number > second:\n        second = number\n\nprint(second)",
+      "visible_tests": [
+        {
+          "input": "5\n10 4 8 20 15",
+          "expected_output": "15"
+        },
+        {
+          "input": "4\n7 12 3 9",
+          "expected_output": "9"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "2\n5 1",
+          "expected_output": "1"
+        },
+        {
+          "input": "3\n1 3 2",
+          "expected_output": "2"
+        },
+        {
+          "input": "5\n-1 -5 -2 -8 -3",
+          "expected_output": "-2"
+        },
+        {
+          "input": "6\n10 9 8 7 6 5",
+          "expected_output": "9"
+        },
+        {
+          "input": "5\n100 20 80 90 70",
+          "expected_output": "90"
+        },
+        {
+          "input": "4\n-10 0 -5 -2",
+          "expected_output": "-2"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "PY-M-002",
+      "title": "Vowel Counter",
+      "language": "Python",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "strings",
+        "loop",
+        "condition",
+        "counter"
+      ],
+      "problem_statement": "Read a line of text and count the vowels a, e, i, o, and u. Treat uppercase vowels as vowels too.",
+      "input_format": "One line containing a string of letters and spaces.",
+      "output_format": "Print the number of vowels.",
+      "constraints": "1 <= length of string <= 200",
+      "buggy_code": "text = input()\ncount = 0\n\nfor ch in text:\n    if ch in \"aeiou\":\n        count += 1\n\nprint(count)",
+      "bugs": [
+        {
+          "location": "Line 5",
+          "description": "The condition checks only lowercase vowels.",
+          "why_wrong": "Uppercase vowels must also be counted, so the input should be normalized or uppercase vowels should be included."
+        }
+      ],
+      "corrected_code": "text = input()\ncount = 0\n\nfor ch in text.lower():\n    if ch in \"aeiou\":\n        count += 1\n\nprint(count)",
+      "visible_tests": [
+        {
+          "input": "Engineering",
+          "expected_output": "5"
+        },
+        {
+          "input": "HELLO WORLD",
+          "expected_output": "3"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "AEIOU",
+          "expected_output": "5"
+        },
+        {
+          "input": "aEiOu",
+          "expected_output": "5"
+        },
+        {
+          "input": "rhythm",
+          "expected_output": "0"
+        },
+        {
+          "input": "Open AI",
+          "expected_output": "4"
+        },
+        {
+          "input": "Python Programming",
+          "expected_output": "4"
+        },
+        {
+          "input": "12345",
+          "expected_output": "0"
+        }
+      ],
+      "estimated_time_minutes": 5
+    },
+    {
+      "id": "PY-M-003",
+      "title": "Search for a Number",
+      "language": "Python",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "lists",
+        "linear search",
+        "loop",
+        "condition"
+      ],
+      "problem_statement": "Read N integers and a target value. Print the zero-based index of the first occurrence of the target, or -1 if it is not present.",
+      "input_format": "First line contains N. Second line contains N integers. Third line contains the target.",
+      "output_format": "Print the zero-based index of the first occurrence, or -1.",
+      "constraints": "1 <= N <= 100; -1000 <= values <= 1000",
+      "buggy_code": "n = int(input())\nnumbers = list(map(int, input().split()))\ntarget = int(input())\n\nanswer = -1\n\nfor i in range(n):\n    if numbers[i] == target:\n        answer = i\n\nprint(answer)",
+      "bugs": [
+        {
+          "location": "Lines 7-9",
+          "description": "The loop continues after finding the target and overwrites answer when the target appears again.",
+          "why_wrong": "The problem asks for the first occurrence, so the search must stop after the first match."
+        }
+      ],
+      "corrected_code": "n = int(input())\nnumbers = list(map(int, input().split()))\ntarget = int(input())\n\nanswer = -1\n\nfor i in range(n):\n    if numbers[i] == target:\n        answer = i\n        break\n\nprint(answer)",
+      "visible_tests": [
+        {
+          "input": "6\n4 7 2 7 9 7\n7",
+          "expected_output": "1"
+        },
+        {
+          "input": "5\n3 8 1 6 4\n9",
+          "expected_output": "-1"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n5\n5",
+          "expected_output": "0"
+        },
+        {
+          "input": "1\n5\n2",
+          "expected_output": "-1"
+        },
+        {
+          "input": "5\n2 2 2 2 2\n2",
+          "expected_output": "0"
+        },
+        {
+          "input": "7\n1 3 5 3 9 3 4\n3",
+          "expected_output": "1"
+        },
+        {
+          "input": "4\n-2 0 5 8\n-2",
+          "expected_output": "0"
+        },
+        {
+          "input": "6\n10 20 30 40 50 60\n60",
+          "expected_output": "5"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "PY-M-004",
+      "title": "Sum of Main Diagonal",
+      "language": "Python",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "2D lists",
+        "nested loops",
+        "matrix",
+        "accumulator"
+      ],
+      "problem_statement": "Read an N x N matrix and print the sum of its main diagonal elements.",
+      "input_format": "First line contains N, followed by N lines containing N integers each.",
+      "output_format": "Print the sum of elements where the row index equals the column index.",
+      "constraints": "1 <= N <= 20; -1000 <= each element <= 1000",
+      "buggy_code": "n = int(input())\nmatrix = []\n\nfor _ in range(n):\n    matrix.append(list(map(int, input().split())))\n\ntotal = 0\n\nfor i in range(n):\n    for j in range(n):\n        if i == j + 1:\n            total += matrix[i][j]\n\nprint(total)",
+      "bugs": [
+        {
+          "location": "Line 11",
+          "description": "The diagonal condition compares i with j+1 instead of j.",
+          "why_wrong": "Main diagonal elements have equal row and column indices, so the condition must be i == j."
+        }
+      ],
+      "corrected_code": "n = int(input())\nmatrix = []\n\nfor _ in range(n):\n    matrix.append(list(map(int, input().split())))\n\ntotal = 0\n\nfor i in range(n):\n    for j in range(n):\n        if i == j:\n            total += matrix[i][j]\n\nprint(total)",
+      "visible_tests": [
+        {
+          "input": "3\n1 2 3\n4 5 6\n7 8 9",
+          "expected_output": "15"
+        },
+        {
+          "input": "2\n10 20\n30 40",
+          "expected_output": "50"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n7",
+          "expected_output": "7"
+        },
+        {
+          "input": "2\n1 9\n8 3",
+          "expected_output": "4"
+        },
+        {
+          "input": "3\n-1 2 3\n4 -5 6\n7 8 -9",
+          "expected_output": "-15"
+        },
+        {
+          "input": "4\n1 0 0 0\n0 2 0 0\n0 0 3 0\n0 0 0 4",
+          "expected_output": "10"
+        },
+        {
+          "input": "3\n5 1 2\n3 4 0\n9 8 6",
+          "expected_output": "15"
+        },
+        {
+          "input": "4\n10 20 30 40\n50 60 70 80\n90 100 110 120\n130 140 150 160",
+          "expected_output": "340"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "PY-H-001",
+      "title": "Student Result Calculator",
+      "language": "Python",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "lists",
+        "loops",
+        "conditions",
+        "average",
+        "grading"
+      ],
+      "problem_statement": "Read marks for five subjects. Calculate the total and average. A student passes only if every subject mark is at least 40. Print the total, average to two decimal places, and PASS or FAIL.",
+      "input_format": "One line containing five integer marks.",
+      "output_format": "Print total on the first line, average on the second line, and PASS or FAIL on the third line.",
+      "constraints": "0 <= each mark <= 100",
+      "buggy_code": "marks = list(map(int, input().split()))\n\ntotal = 0\npassed = True\n\nfor mark in marks:\n    total += mark\n    if mark < 35:\n        passed = False\n\naverage = total / 4\n\nif average >= 40:\n    result = \"PASS\"\nelse:\n    result = \"FAIL\"\n\nprint(total)\nprint(f\"{average:.2f}\")\nprint(result.lower())",
+      "bugs": [
+        {
+          "location": "Line 7",
+          "description": "The fail threshold is 35 instead of 40.",
+          "why_wrong": "The stated passing mark for every subject is 40."
+        },
+        {
+          "location": "Line 10",
+          "description": "The total is divided by 4 instead of 5.",
+          "why_wrong": "There are five subjects, so the average must be divided by 5."
+        },
+        {
+          "location": "Line 12",
+          "description": "The final result is based only on the average instead of requiring every subject to pass.",
+          "why_wrong": "A student can have an average above 40 while still having a subject below 40."
+        },
+        {
+          "location": "Line 18",
+          "description": "The result is converted to lowercase before printing.",
+          "why_wrong": "The required output is exactly uppercase PASS or FAIL."
+        }
+      ],
+      "corrected_code": "marks = list(map(int, input().split()))\n\ntotal = 0\npassed = True\n\nfor mark in marks:\n    total += mark\n    if mark < 40:\n        passed = False\n\naverage = total / 5\n\nif passed:\n    result = \"PASS\"\nelse:\n    result = \"FAIL\"\n\nprint(total)\nprint(f\"{average:.2f}\")\nprint(result)",
+      "visible_tests": [
+        {
+          "input": "80 70 90 60 50",
+          "expected_output": "350\n70.00\nPASS"
+        },
+        {
+          "input": "90 85 38 92 88",
+          "expected_output": "393\n78.60\nFAIL"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "40 40 40 40 40",
+          "expected_output": "200\n40.00\nPASS"
+        },
+        {
+          "input": "39 100 100 100 100",
+          "expected_output": "439\n87.80\nFAIL"
+        },
+        {
+          "input": "0 0 0 0 0",
+          "expected_output": "0\n0.00\nFAIL"
+        },
+        {
+          "input": "100 100 100 100 100",
+          "expected_output": "500\n100.00\nPASS"
+        },
+        {
+          "input": "50 50 50 50 39",
+          "expected_output": "239\n47.80\nFAIL"
+        },
+        {
+          "input": "41 41 41 41 41",
+          "expected_output": "205\n41.00\nPASS"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "PY-H-002",
+      "title": "Library Fine Calculator",
+      "language": "Python",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "conditions",
+        "tiered calculation",
+        "arithmetic",
+        "input"
+      ],
+      "problem_statement": "Calculate a library fine from the number of overdue days. The first 5 days cost 2 per day, days 6 to 10 cost 3 per day, and every day after 10 costs 5 per day. Print the fine.",
+      "input_format": "One integer representing overdue days.",
+      "output_format": "Print the total fine.",
+      "constraints": "0 <= overdue days <= 100",
+      "buggy_code": "days = int(input())\nfine = 0\n\nif days <= 5:\n    fine = days * 3\nelif days <= 10:\n    fine = 5 * 2 + (days - 5) * 2\nelse:\n    fine = 5 * 2 + 5 * 3 + (days - 10) * 4\n\nif days == 0:\n    fine = 5\n\nprint(fine)",
+      "bugs": [
+        {
+          "location": "Line 5",
+          "description": "The first five days are charged at 3 per day instead of 2.",
+          "why_wrong": "The first five overdue days cost 2 per day."
+        },
+        {
+          "location": "Line 7",
+          "description": "Days 6 through 10 are charged at 2 per day instead of 3.",
+          "why_wrong": "The second tier has a rate of 3 per day."
+        },
+        {
+          "location": "Line 9",
+          "description": "Days after 10 are charged at 4 per day instead of 5.",
+          "why_wrong": "Every day beyond day 10 costs 5."
+        },
+        {
+          "location": "Line 11",
+          "description": "A zero-day loan is incorrectly given a fine of 5.",
+          "why_wrong": "With zero overdue days, the fine must be zero."
+        }
+      ],
+      "corrected_code": "days = int(input())\nfine = 0\n\nif days <= 5:\n    fine = days * 2\nelif days <= 10:\n    fine = 5 * 2 + (days - 5) * 3\nelse:\n    fine = 5 * 2 + 5 * 3 + (days - 10) * 5\n\nprint(fine)",
+      "visible_tests": [
+        {
+          "input": "4",
+          "expected_output": "8"
+        },
+        {
+          "input": "8",
+          "expected_output": "19"
+        },
+        {
+          "input": "12",
+          "expected_output": "35"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "0",
+          "expected_output": "0"
+        },
+        {
+          "input": "1",
+          "expected_output": "2"
+        },
+        {
+          "input": "5",
+          "expected_output": "10"
+        },
+        {
+          "input": "6",
+          "expected_output": "13"
+        },
+        {
+          "input": "10",
+          "expected_output": "25"
+        },
+        {
+          "input": "11",
+          "expected_output": "30"
+        },
+        {
+          "input": "20",
+          "expected_output": "75"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "PY-H-003",
+      "title": "Monthly Salary Calculator",
+      "language": "Python",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "conditions",
+        "percentage",
+        "arithmetic",
+        "salary calculation"
+      ],
+      "problem_statement": "Calculate an employee's monthly salary. Basic salary is given. HRA is 20% of basic salary, DA is 10%, and a tax of 5% is deducted from the gross salary. Print HRA, DA, gross salary, and net salary, each with two decimal places.",
+      "input_format": "One positive number representing basic salary.",
+      "output_format": "Print HRA, DA, gross salary, and net salary on separate lines.",
+      "constraints": "1000 <= basic salary <= 1000000",
+      "buggy_code": "basic = float(input())\n\nhra = basic * 10 / 100\nda = basic * 15 / 100\n\ngross = basic + hra + da\ntax = basic * 5 / 100\nnet = gross + tax\n\nprint(f\"{hra:.2f}\")\nprint(f\"{da:.2f}\")\nprint(f\"{gross:.2f}\")\nprint(f\"{net:.2f}\")",
+      "bugs": [
+        {
+          "location": "Line 3",
+          "description": "HRA is calculated at 10% instead of 20%.",
+          "why_wrong": "The stated HRA rate is 20% of basic salary."
+        },
+        {
+          "location": "Line 4",
+          "description": "DA is calculated at 15% instead of 10%.",
+          "why_wrong": "The stated DA rate is 10% of basic salary."
+        },
+        {
+          "location": "Line 7",
+          "description": "Tax is added to gross salary instead of deducted.",
+          "why_wrong": "Tax reduces the employee's take-home salary."
+        },
+        {
+          "location": "Line 8",
+          "description": "The net salary calculation adds tax again instead of subtracting the tax amount.",
+          "why_wrong": "Net salary should be gross salary minus tax."
+        }
+      ],
+      "corrected_code": "basic = float(input())\n\nhra = basic * 20 / 100\nda = basic * 10 / 100\n\ngross = basic + hra + da\ntax = gross * 5 / 100\nnet = gross - tax\n\nprint(f\"{hra:.2f}\")\nprint(f\"{da:.2f}\")\nprint(f\"{gross:.2f}\")\nprint(f\"{net:.2f}\")",
+      "visible_tests": [
+        {
+          "input": "50000",
+          "expected_output": "10000.00\n5000.00\n65000.00\n61750.00"
+        },
+        {
+          "input": "30000",
+          "expected_output": "6000.00\n3000.00\n39000.00\n37050.00"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1000",
+          "expected_output": "200.00\n100.00\n1300.00\n1235.00"
+        },
+        {
+          "input": "10000",
+          "expected_output": "2000.00\n1000.00\n13000.00\n12350.00"
+        },
+        {
+          "input": "25000",
+          "expected_output": "5000.00\n2500.00\n32500.00\n30875.00"
+        },
+        {
+          "input": "75000",
+          "expected_output": "15000.00\n7500.00\n97500.00\n92625.00"
+        },
+        {
+          "input": "100000",
+          "expected_output": "20000.00\n10000.00\n130000.00\n123500.00"
+        },
+        {
+          "input": "12500",
+          "expected_output": "2500.00\n1250.00\n16250.00\n15437.50"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "PY-H-004",
+      "title": "Electricity Bill Calculator",
+      "language": "Python",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "conditions",
+        "tiered calculation",
+        "arithmetic",
+        "billing"
+      ],
+      "problem_statement": "Calculate an electricity bill using these slabs: first 100 units at 2 per unit, next 100 units at 3 per unit, and every unit above 200 at 5 per unit. Add a fixed charge of 50. Print the final bill.",
+      "input_format": "One integer representing units consumed.",
+      "output_format": "Print the total bill.",
+      "constraints": "0 <= units <= 1000",
+      "buggy_code": "units = int(input())\n\nif units <= 100:\n    bill = units * 3\nelif units <= 200:\n    bill = 100 * 2 + (units - 100) * 2\nelse:\n    bill = 100 * 2 + 100 * 3 + (units - 200) * 4\n\nbill = bill + 40\n\nprint(bill)",
+      "bugs": [
+        {
+          "location": "Line 4",
+          "description": "The first 100 units are charged at 3 per unit instead of 2.",
+          "why_wrong": "The first slab rate is 2 per unit."
+        },
+        {
+          "location": "Line 6",
+          "description": "The second slab is charged at 2 per unit instead of 3.",
+          "why_wrong": "Units 101 through 200 cost 3 per unit."
+        },
+        {
+          "location": "Line 8",
+          "description": "Units above 200 are charged at 4 per unit instead of 5.",
+          "why_wrong": "The third slab rate is 5 per unit."
+        },
+        {
+          "location": "Line 10",
+          "description": "The fixed charge is 40 instead of 50.",
+          "why_wrong": "The specified fixed charge is 50."
+        }
+      ],
+      "corrected_code": "units = int(input())\n\nif units <= 100:\n    bill = units * 2\nelif units <= 200:\n    bill = 100 * 2 + (units - 100) * 3\nelse:\n    bill = 100 * 2 + 100 * 3 + (units - 200) * 5\n\nbill = bill + 50\n\nprint(bill)",
+      "visible_tests": [
+        {
+          "input": "50",
+          "expected_output": "150"
+        },
+        {
+          "input": "150",
+          "expected_output": "400"
+        },
+        {
+          "input": "250",
+          "expected_output": "800"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "0",
+          "expected_output": "50"
+        },
+        {
+          "input": "1",
+          "expected_output": "52"
+        },
+        {
+          "input": "100",
+          "expected_output": "250"
+        },
+        {
+          "input": "101",
+          "expected_output": "253"
+        },
+        {
+          "input": "200",
+          "expected_output": "550"
+        },
+        {
+          "input": "201",
+          "expected_output": "555"
+        },
+        {
+          "input": "500",
+          "expected_output": "2050"
+        }
+      ],
+      "estimated_time_minutes": 9
+    }
+  ]
+}

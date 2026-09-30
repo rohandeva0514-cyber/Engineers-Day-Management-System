@@ -147,6 +147,147 @@ export function setSystemRegistration(open: boolean): Promise<{ registrationSyst
   });
 }
 
+/* ------------------------------------------------------------- arena control */
+
+export type ArenaStatus = 'OFFLINE' | 'ACTIVE' | 'ENDED';
+
+/**
+ * The arena switch as an organiser sees it.
+ *
+ * Richer than the public `/api/arena/status`, and that is the point: this one
+ * carries who last moved the switch and when, which has no business on an
+ * endpoint anyone on the internet polls.
+ */
+export interface ArenaControlView {
+  eventId: string;
+  status: ArenaStatus;
+  durationSeconds: number;
+  openedAt: string | null;
+  endedAt: string | null;
+  updatedAt: string;
+  updatedBy: string | null;
+}
+
+export interface ArenaDashboard {
+  control: ArenaControlView;
+}
+
+export function fetchArenaControl(): Promise<ArenaDashboard> {
+  return adminRequest<ArenaDashboard>('/arena');
+}
+
+/**
+ * Start, pause, or end the arena.
+ *
+ * The backend enforces the transition rules — an ended arena cannot jump straight
+ * back to active. Hiding a button would not stop a direct call, so the button is a
+ * convenience and the state machine is the enforcement.
+ */
+export function setArenaStatus(status: ArenaStatus): Promise<ArenaControlView> {
+  return adminRequest<ArenaControlView>('/arena/status', {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
+/* -------------------------------------------------- manual evaluation ----- */
+
+export interface SubmissionRow {
+  attemptId: number;
+  fullName: string;
+  rollNo: string;
+  email: string;
+  branch: string | null;
+  division: string | null;
+  yearLevel: number;
+  language: string | null;
+  state: string;
+  /** Null when the participant's clock ran out without submitting. */
+  finalSubmittedAt: string | null;
+  totalScore: number | null;
+  evaluationStatus: 'PENDING' | 'PARTIAL' | 'EVALUATED';
+  problemsEvaluated: number;
+  problemsTotal: number;
+}
+
+export interface SubmittedProblem {
+  ref: string;
+  title: string;
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+  points: number;
+  status: string;
+  attempted: boolean;
+  /** The participant's autosaved code. Null if they never typed here. */
+  sourceCode: string | null;
+  awardedPoints: number | null;
+
+  /**
+   * What the problem asked for.
+   *
+   * Needed to judge the code at all — a title alone does not let anyone decide
+   * whether a solution is correct. Null only if the bank entry could not be
+   * resolved, which should not happen for a started attempt.
+   */
+  problemStatement: string | null;
+  inputFormat: string | null;
+  outputFormat: string | null;
+  constraints: string | null;
+  visibleTests: { input: string; expectedOutput: string }[];
+}
+
+export interface SubmissionDetail {
+  participant: SubmissionRow;
+  problems: SubmittedProblem[];
+}
+
+export function fetchSubmissions(): Promise<{ total: number; submissions: SubmissionRow[] }> {
+  return adminRequest('/arena/submissions');
+}
+
+export function fetchSubmission(attemptId: number): Promise<SubmissionDetail> {
+  return adminRequest(`/arena/submissions/${attemptId}`);
+}
+
+/**
+ * Award 0 or the problem's full points. `null` clears the award.
+ *
+ * The backend refuses anything other than 0 or the full value, and the database
+ * refuses it again — there is no partial credit to express.
+ */
+export function awardPoints(
+  attemptId: number,
+  ref: string,
+  points: number | null,
+): Promise<SubmissionDetail> {
+  return adminRequest(`/arena/submissions/${attemptId}/problems/${encodeURIComponent(ref)}/award`, {
+    method: 'PUT',
+    body: JSON.stringify({ points }),
+  });
+}
+
+/** The CSV export URL. Opened with credentials by the panel. */
+export function submissionsExportUrl(): string {
+  return `${API_BASE_URL}/admin/arena/submissions/export.csv`;
+}
+
+/**
+ * Fetch the export with the in-memory admin credentials and hand back a blob URL.
+ *
+ * A plain link would not carry the Basic auth header, so the browser would prompt
+ * or 401. Fetching it here reuses the credentials the panel already holds.
+ */
+export async function downloadSubmissionsCsv(): Promise<string> {
+  if (credentials === null) throw new ApiError('UNKNOWN', 'Not signed in.', 401);
+
+  const response = await fetch(submissionsExportUrl(), {
+    headers: { Authorization: `Basic ${credentials}`, Accept: 'text/csv' },
+  });
+  if (!response.ok) {
+    throw new ApiError('UNKNOWN', 'The export could not be generated.', response.status);
+  }
+  return URL.createObjectURL(await response.blob());
+}
+
 export function fetchParticipants(filters: ParticipantFilters): Promise<AdminParticipantPage> {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) {

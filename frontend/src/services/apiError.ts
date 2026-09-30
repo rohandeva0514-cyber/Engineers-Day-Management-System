@@ -24,6 +24,32 @@ export type ApiErrorCode =
   | 'SOLO_EVENT_REJECTS_TEAM'
   | 'TEAM_NAME_REQUIRED'
   | 'DUPLICATE_PARTICIPANT_IN_ROSTER'
+  /** The requested Debugging Arena lifecycle move is not one the state machine allows. */
+  | 'ARENA_TRANSITION_INVALID'
+  /** The arena has not been opened, so nobody may check in or start. */
+  | 'ARENA_OFFLINE'
+  /** Mission control has ended the arena. */
+  | 'ARENA_ENDED'
+  /** No live arena session — absent, lapsed, or displaced by another device. */
+  | 'ARENA_SESSION_INVALID'
+  /** The language was fixed when the mission started. */
+  | 'ARENA_LANGUAGE_LOCKED'
+  | 'ATTEMPT_ALREADY_STARTED'
+  | 'ATTEMPT_ALREADY_FINALIZED'
+  | 'LANGUAGE_NOT_SUPPORTED'
+  | 'ATTEMPT_NOT_STARTED'
+  | 'PROBLEM_NOT_FOUND'
+  | 'DRAFT_STALE'
+  | 'DRAFT_TOO_LARGE'
+  /** This problem has already been judged and is final. Per-problem, not the mission. */
+  | 'PROBLEM_ALREADY_SUBMITTED'
+  /**
+   * The judge failed — NOT a verdict on the participant's code.
+   *
+   * Must never be rendered as a wrong answer. Nothing was recorded, no status
+   * moved, the draft is intact, and retrying is the correct response.
+   */
+  | 'EXECUTION_UNAVAILABLE'
   | 'INTERNAL_ERROR'
   /** The request never reached the server. */
   | 'NETWORK'
@@ -120,6 +146,20 @@ export const ERROR_TITLES: Record<ApiErrorCode, string> = {
   SOLO_EVENT_REJECTS_TEAM: 'This is a solo event',
   TEAM_NAME_REQUIRED: 'A team name is required',
   DUPLICATE_PARTICIPANT_IN_ROSTER: 'Someone is listed twice',
+  ARENA_TRANSITION_INVALID: 'That arena change is not allowed',
+  ARENA_OFFLINE: 'The arena has not started',
+  ARENA_ENDED: 'The arena has closed',
+  ARENA_SESSION_INVALID: 'Your session has ended',
+  ARENA_LANGUAGE_LOCKED: 'Your language is locked',
+  ATTEMPT_ALREADY_STARTED: 'Your mission is already running',
+  ATTEMPT_ALREADY_FINALIZED: 'Your mission is already over',
+  LANGUAGE_NOT_SUPPORTED: 'That language is not available',
+  ATTEMPT_NOT_STARTED: 'Your mission has not started',
+  PROBLEM_NOT_FOUND: 'No such problem in your mission',
+  DRAFT_STALE: 'This problem changed elsewhere',
+  DRAFT_TOO_LARGE: 'That is too large to save',
+  PROBLEM_ALREADY_SUBMITTED: 'Already submitted',
+  EXECUTION_UNAVAILABLE: 'Execution service unavailable',
   INTERNAL_ERROR: 'Something went wrong on our side',
   NETWORK: 'No connection',
   UNAVAILABLE: 'Registration service unavailable',
@@ -139,4 +179,17 @@ export const ERROR_HINTS: Partial<Record<ApiErrorCode, string>> = {
   EVENT_SLOT_ALREADY_TAKEN:
     'Each student takes one event from each group. You are already registered for another event in this one — your other groups are unaffected.',
   TEAM_NAME_TAKEN: 'Pick a different team name and submit again.',
+  ARENA_TRANSITION_INVALID:
+    'An ended arena has to be reopened to Offline before it can be started again. That is deliberate — restarting a finished competition should not be one click.',
+  ARENA_OFFLINE: 'Wait for the event administrator to open the arena. This screen updates on its own.',
+  ARENA_SESSION_INVALID:
+    'Enter your access code again. Your attempt and your remaining time are unaffected.',
+  ARENA_LANGUAGE_LOCKED:
+    'Your language was fixed when your mission started, so that the problems you are scored on cannot change part-way through.',
+  EXECUTION_UNAVAILABLE:
+    'This is a problem with our judge, not with your code. Nothing was recorded and your work is safe — try again in a moment.',
+  PROBLEM_ALREADY_SUBMITTED:
+    'This problem has been judged and cannot be changed. Your other problems are unaffected.',
+  DRAFT_STALE:
+    'This problem was saved on another device since you opened it. Reload the problem to see the current code.',
 };

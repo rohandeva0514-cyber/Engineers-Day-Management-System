@@ -88,6 +88,53 @@ app:
     username: ${ADMIN_USERNAME:admin}
     password: ${ADMIN_PASSWORD:}
 
+  arena:
+    # EMERGENCY MANUAL-EVALUATION MODE.
+    #
+    # false switches off live code execution for the whole event: /run and the
+    # per-problem /submit are refused server-side, and the arena becomes
+    # edit -> autosave -> submit mission -> manual review by organisers.
+    #
+    # This is a switch, not a deletion. The Judge0 engine, its language mapping and
+    # the output comparator are all present and still tested; set this back to true
+    # once the execution path is trusted again.
+    #
+    # The participant UI offers no way to reach those endpoints either, but the
+    # server refusing them is what makes it a fact rather than a hidden button.
+    execution-enabled: ${ARENA_EXECUTION_ENABLED:false}
+
+  # The self-hosted Judge0 that runs participant code.
+  #
+  # Reachable from the BACKEND ONLY. The browser never receives this URL and never
+  # talks to the judge: every execution goes through /api/arena/problems/{ref}/run,
+  # which authorises it first. Exposing Judge0 to the internet would be an open
+  # remote code execution service.
+  #
+  # The limits below are attached to every submission by Judge0ExecutionEngine and
+  # cannot be influenced by a request. They match the locked architecture: 2s CPU,
+  # 256 MB, 64 KB of captured output. The wall limit is looser than the CPU limit on
+  # purpose - it is what catches a program blocked on input rather than burning CPU,
+  # and it has to leave room for JVM start-up on the Java problems.
+  judge0:
+    base-url: ${JUDGE0_BASE_URL:http://localhost:2358}
+    # Only needed if the deployment enables authentication.
+    auth-token: ${JUDGE0_AUTH_TOKEN:}
+    cpu-time-limit-seconds: ${JUDGE0_CPU_SECONDS:2}
+    wall-time-limit-seconds: ${JUDGE0_WALL_SECONDS:10}
+    memory-limit-kb: ${JUDGE0_MEMORY_KB:262144}
+    max-output-chars: ${JUDGE0_MAX_OUTPUT:65536}
+    connect-timeout-ms: 3000
+    # Per-call backstop only. Under the async flow no single call waits for a
+    # verdict, so anything slower than this is a wedged socket.
+    read-timeout-ms: ${JUDGE0_READ_TIMEOUT_MS:10000}
+
+    # Submissions are created with wait=false and then polled. The budget - not an
+    # HTTP timeout - is what bounds how long one request can occupy a Tomcat thread
+    # when the judge never resolves a submission.
+    poll-interval-ms: ${JUDGE0_POLL_INTERVAL_MS:150}
+    max-poll-interval-ms: ${JUDGE0_MAX_POLL_INTERVAL_MS:750}
+    poll-budget-ms: ${JUDGE0_POLL_BUDGET_MS:25000}
+
   # Browser origins allowed to call this API. Never a wildcard - see WebCorsConfig.
   #
   # The default carries the deployed frontend and the two Vite dev ports, so a fresh

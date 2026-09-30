@@ -12,6 +12,8 @@ import {
   type AdminParticipantRow,
   type ParticipantFilters,
 } from './adminApi';
+import { ArenaControlPanel } from './ArenaControlPanel';
+import { ArenaSubmissionsPanel } from './ArenaSubmissionsPanel';
 import { BrandLogo } from '@/components/BrandLogo';
 import { BRANCHES, divisionsForYear } from '@/data/academics';
 import '@/styles/admin.css';
@@ -263,6 +265,15 @@ function AdminConsole({ onSignOut }: { onSignOut: () => void }) {
           </table>
         </div>
       </section>
+
+      {/* Below the registration tables: on a normal day an organiser is here for
+          registrations, and on event day they scroll once to a control that is
+          unmistakable when they reach it. */}
+      <ArenaControlPanel />
+
+      {/* Manual evaluation. Lives with the arena controls because on event day an
+          organiser moves between the two constantly. */}
+      <ArenaSubmissionsPanel />
 
       <ParticipantBrowser events={events} />
     </div>

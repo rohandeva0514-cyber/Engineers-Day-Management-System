@@ -359,3 +359,78 @@
   letter-spacing: 0.1em;
   color: var(--color-orange);
 }
+
+/* --- manual evaluation ---------------------------------------------------- */
+
+/* Participant source, shown verbatim. Monospace and scrollable: an organiser is
+   comparing it line by line against the problem bank, so it must not reflow. */
+.admin__code {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-void);
+  border: 1px solid var(--color-line);
+  border-left: 2px solid var(--color-tech);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-ink);
+  white-space: pre;
+  overflow: auto;
+  max-height: 28rem;
+}
+
+/* The awarded value, so an organiser can see at a glance what they already gave. */
+.admin__button[data-active='true'] {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+/* Judging one problem: what was asked, beside what was written. Side by side on a
+   laptop, stacked when there is not room - an organiser must be able to read both
+   without scrolling between them. */
+.admin__review {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 1100px) {
+  .admin__review {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.admin__review-brief {
+  padding: 0.85rem 1rem;
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  max-height: 28rem;
+  overflow-y: auto;
+}
+
+.admin__review-title {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.admin__review-text {
+  margin: 0.3rem 0 0.9rem;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.admin__review-example {
+  margin: 0.3rem 0 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--color-void);
+  border-left: 2px solid var(--color-line-bright);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+}

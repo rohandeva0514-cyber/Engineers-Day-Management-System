@@ -1,0 +1,914 @@
+{
+  "bank_name": "Engineers Day 2026 Debugging Arena - JavaScript Problem Bank",
+  "language": "JavaScript",
+  "runtime": "Node.js",
+  "total_problems": 12,
+  "distribution": {
+    "EASY": 4,
+    "MEDIUM": 4,
+    "HARD": 4
+  },
+  "validation": {
+    "runtime": "Node.js",
+    "ansi_output_normalized": true,
+    "all_corrected_tests_passed": true,
+    "all_buggy_programs_ran_without_runtime_failures": true,
+    "every_buggy_program_failed_at_least_one_hidden_test": true,
+    "details": [
+      {
+        "id": "JS-E-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 5
+      },
+      {
+        "id": "JS-E-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 5
+      },
+      {
+        "id": "JS-E-003",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 5
+      },
+      {
+        "id": "JS-E-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 3
+      },
+      {
+        "id": "JS-M-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 2
+      },
+      {
+        "id": "JS-M-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 3
+      },
+      {
+        "id": "JS-M-003",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 6
+      },
+      {
+        "id": "JS-M-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 6
+      },
+      {
+        "id": "JS-H-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 5
+      },
+      {
+        "id": "JS-H-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 6
+      },
+      {
+        "id": "JS-H-003",
+        "corrected_tests_passed": 10,
+        "buggy_hidden_behavior_failures": 7
+      },
+      {
+        "id": "JS-H-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_behavior_failures": 6
+      }
+    ]
+  },
+  "problems": [
+    {
+      "id": "JS-E-001",
+      "title": "Sum of Positive Numbers",
+      "language": "JavaScript",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "arrays",
+        "loop",
+        "condition",
+        "accumulator"
+      ],
+      "problem_statement": "Read N integers and print the sum of all positive numbers.",
+      "input_format": "First line contains N. Second line contains N integers.",
+      "output_format": "Print the sum of all positive integers.",
+      "constraints": "1 <= N <= 100; -1000 <= each integer <= 1000",
+      "buggy_code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\nlet pos = 0;\nconst n = input[pos++];\nlet sum = 0;\n\nfor (let i = 0; i < n; i++) {\n    const value = input[pos++];\n    if (value < 0) {\n        sum += value;\n    }\n}\n\nconsole.log(sum);",
+      "bugs": [
+        {
+          "location": "Line 9",
+          "description": "The condition selects negative numbers instead of positive numbers.",
+          "why_wrong": "The task requires adding values greater than zero."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\nlet pos = 0;\nconst n = input[pos++];\nlet sum = 0;\n\nfor (let i = 0; i < n; i++) {\n    const value = input[pos++];\n    if (value > 0) {\n        sum += value;\n    }\n}\n\nconsole.log(sum);",
+      "visible_tests": [
+        {
+          "input": "5\n-2 4 0 7 -1",
+          "expected_output": "11"
+        },
+        {
+          "input": "4\n3 8 1 9",
+          "expected_output": "21"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n0",
+          "expected_output": "0"
+        },
+        {
+          "input": "1\n5",
+          "expected_output": "5"
+        },
+        {
+          "input": "5\n-1 -2 -3 -4 -5",
+          "expected_output": "0"
+        },
+        {
+          "input": "6\n1 0 2 0 3 0",
+          "expected_output": "6"
+        },
+        {
+          "input": "3\n-5 2 8",
+          "expected_output": "10"
+        },
+        {
+          "input": "4\n-1 0 -2 0",
+          "expected_output": "0"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JS-E-002",
+      "title": "Largest of Three",
+      "language": "JavaScript",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "conditions",
+        "comparison"
+      ],
+      "problem_statement": "Read three integers and print the largest value.",
+      "input_format": "Three space-separated integers.",
+      "output_format": "Print the largest integer.",
+      "constraints": "-100000 <= each integer <= 100000",
+      "buggy_code": "const fs = require('fs');\nconst a = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nlet largest = a[0];\n\nif (a[1] > largest) {\n    largest = a[1];\n}\n\nif (a[2] < largest) {\n    largest = a[2];\n}\n\nconsole.log(largest);",
+      "bugs": [
+        {
+          "location": "Line 9",
+          "description": "The program replaces largest when the third value is smaller instead of when it is larger.",
+          "why_wrong": "The largest value should only be replaced when the new value is greater."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst a = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nlet largest = a[0];\n\nif (a[1] > largest) {\n    largest = a[1];\n}\n\nif (a[2] > largest) {\n    largest = a[2];\n}\n\nconsole.log(largest);",
+      "visible_tests": [
+        {
+          "input": "10 25 18",
+          "expected_output": "25"
+        },
+        {
+          "input": "7 4 12",
+          "expected_output": "12"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1 1 1",
+          "expected_output": "1"
+        },
+        {
+          "input": "-5 -2 -9",
+          "expected_output": "-2"
+        },
+        {
+          "input": "100 50 75",
+          "expected_output": "100"
+        },
+        {
+          "input": "2 9 15",
+          "expected_output": "15"
+        },
+        {
+          "input": "20 30 10",
+          "expected_output": "30"
+        },
+        {
+          "input": "-1 0 -3",
+          "expected_output": "0"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JS-E-003",
+      "title": "Simple Interest",
+      "language": "JavaScript",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "arithmetic",
+        "percentage",
+        "input"
+      ],
+      "problem_statement": "Calculate simple interest using SI = P × R × T / 100.",
+      "input_format": "Three numbers: principal, rate, and time.",
+      "output_format": "Print simple interest with two decimal places.",
+      "constraints": "1 <= P <= 100000; 0 <= R <= 100; 1 <= T <= 20",
+      "buggy_code": "const fs = require('fs');\nconst [p, r, t] = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nconst interest = p * r * t / 10;\n\nconsole.log(interest.toFixed(2));",
+      "bugs": [
+        {
+          "location": "Line 4",
+          "description": "The percentage calculation divides by 10 instead of 100.",
+          "why_wrong": "A percentage rate must be converted from percent by dividing by 100."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst [p, r, t] = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nconst interest = p * r * t / 100;\n\nconsole.log(interest.toFixed(2));",
+      "visible_tests": [
+        {
+          "input": "1000 5 2",
+          "expected_output": "100.00"
+        },
+        {
+          "input": "5000 8 3",
+          "expected_output": "1200.00"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "100 0 5",
+          "expected_output": "0.00"
+        },
+        {
+          "input": "1000 10 1",
+          "expected_output": "100.00"
+        },
+        {
+          "input": "2500 4 2",
+          "expected_output": "200.00"
+        },
+        {
+          "input": "10000 7.5 2",
+          "expected_output": "1500.00"
+        },
+        {
+          "input": "750 12 4",
+          "expected_output": "360.00"
+        },
+        {
+          "input": "1 100 1",
+          "expected_output": "1.00"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JS-E-004",
+      "title": "Print Multiples of Five",
+      "language": "JavaScript",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "loops",
+        "range",
+        "modulo"
+      ],
+      "problem_statement": "Read N and print all numbers from 1 through N that are divisible by 5.",
+      "input_format": "One integer N.",
+      "output_format": "Print matching numbers in increasing order separated by spaces.",
+      "constraints": "1 <= N <= 100",
+      "buggy_code": "const fs = require('fs');\nconst n = Number(fs.readFileSync(0, 'utf8').trim());\n\nlet result = [];\n\nfor (let i = 1; i < n; i++) {\n    if (i % 5 === 0) {\n        result.push(i);\n    }\n}\n\nconsole.log(result.join(' '));",
+      "bugs": [
+        {
+          "location": "Line 6",
+          "description": "The loop stops at N-1, so N itself is never checked.",
+          "why_wrong": "The required range includes N."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst n = Number(fs.readFileSync(0, 'utf8').trim());\n\nlet result = [];\n\nfor (let i = 1; i <= n; i++) {\n    if (i % 5 === 0) {\n        result.push(i);\n    }\n}\n\nconsole.log(result.join(' '));",
+      "visible_tests": [
+        {
+          "input": "20",
+          "expected_output": "5 10 15 20"
+        },
+        {
+          "input": "12",
+          "expected_output": "5 10"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1",
+          "expected_output": ""
+        },
+        {
+          "input": "5",
+          "expected_output": "5"
+        },
+        {
+          "input": "6",
+          "expected_output": "5"
+        },
+        {
+          "input": "10",
+          "expected_output": "5 10"
+        },
+        {
+          "input": "24",
+          "expected_output": "5 10 15 20"
+        },
+        {
+          "input": "25",
+          "expected_output": "5 10 15 20 25"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JS-M-001",
+      "title": "First Occurrence Search",
+      "language": "JavaScript",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "arrays",
+        "linear search",
+        "loop",
+        "break"
+      ],
+      "problem_statement": "Read N integers and a target. Print the zero-based index of the first occurrence, or -1 if the target is absent.",
+      "input_format": "First line contains N. Second line contains N integers. Third line contains the target.",
+      "output_format": "Print the first zero-based index or -1.",
+      "constraints": "1 <= N <= 100; -1000 <= values <= 1000",
+      "buggy_code": "const fs = require('fs');\nconst data = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\nlet pos = 0;\n\nconst n = data[pos++];\nconst a = data.slice(pos, pos + n);\npos += n;\nconst target = data[pos++];\n\nlet answer = -1;\n\nfor (let i = 0; i < n; i++) {\n    if (a[i] === target) {\n        answer = i;\n    }\n}\n\nconsole.log(answer);",
+      "bugs": [
+        {
+          "location": "Lines 14-16",
+          "description": "The search continues after finding a match and overwrites the answer when the target appears again.",
+          "why_wrong": "The problem asks for the first occurrence, so the search must stop at the first match."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst data = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\nlet pos = 0;\n\nconst n = data[pos++];\nconst a = data.slice(pos, pos + n);\npos += n;\nconst target = data[pos++];\n\nlet answer = -1;\n\nfor (let i = 0; i < n; i++) {\n    if (a[i] === target) {\n        answer = i;\n        break;\n    }\n}\n\nconsole.log(answer);",
+      "visible_tests": [
+        {
+          "input": "6\n4 7 2 7 9 7\n7",
+          "expected_output": "1"
+        },
+        {
+          "input": "5\n3 8 1 6 4\n9",
+          "expected_output": "-1"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n5\n5",
+          "expected_output": "0"
+        },
+        {
+          "input": "1\n5\n2",
+          "expected_output": "-1"
+        },
+        {
+          "input": "5\n2 2 2 2 2\n2",
+          "expected_output": "0"
+        },
+        {
+          "input": "7\n1 3 5 3 9 3 4\n3",
+          "expected_output": "1"
+        },
+        {
+          "input": "4\n-2 0 5 8\n-2",
+          "expected_output": "0"
+        },
+        {
+          "input": "6\n10 20 30 40 50 60\n60",
+          "expected_output": "5"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "JS-M-002",
+      "title": "Vowel Counter",
+      "language": "JavaScript",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "strings",
+        "loop",
+        "condition",
+        "counter"
+      ],
+      "problem_statement": "Read a line of text and count vowels a, e, i, o, and u. Uppercase vowels must also be counted.",
+      "input_format": "One line containing letters and spaces.",
+      "output_format": "Print the number of vowels.",
+      "constraints": "1 <= length <= 200",
+      "buggy_code": "const fs = require('fs');\nconst text = fs.readFileSync(0, 'utf8').trim();\n\nlet count = 0;\n\nfor (const ch of text) {\n    if ('aeiou'.includes(ch)) {\n        count++;\n    }\n}\n\nconsole.log(count);",
+      "bugs": [
+        {
+          "location": "Line 7",
+          "description": "The condition checks only lowercase vowels.",
+          "why_wrong": "Uppercase vowels are also supposed to be counted."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst text = fs.readFileSync(0, 'utf8').trim().toLowerCase();\n\nlet count = 0;\n\nfor (const ch of text) {\n    if ('aeiou'.includes(ch)) {\n        count++;\n    }\n}\n\nconsole.log(count);",
+      "visible_tests": [
+        {
+          "input": "Engineering",
+          "expected_output": "5"
+        },
+        {
+          "input": "HELLO WORLD",
+          "expected_output": "3"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "AEIOU",
+          "expected_output": "5"
+        },
+        {
+          "input": "aEiOu",
+          "expected_output": "5"
+        },
+        {
+          "input": "rhythm",
+          "expected_output": "0"
+        },
+        {
+          "input": "Open AI",
+          "expected_output": "4"
+        },
+        {
+          "input": "Python Programming",
+          "expected_output": "4"
+        },
+        {
+          "input": "12345",
+          "expected_output": "0"
+        }
+      ],
+      "estimated_time_minutes": 5
+    },
+    {
+      "id": "JS-M-003",
+      "title": "Reverse a Number",
+      "language": "JavaScript",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "while loop",
+        "modulo",
+        "integer arithmetic"
+      ],
+      "problem_statement": "Read a positive integer and print its digits in reverse order as a number.",
+      "input_format": "One positive integer.",
+      "output_format": "Print the reversed integer.",
+      "constraints": "1 <= N <= 999999999",
+      "buggy_code": "const fs = require('fs');\nlet n = Number(fs.readFileSync(0, 'utf8').trim());\n\nlet reversed = 0;\n\nwhile (n > 0) {\n    const digit = n % 10;\n    reversed = reversed * 10 + digit;\n    n = Math.floor(n / 10);\n}\n\nconsole.log(n);",
+      "bugs": [
+        {
+          "location": "Line 10",
+          "description": "The program prints n after the loop instead of the reversed value.",
+          "why_wrong": "n has become 0 by the time the loop finishes; the calculated reversed number is stored in reversed."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nlet n = Number(fs.readFileSync(0, 'utf8').trim());\n\nlet reversed = 0;\n\nwhile (n > 0) {\n    const digit = n % 10;\n    reversed = reversed * 10 + digit;\n    n = Math.floor(n / 10);\n}\n\nconsole.log(reversed);",
+      "visible_tests": [
+        {
+          "input": "1234",
+          "expected_output": "4321"
+        },
+        {
+          "input": "560",
+          "expected_output": "65"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1",
+          "expected_output": "1"
+        },
+        {
+          "input": "10",
+          "expected_output": "1"
+        },
+        {
+          "input": "101",
+          "expected_output": "101"
+        },
+        {
+          "input": "900",
+          "expected_output": "9"
+        },
+        {
+          "input": "12345",
+          "expected_output": "54321"
+        },
+        {
+          "input": "7008",
+          "expected_output": "8007"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "JS-M-004",
+      "title": "Main Diagonal Sum",
+      "language": "JavaScript",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "2D arrays",
+        "nested loops",
+        "matrix",
+        "accumulator"
+      ],
+      "problem_statement": "Read an N x N matrix and print the sum of its main diagonal.",
+      "input_format": "First line contains N, followed by N rows containing N integers.",
+      "output_format": "Print the main diagonal sum.",
+      "constraints": "1 <= N <= 20; -1000 <= each value <= 1000",
+      "buggy_code": "const fs = require('fs');\nconst data = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\nlet pos = 0;\n\nconst n = data[pos++];\nlet matrix = [];\n\nfor (let i = 0; i < n; i++) {\n    matrix.push(data.slice(pos, pos + n));\n    pos += n;\n}\n\nlet sum = 0;\n\nfor (let i = 0; i < n; i++) {\n    for (let j = 0; j < n; j++) {\n        if (i === j + 1) {\n            sum += matrix[i][j];\n        }\n    }\n}\n\nconsole.log(sum);",
+      "bugs": [
+        {
+          "location": "Line 17",
+          "description": "The diagonal condition uses i === j + 1 instead of i === j.",
+          "why_wrong": "Main diagonal elements have equal row and column indices."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst data = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\nlet pos = 0;\n\nconst n = data[pos++];\nlet matrix = [];\n\nfor (let i = 0; i < n; i++) {\n    matrix.push(data.slice(pos, pos + n));\n    pos += n;\n}\n\nlet sum = 0;\n\nfor (let i = 0; i < n; i++) {\n    for (let j = 0; j < n; j++) {\n        if (i === j) {\n            sum += matrix[i][j];\n        }\n    }\n}\n\nconsole.log(sum);",
+      "visible_tests": [
+        {
+          "input": "3\n1 2 3\n4 5 6\n7 8 9",
+          "expected_output": "15"
+        },
+        {
+          "input": "2\n10 20\n30 40",
+          "expected_output": "50"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n7",
+          "expected_output": "7"
+        },
+        {
+          "input": "2\n1 9\n8 3",
+          "expected_output": "4"
+        },
+        {
+          "input": "3\n-1 2 3\n4 -5 6\n7 8 -9",
+          "expected_output": "-15"
+        },
+        {
+          "input": "4\n1 0 0 0\n0 2 0 0\n0 0 3 0\n0 0 0 4",
+          "expected_output": "10"
+        },
+        {
+          "input": "3\n5 1 2\n3 4 0\n9 8 6",
+          "expected_output": "15"
+        },
+        {
+          "input": "2\n1 1\n2 2",
+          "expected_output": "3"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "JS-H-001",
+      "title": "Student Result Calculator",
+      "language": "JavaScript",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "arrays",
+        "loops",
+        "average",
+        "conditions",
+        "grading"
+      ],
+      "problem_statement": "Read marks for five subjects. Print total, average to two decimal places, and PASS or FAIL. A student passes only if every subject mark is at least 40.",
+      "input_format": "One line containing five integer marks.",
+      "output_format": "Print total, average, and PASS or FAIL on separate lines.",
+      "constraints": "0 <= each mark <= 100",
+      "buggy_code": "const fs = require('fs');\nconst marks = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nlet total = 0;\nlet passed = true;\n\nfor (const mark of marks) {\n    total += mark;\n    if (mark < 35) {\n        passed = false;\n    }\n}\n\nconst average = total / 4;\n\nif (average >= 40) {\n    passed = true;\n}\n\nconsole.log(total);\nconsole.log(average.toFixed(2));\nconsole.log(passed ? 'PASSED' : 'FAIL');",
+      "bugs": [
+        {
+          "location": "Line 9",
+          "description": "The subject pass threshold is 35 instead of 40.",
+          "why_wrong": "Every subject must have at least 40 marks."
+        },
+        {
+          "location": "Line 13",
+          "description": "The average is divided by 4 instead of 5.",
+          "why_wrong": "There are five subjects."
+        },
+        {
+          "location": "Lines 15-17",
+          "description": "The program sets passed to true when the average is at least 40, even if a subject has failed.",
+          "why_wrong": "Passing requires every subject to meet the minimum mark, not merely a sufficient average."
+        },
+        {
+          "location": "Line 20",
+          "description": "The passing output is PASSED instead of PASS.",
+          "why_wrong": "The required output is exactly PASS or FAIL."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst marks = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nlet total = 0;\nlet passed = true;\n\nfor (const mark of marks) {\n    total += mark;\n    if (mark < 40) {\n        passed = false;\n    }\n}\n\nconst average = total / 5;\n\nconsole.log(total);\nconsole.log(average.toFixed(2));\nconsole.log(passed ? 'PASS' : 'FAIL');",
+      "visible_tests": [
+        {
+          "input": "80 70 90 60 50",
+          "expected_output": "350\n70.00\nPASS"
+        },
+        {
+          "input": "90 85 38 92 88",
+          "expected_output": "393\n78.60\nFAIL"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "40 40 40 40 40",
+          "expected_output": "200\n40.00\nPASS"
+        },
+        {
+          "input": "39 100 100 100 100",
+          "expected_output": "439\n87.80\nFAIL"
+        },
+        {
+          "input": "0 0 0 0 0",
+          "expected_output": "0\n0.00\nFAIL"
+        },
+        {
+          "input": "100 100 100 100 100",
+          "expected_output": "500\n100.00\nPASS"
+        },
+        {
+          "input": "50 50 50 50 39",
+          "expected_output": "239\n47.80\nFAIL"
+        },
+        {
+          "input": "41 41 41 41 41",
+          "expected_output": "205\n41.00\nPASS"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "JS-H-002",
+      "title": "Shopping Bill",
+      "language": "JavaScript",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "loops",
+        "discounts",
+        "arithmetic",
+        "conditions"
+      ],
+      "problem_statement": "Read three item prices. If the subtotal is at least 2000, apply a 10% discount; otherwise apply 5%. Add a fixed delivery charge of 50 after the discount. Print subtotal, discount, and final bill.",
+      "input_format": "Three positive item prices.",
+      "output_format": "Print subtotal, discount, and final bill with two decimal places on separate lines.",
+      "constraints": "1 <= each price <= 100000",
+      "buggy_code": "const fs = require('fs');\nconst prices = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nlet subtotal = 0;\n\nfor (const price of prices) {\n    subtotal += price;\n}\n\nlet discount;\n\nif (subtotal >= 2000) {\n    discount = subtotal * 5 / 100;\n} else {\n    discount = subtotal * 10 / 100;\n}\n\nconst finalBill = subtotal - discount - 50;\n\nconsole.log(subtotal.toFixed(2));\nconsole.log(discount.toFixed(0));\nconsole.log(finalBill.toFixed(2));",
+      "bugs": [
+        {
+          "location": "Line 13",
+          "description": "The discount rate for subtotals of at least 2000 is 5% instead of 10%.",
+          "why_wrong": "The higher 10% discount applies when the subtotal is at least 2000."
+        },
+        {
+          "location": "Line 15",
+          "description": "The discount rate for subtotals below 2000 is 10% instead of 5%.",
+          "why_wrong": "Subtotals below 2000 receive a 5% discount."
+        },
+        {
+          "location": "Line 18",
+          "description": "The delivery charge is subtracted from the final bill.",
+          "why_wrong": "The 50 delivery charge must be added after the discount."
+        },
+        {
+          "location": "Line 21",
+          "description": "The discount is printed with zero decimal places instead of two.",
+          "why_wrong": "The required output format shows monetary values with two decimal places."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst prices = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nlet subtotal = 0;\n\nfor (const price of prices) {\n    subtotal += price;\n}\n\nlet discount;\n\nif (subtotal >= 2000) {\n    discount = subtotal * 10 / 100;\n} else {\n    discount = subtotal * 5 / 100;\n}\n\nconst finalBill = subtotal - discount + 50;\n\nconsole.log(subtotal.toFixed(2));\nconsole.log(discount.toFixed(2));\nconsole.log(finalBill.toFixed(2));",
+      "visible_tests": [
+        {
+          "input": "500 600 700",
+          "expected_output": "1800.00\n90.00\n1760.00"
+        },
+        {
+          "input": "1000 800 500",
+          "expected_output": "2300.00\n230.00\n2120.00"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1 1 1",
+          "expected_output": "3.00\n0.15\n52.85"
+        },
+        {
+          "input": "1000 500 500",
+          "expected_output": "2000.00\n200.00\n1850.00"
+        },
+        {
+          "input": "1000 499 500",
+          "expected_output": "1999.00\n99.95\n1949.05"
+        },
+        {
+          "input": "500 500 1000",
+          "expected_output": "2000.00\n200.00\n1850.00"
+        },
+        {
+          "input": "2000 2000 2000",
+          "expected_output": "6000.00\n600.00\n5450.00"
+        },
+        {
+          "input": "250 250 250",
+          "expected_output": "750.00\n37.50\n762.50"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "JS-H-003",
+      "title": "Electricity Bill",
+      "language": "JavaScript",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "conditions",
+        "slab calculation",
+        "arithmetic",
+        "billing"
+      ],
+      "problem_statement": "Calculate an electricity bill. First 100 units cost 2 per unit, next 100 cost 3 per unit, and every unit above 200 costs 5 per unit. Add a fixed charge of 50.",
+      "input_format": "One integer representing units consumed.",
+      "output_format": "Print the total bill.",
+      "constraints": "0 <= units <= 1000",
+      "buggy_code": "const fs = require('fs');\nconst units = Number(fs.readFileSync(0, 'utf8').trim());\n\nlet bill;\n\nif (units <= 100) {\n    bill = units * 3;\n} else if (units <= 200) {\n    bill = 100 * 2 + (units - 100) * 2;\n} else {\n    bill = 100 * 2 + 100 * 3 + (units - 200) * 4;\n}\n\nbill += 40;\n\nconsole.log(bill);",
+      "bugs": [
+        {
+          "location": "Line 7",
+          "description": "The first slab is charged at 3 instead of 2 per unit.",
+          "why_wrong": "The first 100 units cost 2 per unit."
+        },
+        {
+          "location": "Line 9",
+          "description": "The second slab is charged at 2 instead of 3 per unit.",
+          "why_wrong": "Units 101 through 200 cost 3 per unit."
+        },
+        {
+          "location": "Line 11",
+          "description": "Units above 200 are charged at 4 instead of 5 per unit.",
+          "why_wrong": "Every unit above 200 costs 5."
+        },
+        {
+          "location": "Line 14",
+          "description": "The fixed charge is 40 instead of 50.",
+          "why_wrong": "The specified fixed charge is 50."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst units = Number(fs.readFileSync(0, 'utf8').trim());\n\nlet bill;\n\nif (units <= 100) {\n    bill = units * 2;\n} else if (units <= 200) {\n    bill = 100 * 2 + (units - 100) * 3;\n} else {\n    bill = 100 * 2 + 100 * 3 + (units - 200) * 5;\n}\n\nbill += 50;\n\nconsole.log(bill);",
+      "visible_tests": [
+        {
+          "input": "50",
+          "expected_output": "150"
+        },
+        {
+          "input": "150",
+          "expected_output": "400"
+        },
+        {
+          "input": "250",
+          "expected_output": "800"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "0",
+          "expected_output": "50"
+        },
+        {
+          "input": "1",
+          "expected_output": "52"
+        },
+        {
+          "input": "100",
+          "expected_output": "250"
+        },
+        {
+          "input": "101",
+          "expected_output": "253"
+        },
+        {
+          "input": "200",
+          "expected_output": "550"
+        },
+        {
+          "input": "201",
+          "expected_output": "555"
+        },
+        {
+          "input": "500",
+          "expected_output": "2050"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "JS-H-004",
+      "title": "Attendance Eligibility",
+      "language": "JavaScript",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "conditions",
+        "percentage",
+        "counters",
+        "arithmetic"
+      ],
+      "problem_statement": "Read total classes and attended classes. Print attendance percentage to two decimal places, missed classes, and ELIGIBLE or NOT ELIGIBLE. Eligibility requires at least 75% attendance.",
+      "input_format": "Two integers: total classes and attended classes.",
+      "output_format": "Print percentage, missed classes, and status on separate lines.",
+      "constraints": "1 <= total <= 1000; 0 <= attended <= total",
+      "buggy_code": "const fs = require('fs');\nconst [total, attended] = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nconst missed = total - attended;\nconst percentage = Math.floor(attended / total) * 100;\n\nif (percentage > 75) {\n    console.log(percentage.toFixed(1));\n    console.log(missed);\n    console.log('ELIGIBLE');\n} else {\n    console.log(percentage.toFixed(1));\n    console.log(missed);\n    console.log('ELIGIBLE');\n}",
+      "bugs": [
+        {
+          "location": "Line 5",
+          "description": "Math.floor is applied to the ratio before multiplying by 100.",
+          "why_wrong": "For example, 80/100 becomes 0 before multiplication, producing 0 instead of 80."
+        },
+        {
+          "location": "Line 7",
+          "description": "The eligibility condition uses > 75 instead of >= 75.",
+          "why_wrong": "Exactly 75% attendance is eligible."
+        },
+        {
+          "location": "Line 11",
+          "description": "The NOT ELIGIBLE branch prints ELIGIBLE.",
+          "why_wrong": "The else branch represents attendance below the required threshold."
+        },
+        {
+          "location": "Lines 8 and 12",
+          "description": "The percentage is printed with one decimal place instead of two.",
+          "why_wrong": "The required output format specifies two decimal places."
+        }
+      ],
+      "corrected_code": "const fs = require('fs');\nconst [total, attended] = fs.readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\n\nconst missed = total - attended;\nconst percentage = attended / total * 100;\n\nconsole.log(percentage.toFixed(2));\nconsole.log(missed);\n\nif (percentage >= 75) {\n    console.log('ELIGIBLE');\n} else {\n    console.log('NOT ELIGIBLE');\n}",
+      "visible_tests": [
+        {
+          "input": "100 80",
+          "expected_output": "80.00\n20\nELIGIBLE"
+        },
+        {
+          "input": "100 60",
+          "expected_output": "60.00\n40\nNOT ELIGIBLE"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "100 75",
+          "expected_output": "75.00\n25\nELIGIBLE"
+        },
+        {
+          "input": "100 74",
+          "expected_output": "74.00\n26\nNOT ELIGIBLE"
+        },
+        {
+          "input": "1 1",
+          "expected_output": "100.00\n0\nELIGIBLE"
+        },
+        {
+          "input": "1 0",
+          "expected_output": "0.00\n1\nNOT ELIGIBLE"
+        },
+        {
+          "input": "200 150",
+          "expected_output": "75.00\n50\nELIGIBLE"
+        },
+        {
+          "input": "80 60",
+          "expected_output": "75.00\n20\nELIGIBLE"
+        }
+      ],
+      "estimated_time_minutes": 9
+    }
+  ]
+}

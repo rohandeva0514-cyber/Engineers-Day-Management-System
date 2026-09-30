@@ -1,0 +1,910 @@
+{
+  "bank_name": "Engineers Day 2026 Debugging Arena - Java Problem Bank",
+  "language": "Java",
+  "total_problems": 12,
+  "distribution": {
+    "EASY": 4,
+    "MEDIUM": 4,
+    "HARD": 4
+  },
+  "validation": {
+    "compiler": "javac",
+    "runtime": "java",
+    "all_corrected_tests_passed": true,
+    "all_buggy_programs_compiled_and_ran": true,
+    "every_buggy_program_failed_at_least_one_hidden_test": true,
+    "details": [
+      {
+        "id": "JAVA-E-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 4
+      },
+      {
+        "id": "JAVA-E-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 5
+      },
+      {
+        "id": "JAVA-E-003",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 5
+      },
+      {
+        "id": "JAVA-E-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      },
+      {
+        "id": "JAVA-M-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 2
+      },
+      {
+        "id": "JAVA-M-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 2
+      },
+      {
+        "id": "JAVA-M-003",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      },
+      {
+        "id": "JAVA-M-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      },
+      {
+        "id": "JAVA-H-001",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 5
+      },
+      {
+        "id": "JAVA-H-002",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      },
+      {
+        "id": "JAVA-H-003",
+        "corrected_tests_passed": 10,
+        "buggy_hidden_failures": 7
+      },
+      {
+        "id": "JAVA-H-004",
+        "corrected_tests_passed": 8,
+        "buggy_hidden_failures": 6
+      }
+    ]
+  },
+  "problems": [
+    {
+      "id": "JAVA-E-001",
+      "title": "Sum of Even Numbers",
+      "language": "Java",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "loops",
+        "conditions",
+        "accumulator"
+      ],
+      "problem_statement": "Read N integers and print the sum of all even numbers.",
+      "input_format": "First line contains N. Second line contains N integers.",
+      "output_format": "Print the sum of all even integers.",
+      "constraints": "1 <= N <= 100; -1000 <= each integer <= 1000",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        int sum = 0;\n\n        for (int i = 0; i < n; i++) {\n            int value = sc.nextInt();\n            if (value % 2 == 1) {\n                sum += value;\n            }\n        }\n\n        System.out.println(sum);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 11",
+          "description": "The condition selects odd numbers instead of even numbers.",
+          "why_wrong": "An even number has remainder 0 when divided by 2."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        int sum = 0;\n\n        for (int i = 0; i < n; i++) {\n            int value = sc.nextInt();\n            if (value % 2 == 0) {\n                sum += value;\n            }\n        }\n\n        System.out.println(sum);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "5\n1 2 3 4 5",
+          "expected_output": "6"
+        },
+        {
+          "input": "4\n10 7 8 3",
+          "expected_output": "18"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n0",
+          "expected_output": "0"
+        },
+        {
+          "input": "1\n8",
+          "expected_output": "8"
+        },
+        {
+          "input": "5\n1 3 5 7 9",
+          "expected_output": "0"
+        },
+        {
+          "input": "6\n-2 -4 3 5 6 8",
+          "expected_output": "8"
+        },
+        {
+          "input": "4\n100 99 98 97",
+          "expected_output": "198"
+        },
+        {
+          "input": "3\n-6 0 7",
+          "expected_output": "-6"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JAVA-E-002",
+      "title": "Largest of Three",
+      "language": "Java",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "conditions",
+        "comparison"
+      ],
+      "problem_statement": "Read three integers and print the largest value.",
+      "input_format": "Three space-separated integers.",
+      "output_format": "Print the largest integer.",
+      "constraints": "-100000 <= each integer <= 100000",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int a = sc.nextInt();\n        int b = sc.nextInt();\n        int c = sc.nextInt();\n\n        int largest = a;\n        if (b > largest) {\n            largest = b;\n        }\n        if (c < largest) {\n            largest = c;\n        }\n\n        System.out.println(largest);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 14",
+          "description": "The program replaces largest when c is smaller instead of when c is larger.",
+          "why_wrong": "To find the largest value, c must replace largest only when c > largest."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int a = sc.nextInt();\n        int b = sc.nextInt();\n        int c = sc.nextInt();\n\n        int largest = a;\n        if (b > largest) {\n            largest = b;\n        }\n        if (c > largest) {\n            largest = c;\n        }\n\n        System.out.println(largest);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "10 25 18",
+          "expected_output": "25"
+        },
+        {
+          "input": "7 4 12",
+          "expected_output": "12"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1 1 1",
+          "expected_output": "1"
+        },
+        {
+          "input": "-5 -2 -9",
+          "expected_output": "-2"
+        },
+        {
+          "input": "100 50 75",
+          "expected_output": "100"
+        },
+        {
+          "input": "2 9 15",
+          "expected_output": "15"
+        },
+        {
+          "input": "20 30 10",
+          "expected_output": "30"
+        },
+        {
+          "input": "-1 0 -3",
+          "expected_output": "0"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JAVA-E-003",
+      "title": "Simple Interest",
+      "language": "Java",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "arithmetic",
+        "percentage",
+        "input"
+      ],
+      "problem_statement": "Calculate simple interest using principal P, rate R, and time T. Use SI = P * R * T / 100.",
+      "input_format": "Three numbers: principal, rate, and time.",
+      "output_format": "Print the simple interest with two decimal places.",
+      "constraints": "1 <= P <= 100000; 0 <= R <= 100; 1 <= T <= 20",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        double p = sc.nextDouble();\n        double r = sc.nextDouble();\n        double t = sc.nextDouble();\n\n        double interest = p * r * t / 10;\n        System.out.printf(\"%.2f%n\", interest);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 9",
+          "description": "The percentage calculation divides by 10 instead of 100.",
+          "why_wrong": "A percentage rate must be converted from percent by dividing by 100."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        double p = sc.nextDouble();\n        double r = sc.nextDouble();\n        double t = sc.nextDouble();\n\n        double interest = p * r * t / 100;\n        System.out.printf(\"%.2f%n\", interest);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "1000 5 2",
+          "expected_output": "100.00"
+        },
+        {
+          "input": "5000 8 3",
+          "expected_output": "1200.00"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "100 0 5",
+          "expected_output": "0.00"
+        },
+        {
+          "input": "1000 10 1",
+          "expected_output": "100.00"
+        },
+        {
+          "input": "2500 4 2",
+          "expected_output": "200.00"
+        },
+        {
+          "input": "10000 7.5 2",
+          "expected_output": "1500.00"
+        },
+        {
+          "input": "750 12 4",
+          "expected_output": "360.00"
+        },
+        {
+          "input": "1 100 1",
+          "expected_output": "1.00"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JAVA-E-004",
+      "title": "Print Countdown",
+      "language": "Java",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "loops",
+        "loop boundary"
+      ],
+      "problem_statement": "Read N and print all integers from N down to 1, separated by spaces.",
+      "input_format": "One integer N.",
+      "output_format": "Print N, N-1, ..., 1 separated by spaces.",
+      "constraints": "1 <= N <= 100",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n\n        for (int i = n; i > 1; i--) {\n            System.out.print(i + \" \");\n        }\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 8",
+          "description": "The loop stops when i becomes 1, so 1 is never printed.",
+          "why_wrong": "The required countdown includes 1, so the loop condition must allow i == 1."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n\n        for (int i = n; i >= 1; i--) {\n            System.out.print(i + \" \");\n        }\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "5",
+          "expected_output": "5 4 3 2 1 "
+        },
+        {
+          "input": "3",
+          "expected_output": "3 2 1 "
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1",
+          "expected_output": "1 "
+        },
+        {
+          "input": "2",
+          "expected_output": "2 1 "
+        },
+        {
+          "input": "6",
+          "expected_output": "6 5 4 3 2 1 "
+        },
+        {
+          "input": "10",
+          "expected_output": "10 9 8 7 6 5 4 3 2 1 "
+        },
+        {
+          "input": "20",
+          "expected_output": "20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 "
+        },
+        {
+          "input": "100",
+          "expected_output": "100 99 98 97 96 95 94 93 92 91 90 89 88 87 86 85 84 83 82 81 80 79 78 77 76 75 74 73 72 71 70 69 68 67 66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 44 43 42 41 40 39 38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 "
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "JAVA-M-001",
+      "title": "Count Digits Greater Than Five",
+      "language": "Java",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "loops",
+        "while",
+        "modulo",
+        "digits"
+      ],
+      "problem_statement": "Read a non-negative integer and count how many of its digits are greater than 5.",
+      "input_format": "One non-negative integer.",
+      "output_format": "Print the number of digits greater than 5.",
+      "constraints": "0 <= N <= 10^9",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        int count = 0;\n\n        while (n > 0) {\n            int digit = n % 10;\n            if (digit >= 5) {\n                count++;\n            }\n            n /= 10;\n        }\n\n        System.out.println(count);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 10",
+          "description": "The condition counts digits equal to 5 even though only digits greater than 5 should be counted.",
+          "why_wrong": "The condition must be digit > 5."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        int count = 0;\n\n        if (n == 0) {\n            count = 0;\n        }\n\n        while (n > 0) {\n            int digit = n % 10;\n            if (digit > 5) {\n                count++;\n            }\n            n /= 10;\n        }\n\n        System.out.println(count);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "563782",
+          "expected_output": "3"
+        },
+        {
+          "input": "12345",
+          "expected_output": "0"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "0",
+          "expected_output": "0"
+        },
+        {
+          "input": "6",
+          "expected_output": "1"
+        },
+        {
+          "input": "5",
+          "expected_output": "0"
+        },
+        {
+          "input": "555",
+          "expected_output": "0"
+        },
+        {
+          "input": "6789",
+          "expected_output": "4"
+        },
+        {
+          "input": "120760",
+          "expected_output": "2"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "JAVA-M-002",
+      "title": "First Occurrence in an Array",
+      "language": "Java",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "arrays",
+        "linear search",
+        "loop",
+        "break"
+      ],
+      "problem_statement": "Read N integers and a target. Print the zero-based index of the first occurrence of the target, or -1 if it is absent.",
+      "input_format": "First line contains N. Second line contains N integers. Third line contains the target.",
+      "output_format": "Print the first zero-based index or -1.",
+      "constraints": "1 <= N <= 100; -1000 <= values <= 1000",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        int[] a = new int[n];\n\n        for (int i = 0; i < n; i++) {\n            a[i] = sc.nextInt();\n        }\n\n        int target = sc.nextInt();\n        int answer = -1;\n\n        for (int i = 0; i < n; i++) {\n            if (a[i] == target) {\n                answer = i;\n            }\n        }\n\n        System.out.println(answer);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Lines 17-19",
+          "description": "The search continues after finding a match and overwrites the answer when the target appears again.",
+          "why_wrong": "The problem asks for the first occurrence, so the loop must stop after the first match."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        int[] a = new int[n];\n\n        for (int i = 0; i < n; i++) {\n            a[i] = sc.nextInt();\n        }\n\n        int target = sc.nextInt();\n        int answer = -1;\n\n        for (int i = 0; i < n; i++) {\n            if (a[i] == target) {\n                answer = i;\n                break;\n            }\n        }\n\n        System.out.println(answer);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "6\n4 7 2 7 9 7\n7",
+          "expected_output": "1"
+        },
+        {
+          "input": "5\n3 8 1 6 4\n9",
+          "expected_output": "-1"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n5\n5",
+          "expected_output": "0"
+        },
+        {
+          "input": "1\n5\n2",
+          "expected_output": "-1"
+        },
+        {
+          "input": "5\n2 2 2 2 2\n2",
+          "expected_output": "0"
+        },
+        {
+          "input": "7\n1 3 5 3 9 3 4\n3",
+          "expected_output": "1"
+        },
+        {
+          "input": "4\n-2 0 5 8\n-2",
+          "expected_output": "0"
+        },
+        {
+          "input": "6\n10 20 30 40 50 60\n60",
+          "expected_output": "5"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "JAVA-M-003",
+      "title": "Reverse a String",
+      "language": "Java",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "strings",
+        "loops",
+        "StringBuilder"
+      ],
+      "problem_statement": "Read a word and print its characters in reverse order.",
+      "input_format": "One word containing only letters.",
+      "output_format": "Print the reversed word.",
+      "constraints": "1 <= length <= 100",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String word = sc.next();\n        String reversed = \"\";\n\n        for (int i = 0; i < word.length() - 1; i++) {\n            reversed += word.charAt(i);\n        }\n\n        System.out.println(reversed);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 9",
+          "description": "The loop runs forward and excludes the last character instead of traversing from the last character to the first.",
+          "why_wrong": "To reverse the word, characters must be appended starting at index length-1 and moving down to 0."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String word = sc.next();\n        String reversed = \"\";\n\n        for (int i = word.length() - 1; i >= 0; i--) {\n            reversed += word.charAt(i);\n        }\n\n        System.out.println(reversed);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "hello",
+          "expected_output": "olleh"
+        },
+        {
+          "input": "Java",
+          "expected_output": "avaJ"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "a",
+          "expected_output": "a"
+        },
+        {
+          "input": "ab",
+          "expected_output": "ba"
+        },
+        {
+          "input": "level",
+          "expected_output": "level"
+        },
+        {
+          "input": "computer",
+          "expected_output": "retupmoc"
+        },
+        {
+          "input": "Engineering",
+          "expected_output": "gnireenignE"
+        },
+        {
+          "input": "abc123",
+          "expected_output": "321cba"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "JAVA-M-004",
+      "title": "Row Sum of a Matrix",
+      "language": "Java",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "2D arrays",
+        "nested loops",
+        "accumulator"
+      ],
+      "problem_statement": "Read an R x C matrix and print the sum of each row on a separate line.",
+      "input_format": "First line contains R and C, followed by R rows containing C integers.",
+      "output_format": "Print R row sums, one per line.",
+      "constraints": "1 <= R,C <= 20; -1000 <= each element <= 1000",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int r = sc.nextInt();\n        int c = sc.nextInt();\n        int[][] matrix = new int[r][c];\n\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) {\n                matrix[i][j] = sc.nextInt();\n            }\n        }\n\n        for (int i = 0; i < r; i++) {\n            int sum = 0;\n            for (int j = 0; j < c - 1; j++) {\n                sum += matrix[i][j];\n            }\n            System.out.println(sum);\n        }\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 18",
+          "description": "The inner loop stops at c - 1, so the last element of every row is skipped.",
+          "why_wrong": "Every column from 0 through c-1 must be included in the row sum."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int r = sc.nextInt();\n        int c = sc.nextInt();\n        int[][] matrix = new int[r][c];\n\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) {\n                matrix[i][j] = sc.nextInt();\n            }\n        }\n\n        for (int i = 0; i < r; i++) {\n            int sum = 0;\n            for (int j = 0; j < c; j++) {\n                sum += matrix[i][j];\n            }\n            System.out.println(sum);\n        }\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "2 3\n1 2 3\n4 5 6",
+          "expected_output": "6\n15"
+        },
+        {
+          "input": "3 2\n10 20\n30 40\n50 60",
+          "expected_output": "30\n70\n110"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1 1\n7",
+          "expected_output": "7"
+        },
+        {
+          "input": "1 4\n1 2 3 4",
+          "expected_output": "10"
+        },
+        {
+          "input": "4 1\n5\n6\n7\n8",
+          "expected_output": "5\n6\n7\n8"
+        },
+        {
+          "input": "2 2\n-1 2\n3 -4",
+          "expected_output": "1\n-1"
+        },
+        {
+          "input": "3 3\n1 0 0\n0 2 0\n0 0 3",
+          "expected_output": "1\n2\n3"
+        },
+        {
+          "input": "2 5\n1 1 1 1 1\n2 2 2 2 2",
+          "expected_output": "5\n10"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "JAVA-H-001",
+      "title": "Student Result Calculator",
+      "language": "Java",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "arrays",
+        "loops",
+        "average",
+        "conditions",
+        "grading"
+      ],
+      "problem_statement": "Read marks for five subjects. Print total, average to two decimal places, and PASS or FAIL. A student passes only if every subject mark is at least 40.",
+      "input_format": "One line containing five integer marks.",
+      "output_format": "Print total, average, and PASS or FAIL on separate lines.",
+      "constraints": "0 <= each mark <= 100",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int[] marks = new int[5];\n\n        int total = 0;\n        boolean passed = true;\n\n        for (int i = 0; i < 5; i++) {\n            marks[i] = sc.nextInt();\n            total += marks[i];\n            if (marks[i] < 35) {\n                passed = false;\n            }\n        }\n\n        double average = total / 4.0;\n\n        if (average >= 40) {\n            passed = true;\n        }\n\n        System.out.println(total);\n        System.out.printf(\"%.2f%n\", average);\n        System.out.println(passed ? \"PASSED\" : \"FAIL\");\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 12",
+          "description": "The subject pass threshold is 35 instead of 40.",
+          "why_wrong": "Every subject must have at least 40 marks."
+        },
+        {
+          "location": "Line 16",
+          "description": "The average is divided by 4 instead of 5.",
+          "why_wrong": "There are five subjects."
+        },
+        {
+          "location": "Line 18",
+          "description": "The program sets passed to true when the average is at least 40, even if a subject has failed.",
+          "why_wrong": "Passing requires every subject to meet the minimum, not merely a sufficient average."
+        },
+        {
+          "location": "Line 22",
+          "description": "The passing output is PASSED instead of PASS.",
+          "why_wrong": "The required output is exactly PASS or FAIL."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int[] marks = new int[5];\n\n        int total = 0;\n        boolean passed = true;\n\n        for (int i = 0; i < 5; i++) {\n            marks[i] = sc.nextInt();\n            total += marks[i];\n            if (marks[i] < 40) {\n                passed = false;\n            }\n        }\n\n        double average = total / 5.0;\n\n        System.out.println(total);\n        System.out.printf(\"%.2f%n\", average);\n        System.out.println(passed ? \"PASS\" : \"FAIL\");\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "80 70 90 60 50",
+          "expected_output": "350\n70.00\nPASS"
+        },
+        {
+          "input": "90 85 38 92 88",
+          "expected_output": "393\n78.60\nFAIL"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "40 40 40 40 40",
+          "expected_output": "200\n40.00\nPASS"
+        },
+        {
+          "input": "39 100 100 100 100",
+          "expected_output": "439\n87.80\nFAIL"
+        },
+        {
+          "input": "0 0 0 0 0",
+          "expected_output": "0\n0.00\nFAIL"
+        },
+        {
+          "input": "100 100 100 100 100",
+          "expected_output": "500\n100.00\nPASS"
+        },
+        {
+          "input": "50 50 50 50 39",
+          "expected_output": "239\n47.80\nFAIL"
+        },
+        {
+          "input": "41 41 41 41 41",
+          "expected_output": "205\n41.00\nPASS"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "JAVA-H-002",
+      "title": "Shopping Bill",
+      "language": "Java",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "arrays",
+        "loops",
+        "discounts",
+        "arithmetic"
+      ],
+      "problem_statement": "Read the prices of three items. Calculate subtotal, discount, and final bill. If subtotal is at least 2000, give a 10% discount; otherwise give a 5% discount. Add a fixed delivery charge of 50 after the discount. Print subtotal, discount, and final bill with two decimal places.",
+      "input_format": "Three positive item prices.",
+      "output_format": "Print subtotal, discount, and final bill on separate lines.",
+      "constraints": "1 <= each price <= 100000",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        double subtotal = 0;\n        for (int i = 0; i < 3; i++) {\n            subtotal += sc.nextDouble();\n        }\n\n        double discount;\n        if (subtotal >= 2000) {\n            discount = subtotal * 5 / 100;\n        } else {\n            discount = subtotal * 10 / 100;\n        }\n\n        double finalBill = subtotal - discount - 50;\n\n        System.out.printf(\"%.2f%n\", subtotal);\n        System.out.printf(\"%.2f%n\", discount);\n        System.out.printf(\"%.2f%n\", finalBill);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 13",
+          "description": "The discount rates are reversed: 5% is used for subtotals of at least 2000.",
+          "why_wrong": "The higher 10% discount applies when subtotal is at least 2000."
+        },
+        {
+          "location": "Line 15",
+          "description": "The lower-tier discount is 10% instead of 5%.",
+          "why_wrong": "Subtotals below 2000 receive a 5% discount."
+        },
+        {
+          "location": "Line 18",
+          "description": "The delivery charge is subtracted from the bill.",
+          "why_wrong": "The fixed delivery charge is added after applying the discount."
+        },
+        {
+          "location": "Line 18",
+          "description": "The final bill subtracts the delivery charge instead of adding it.",
+          "why_wrong": "A delivery charge increases the amount the customer pays."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        double subtotal = 0;\n        for (int i = 0; i < 3; i++) {\n            subtotal += sc.nextDouble();\n        }\n\n        double discount;\n        if (subtotal >= 2000) {\n            discount = subtotal * 10 / 100;\n        } else {\n            discount = subtotal * 5 / 100;\n        }\n\n        double finalBill = subtotal - discount + 50;\n\n        System.out.printf(\"%.2f%n\", subtotal);\n        System.out.printf(\"%.2f%n\", discount);\n        System.out.printf(\"%.2f%n\", finalBill);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "500 600 700",
+          "expected_output": "1800.00\n90.00\n1760.00"
+        },
+        {
+          "input": "1000 800 500",
+          "expected_output": "2300.00\n230.00\n2120.00"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1 1 1",
+          "expected_output": "3.00\n0.15\n52.85"
+        },
+        {
+          "input": "1000 500 500",
+          "expected_output": "2000.00\n200.00\n1850.00"
+        },
+        {
+          "input": "1000 499 500",
+          "expected_output": "1999.00\n99.95\n1949.05"
+        },
+        {
+          "input": "500 500 1000",
+          "expected_output": "2000.00\n200.00\n1850.00"
+        },
+        {
+          "input": "2000 2000 2000",
+          "expected_output": "6000.00\n600.00\n5450.00"
+        },
+        {
+          "input": "250 250 250",
+          "expected_output": "750.00\n37.50\n762.50"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "JAVA-H-003",
+      "title": "Electricity Bill",
+      "language": "Java",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "conditions",
+        "slab calculation",
+        "arithmetic",
+        "billing"
+      ],
+      "problem_statement": "Calculate an electricity bill. The first 100 units cost 2 per unit, the next 100 units cost 3 per unit, and every unit above 200 costs 5 per unit. Add a fixed charge of 50.",
+      "input_format": "One integer representing units consumed.",
+      "output_format": "Print the total bill.",
+      "constraints": "0 <= units <= 1000",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int units = sc.nextInt();\n        int bill;\n\n        if (units <= 100) {\n            bill = units * 3;\n        } else if (units <= 200) {\n            bill = 100 * 2 + (units - 100) * 2;\n        } else {\n            bill = 100 * 2 + 100 * 3 + (units - 200) * 4;\n        }\n\n        bill += 40;\n        System.out.println(bill);\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 9",
+          "description": "The first 100 units are charged at 3 instead of 2 per unit.",
+          "why_wrong": "The first slab rate is 2 per unit."
+        },
+        {
+          "location": "Line 11",
+          "description": "The second slab is charged at 2 instead of 3 per unit.",
+          "why_wrong": "Units 101 through 200 cost 3 per unit."
+        },
+        {
+          "location": "Line 13",
+          "description": "Units above 200 are charged at 4 instead of 5 per unit.",
+          "why_wrong": "Every unit above 200 costs 5."
+        },
+        {
+          "location": "Line 16",
+          "description": "The fixed charge is 40 instead of 50.",
+          "why_wrong": "The specified fixed charge is 50."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int units = sc.nextInt();\n        int bill;\n\n        if (units <= 100) {\n            bill = units * 2;\n        } else if (units <= 200) {\n            bill = 100 * 2 + (units - 100) * 3;\n        } else {\n            bill = 100 * 2 + 100 * 3 + (units - 200) * 5;\n        }\n\n        bill += 50;\n        System.out.println(bill);\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "50",
+          "expected_output": "150"
+        },
+        {
+          "input": "150",
+          "expected_output": "400"
+        },
+        {
+          "input": "250",
+          "expected_output": "800"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "0",
+          "expected_output": "50"
+        },
+        {
+          "input": "1",
+          "expected_output": "52"
+        },
+        {
+          "input": "100",
+          "expected_output": "250"
+        },
+        {
+          "input": "101",
+          "expected_output": "253"
+        },
+        {
+          "input": "200",
+          "expected_output": "550"
+        },
+        {
+          "input": "201",
+          "expected_output": "555"
+        },
+        {
+          "input": "500",
+          "expected_output": "2050"
+        }
+      ],
+      "estimated_time_minutes": 9
+    },
+    {
+      "id": "JAVA-H-004",
+      "title": "Attendance Eligibility",
+      "language": "Java",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "loops",
+        "conditions",
+        "percentage",
+        "counters"
+      ],
+      "problem_statement": "Read the total number of classes and the number attended by a student. Calculate attendance percentage. A student is eligible if attendance is at least 75%. Also print the number of classes missed.",
+      "input_format": "Two integers: total classes and attended classes.",
+      "output_format": "Print attendance percentage to two decimal places, number of missed classes, and ELIGIBLE or NOT ELIGIBLE on separate lines.",
+      "constraints": "1 <= total classes <= 1000; 0 <= attended <= total",
+      "buggy_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        int total = sc.nextInt();\n        int attended = sc.nextInt();\n\n        int missed = total - attended;\n        double percentage = attended / total * 100;\n\n        if (percentage > 75) {\n            System.out.printf(\"%.1f%n\", percentage);\n            System.out.println(missed);\n            System.out.println(\"ELIGIBLE\");\n        } else {\n            System.out.printf(\"%.1f%n\", percentage);\n            System.out.println(missed);\n            System.out.println(\"ELIGIBLE\");\n        }\n    }\n}",
+      "bugs": [
+        {
+          "location": "Line 10",
+          "description": "Integer division occurs before multiplying by 100.",
+          "why_wrong": "Both operands are integers, so the decimal portion is lost before the percentage is calculated."
+        },
+        {
+          "location": "Line 12",
+          "description": "The eligibility condition uses > 75 instead of >= 75.",
+          "why_wrong": "Exactly 75% attendance is eligible."
+        },
+        {
+          "location": "Line 17",
+          "description": "The NOT ELIGIBLE case prints ELIGIBLE.",
+          "why_wrong": "The else branch represents attendance below the required threshold."
+        },
+        {
+          "location": "Lines 13 and 18",
+          "description": "The percentage is printed with one decimal place instead of two.",
+          "why_wrong": "The required output format specifies two digits after the decimal point."
+        }
+      ],
+      "corrected_code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        int total = sc.nextInt();\n        int attended = sc.nextInt();\n\n        int missed = total - attended;\n        double percentage = (double) attended / total * 100;\n\n        System.out.printf(\"%.2f%n\", percentage);\n        System.out.println(missed);\n\n        if (percentage >= 75) {\n            System.out.println(\"ELIGIBLE\");\n        } else {\n            System.out.println(\"NOT ELIGIBLE\");\n        }\n    }\n}",
+      "visible_tests": [
+        {
+          "input": "100 80",
+          "expected_output": "80.00\n20\nELIGIBLE"
+        },
+        {
+          "input": "100 60",
+          "expected_output": "60.00\n40\nNOT ELIGIBLE"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "100 75",
+          "expected_output": "75.00\n25\nELIGIBLE"
+        },
+        {
+          "input": "100 74",
+          "expected_output": "74.00\n26\nNOT ELIGIBLE"
+        },
+        {
+          "input": "1 1",
+          "expected_output": "100.00\n0\nELIGIBLE"
+        },
+        {
+          "input": "1 0",
+          "expected_output": "0.00\n1\nNOT ELIGIBLE"
+        },
+        {
+          "input": "200 150",
+          "expected_output": "75.00\n50\nELIGIBLE"
+        },
+        {
+          "input": "80 60",
+          "expected_output": "75.00\n20\nELIGIBLE"
+        }
+      ],
+      "estimated_time_minutes": 9
+    }
+  ]
+}

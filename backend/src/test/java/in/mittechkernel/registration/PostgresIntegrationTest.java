@@ -60,11 +60,21 @@ public abstract class PostgresIntegrationTest {
      */
     @BeforeEach
     void resetDatabase() {
-        jdbc.execute("TRUNCATE registration, team_member, team, participant RESTART IDENTITY CASCADE");
+        // arena_attempt is listed first because it references registration; CASCADE
+        // would take it anyway, but naming it makes the dependency visible rather
+        // than incidental.
+        jdbc.execute("TRUNCATE arena_attempt, registration, team_member, team, participant "
+                + "RESTART IDENTITY CASCADE");
         jdbc.execute("UPDATE event SET seats_taken = 0, registration_status = 'REGISTRATION_OPEN'");
         jdbc.execute("UPDATE event SET capacity = 30 WHERE id = 'buildx'");
         jdbc.execute("UPDATE event SET capacity = 40 WHERE id = 'ideathon'");
         jdbc.execute("UPDATE event SET capacity = NULL WHERE id NOT IN ('buildx', 'ideathon')");
+
+        // The arena switch is global operational state, so a test that starts the
+        // arena would otherwise leave it running for every test that followed - the
+        // exact cross-contamination this method exists to prevent.
+        jdbc.execute("UPDATE arena_control SET status = 'OFFLINE', duration_seconds = 2700, "
+                + "opened_at = NULL, ended_at = NULL, updated_at = now(), updated_by = NULL");
     }
 
     protected void closeRegistration(String eventId) {

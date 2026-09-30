@@ -1,0 +1,842 @@
+{
+  "event": "Engineers Day 2026 Debugging Arena",
+  "language": "C++",
+  "total_problems": 12,
+  "quality_control": {
+    "easy": 4,
+    "medium": 4,
+    "hard": 4,
+    "all_buggy_programs_compiled": true,
+    "all_corrected_programs_passed_visible_and_hidden_tests": true,
+    "every_buggy_program_failed_at_least_one_hidden_test": true,
+    "validation_compiler": "g++ -std=c++17"
+  },
+  "problems": [
+    {
+      "id": "C++-E-001",
+      "title": "Sum from 1 to N",
+      "language": "C++",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "loops",
+        "accumulators"
+      ],
+      "problem_statement": "Calculate the sum of all integers from 1 through N.",
+      "input_format": "A single integer N.",
+      "output_format": "Print the sum from 1 through N.",
+      "constraints": "1 <= N <= 1000",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int sum = 0;\n    for (int i = 1; i < n; i++) {\n        sum += i;\n    }\n    cout << sum;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "for loop condition",
+          "description": "The loop stops at i < n instead of including N.",
+          "why_wrong": "The required range is 1 through N, so N must also be added."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int sum = 0;\n    for (int i = 1; i <= n; i++) {\n        sum += i;\n    }\n    cout << sum;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "5",
+          "output": "15"
+        },
+        {
+          "input": "1",
+          "output": "1"
+        },
+        {
+          "input": "10",
+          "output": "55"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "2",
+          "expected_output": "3"
+        },
+        {
+          "input": "3",
+          "expected_output": "6"
+        },
+        {
+          "input": "7",
+          "expected_output": "28"
+        },
+        {
+          "input": "20",
+          "expected_output": "210"
+        },
+        {
+          "input": "100",
+          "expected_output": "5050"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "C++-E-002",
+      "title": "Find the Largest Mark",
+      "language": "C++",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "arrays",
+        "comparison",
+        "loops"
+      ],
+      "problem_statement": "Read N marks and print the largest mark.",
+      "input_format": "N followed by N integer marks.",
+      "output_format": "Print the largest mark.",
+      "constraints": "1 <= N <= 50; 0 <= mark <= 100",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int marks[50];\n    for (int i = 0; i < n; i++) cin >> marks[i];\n    int largest = marks[0];\n    for (int i = 1; i < n; i++) {\n        if (marks[i] < largest) largest = marks[i];\n    }\n    cout << largest;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "comparison inside second loop",
+          "description": "The program replaces largest when the current mark is smaller.",
+          "why_wrong": "To find the largest value, the current mark should replace largest only when it is greater."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int marks[50];\n    for (int i = 0; i < n; i++) cin >> marks[i];\n    int largest = marks[0];\n    for (int i = 1; i < n; i++) {\n        if (marks[i] > largest) largest = marks[i];\n    }\n    cout << largest;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "5\n72 81 65 90 77",
+          "output": "90"
+        },
+        {
+          "input": "3\n40 25 38",
+          "output": "40"
+        },
+        {
+          "input": "1\n55",
+          "output": "55"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "2\n10 20",
+          "expected_output": "20"
+        },
+        {
+          "input": "4\n100 1 50 99",
+          "expected_output": "100"
+        },
+        {
+          "input": "5\n33 33 32 31 30",
+          "expected_output": "33"
+        },
+        {
+          "input": "3\n0 4 2",
+          "expected_output": "4"
+        },
+        {
+          "input": "6\n12 98 45 67 23 89",
+          "expected_output": "98"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "C++-E-003",
+      "title": "Celsius to Fahrenheit",
+      "language": "C++",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "input/output",
+        "arithmetic"
+      ],
+      "problem_statement": "Convert a temperature from Celsius to Fahrenheit using F = C * 9 / 5 + 32.",
+      "input_format": "One integer temperature in Celsius.",
+      "output_format": "Print the Fahrenheit temperature as an integer.",
+      "constraints": "-50 <= C <= 100",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int c; cin >> c;\n    int f = c * 9 / 5 - 32;\n    cout << f;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "Fahrenheit calculation",
+          "description": "The program subtracts 32 instead of adding 32.",
+          "why_wrong": "The Celsius-to-Fahrenheit formula ends with +32."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int c; cin >> c;\n    int f = c * 9 / 5 + 32;\n    cout << f;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "0",
+          "output": "32"
+        },
+        {
+          "input": "100",
+          "output": "212"
+        },
+        {
+          "input": "20",
+          "output": "68"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "10",
+          "expected_output": "50"
+        },
+        {
+          "input": "-10",
+          "expected_output": "14"
+        },
+        {
+          "input": "25",
+          "expected_output": "77"
+        },
+        {
+          "input": "40",
+          "expected_output": "104"
+        },
+        {
+          "input": "-20",
+          "expected_output": "-4"
+        }
+      ],
+      "estimated_time_minutes": 2
+    },
+    {
+      "id": "C++-E-004",
+      "title": "Count Even Numbers",
+      "language": "C++",
+      "difficulty": "EASY",
+      "points": 100,
+      "bug_count": 1,
+      "concepts": [
+        "arrays",
+        "conditions",
+        "counters"
+      ],
+      "problem_statement": "Read N integers and count how many of them are even.",
+      "input_format": "N followed by N integers.",
+      "output_format": "Print the count of even integers.",
+      "constraints": "1 <= N <= 50; -1000 <= value <= 1000",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int count = 0, x;\n    for (int i = 0; i < n; i++) {\n        cin >> x;\n        if (x % 2 != 0) count++;\n    }\n    cout << count;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "condition inside loop",
+          "description": "The condition counts odd numbers instead of even numbers.",
+          "why_wrong": "An even number has remainder 0 when divided by 2, so only x % 2 == 0 should increment the counter."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int count = 0, x;\n    for (int i = 0; i < n; i++) {\n        cin >> x;\n        if (x % 2 == 0) count++;\n    }\n    cout << count;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "5\n1 2 3 4 6",
+          "output": "3"
+        },
+        {
+          "input": "4\n8 10 12 14",
+          "output": "4"
+        },
+        {
+          "input": "3\n1 3 5",
+          "output": "0"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n2",
+          "expected_output": "1"
+        },
+        {
+          "input": "2\n2 3",
+          "expected_output": "1"
+        },
+        {
+          "input": "6\n0 -1 -2 5 7 8",
+          "expected_output": "3"
+        },
+        {
+          "input": "5\n11 13 15 17 19",
+          "expected_output": "0"
+        },
+        {
+          "input": "7\n4 6 9 10 11 12 14",
+          "expected_output": "5"
+        }
+      ],
+      "estimated_time_minutes": 2
+    },
+    {
+      "id": "C++-M-001",
+      "title": "Factorial of N",
+      "language": "C++",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "loops",
+        "accumulators",
+        "functions"
+      ],
+      "problem_statement": "Calculate N factorial, N! = 1 * 2 * ... * N.",
+      "input_format": "One integer N.",
+      "output_format": "Print N!.",
+      "constraints": "0 <= N <= 10",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int fact = 1;\n    for (int i = 1; i < n; i++) fact *= i;\n    cout << fact;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "factorial loop condition",
+          "description": "The loop stops before multiplying by N.",
+          "why_wrong": "N! includes every factor from 1 through N."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int fact = 1;\n    for (int i = 1; i <= n; i++) fact *= i;\n    cout << fact;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "5",
+          "output": "120"
+        },
+        {
+          "input": "0",
+          "output": "1"
+        },
+        {
+          "input": "3",
+          "output": "6"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1",
+          "expected_output": "1"
+        },
+        {
+          "input": "2",
+          "expected_output": "2"
+        },
+        {
+          "input": "4",
+          "expected_output": "24"
+        },
+        {
+          "input": "6",
+          "expected_output": "720"
+        },
+        {
+          "input": "10",
+          "expected_output": "3628800"
+        }
+      ],
+      "estimated_time_minutes": 4
+    },
+    {
+      "id": "C++-M-002",
+      "title": "First Occurrence Search",
+      "language": "C++",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "arrays",
+        "linear search",
+        "conditions"
+      ],
+      "problem_statement": "Find the first index at which a target value occurs in an array. Print -1 if it is absent.",
+      "input_format": "N, N integers, then target.",
+      "output_format": "Print the zero-based index of the first occurrence, or -1.",
+      "constraints": "1 <= N <= 50",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int a[50];\n    for (int i = 0; i < n; i++) cin >> a[i];\n    int target; cin >> target;\n    int index = -1;\n    for (int i = 0; i < n - 1; i++) {\n        if (a[i] == target) { index = i; break; }\n    }\n    cout << index;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "search loop condition",
+          "description": "The loop excludes the last array element.",
+          "why_wrong": "The valid indexes run from 0 through n-1, so the last element must also be searched."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int a[50];\n    for (int i = 0; i < n; i++) cin >> a[i];\n    int target; cin >> target;\n    int index = -1;\n    for (int i = 0; i < n; i++) {\n        if (a[i] == target) { index = i; break; }\n    }\n    cout << index;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "5\n4 7 2 7 9\n7",
+          "output": "1"
+        },
+        {
+          "input": "4\n10 20 30 40\n25",
+          "output": "-1"
+        },
+        {
+          "input": "3\n5 8 11\n5",
+          "output": "0"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n42\n42",
+          "expected_output": "0"
+        },
+        {
+          "input": "2\n3 9\n9",
+          "expected_output": "1"
+        },
+        {
+          "input": "5\n1 2 3 4 5\n5",
+          "expected_output": "4"
+        },
+        {
+          "input": "6\n7 2 7 3 7 4\n7",
+          "expected_output": "0"
+        },
+        {
+          "input": "4\n8 6 4 2\n2",
+          "expected_output": "3"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "C++-M-003",
+      "title": "Reverse a Number",
+      "language": "C++",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "while loop",
+        "arithmetic",
+        "digits"
+      ],
+      "problem_statement": "Reverse the digits of a positive integer and print the reversed number.",
+      "input_format": "One positive integer N.",
+      "output_format": "Print N with its digits reversed.",
+      "constraints": "1 <= N <= 999999",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int rev = 0;\n    while (n > 0) {\n        int digit = n % 10;\n        rev = rev * 10 + n / 10;\n        n /= 10;\n    }\n    cout << rev;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "reverse-number update",
+          "description": "The value added to rev uses n / 10 instead of the extracted digit.",
+          "why_wrong": "Each iteration must append the last digit, not the remaining prefix of the number."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int rev = 0;\n    while (n > 0) {\n        int digit = n % 10;\n        rev = rev * 10 + digit;\n        n /= 10;\n    }\n    cout << rev;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "1234",
+          "output": "4321"
+        },
+        {
+          "input": "50",
+          "output": "5"
+        },
+        {
+          "input": "7",
+          "output": "7"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "12",
+          "expected_output": "21"
+        },
+        {
+          "input": "105",
+          "expected_output": "501"
+        },
+        {
+          "input": "321",
+          "expected_output": "123"
+        },
+        {
+          "input": "1000",
+          "expected_output": "1"
+        },
+        {
+          "input": "9876",
+          "expected_output": "6789"
+        }
+      ],
+      "estimated_time_minutes": 3
+    },
+    {
+      "id": "C++-M-004",
+      "title": "Row Sums of a Matrix",
+      "language": "C++",
+      "difficulty": "MEDIUM",
+      "points": 200,
+      "bug_count": 1,
+      "concepts": [
+        "nested loops",
+        "2D arrays",
+        "accumulators"
+      ],
+      "problem_statement": "Read a matrix with R rows and C columns and print the sum of each row.",
+      "input_format": "R C followed by R*C integers.",
+      "output_format": "Print one row sum per line.",
+      "constraints": "1 <= R,C <= 5",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int r, c; cin >> r >> c;\n    int a[5][5];\n    for (int i = 0; i < r; i++)\n        for (int j = 0; j < c; j++) cin >> a[i][j];\n    int sum = 0;\n    for (int i = 0; i < r; i++) {\n        for (int j = 0; j < c; j++) sum += a[i][j];\n        cout << sum << \"\\n\";\n    }\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "row-sum accumulator",
+          "description": "sum is initialized only once before processing all rows.",
+          "why_wrong": "Each row needs its own sum; otherwise later rows include the sums of previous rows."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int r, c; cin >> r >> c;\n    int a[5][5];\n    for (int i = 0; i < r; i++)\n        for (int j = 0; j < c; j++) cin >> a[i][j];\n    for (int i = 0; i < r; i++) {\n        int sum = 0;\n        for (int j = 0; j < c; j++) sum += a[i][j];\n        cout << sum << \"\\n\";\n    }\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "2 3\n1 2 3\n4 5 6",
+          "output": "6\n15"
+        },
+        {
+          "input": "3 2\n5 5\n1 2\n10 0",
+          "output": "10\n3\n10"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1 4\n1 2 3 4",
+          "expected_output": "10"
+        },
+        {
+          "input": "2 2\n1 1\n2 2",
+          "expected_output": "2\n4"
+        },
+        {
+          "input": "3 1\n5\n0\n-2",
+          "expected_output": "5\n0\n-2"
+        },
+        {
+          "input": "2 4\n1 0 2 0\n3 4 5 6",
+          "expected_output": "3\n18"
+        },
+        {
+          "input": "4 2\n10 20\n0 1\n-5 5\n7 3",
+          "expected_output": "30\n1\n0\n10"
+        }
+      ],
+      "estimated_time_minutes": 4
+    },
+    {
+      "id": "C++-H-001",
+      "title": "Student Result Calculator",
+      "language": "C++",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "arrays",
+        "loops",
+        "average",
+        "conditions"
+      ],
+      "problem_statement": "Read a student's marks, calculate the total, average, and grade. Grade A is 75 or above, B is 60 or above, C is 40 or above, otherwise F.",
+      "input_format": "N followed by N marks.",
+      "output_format": "Print Total, Average, and Grade on separate lines. Average is printed as a whole number using integer division.",
+      "constraints": "1 <= N <= 10; 0 <= mark <= 100",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int total = 10;\n    for (int i = 0; i < n; i++) {\n        int mark; cin >> mark;\n        total += mark;\n    }\n    int average = total / 3;\n    char grade;\n    if (average > 75) grade = 'A';\n    else if (average >= 60) grade = 'B';\n    else if (average > 40) grade = 'C';\n    else grade = 'F';\n    cout << total << \"\\n\" << average << \"\\n\" << grade;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "total initialization",
+          "description": "total starts at 10 instead of 0.",
+          "why_wrong": "The total should contain only the student's marks."
+        },
+        {
+          "location": "average calculation",
+          "description": "The total is always divided by 3 instead of by the number of subjects n.",
+          "why_wrong": "The average is total divided by the number of marks entered."
+        },
+        {
+          "location": "A grade condition",
+          "description": "The A grade condition uses > 75 instead of >= 75.",
+          "why_wrong": "A student with an average of exactly 75 should receive A."
+        },
+        {
+          "location": "C grade condition",
+          "description": "The C grade condition uses > 40 instead of >= 40.",
+          "why_wrong": "An average of exactly 40 should receive grade C."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int total = 0;\n    for (int i = 0; i < n; i++) {\n        int mark; cin >> mark;\n        total += mark;\n    }\n    int average = total / n;\n    char grade;\n    if (average >= 75) grade = 'A';\n    else if (average >= 60) grade = 'B';\n    else if (average >= 40) grade = 'C';\n    else grade = 'F';\n    cout << total << \"\\n\" << average << \"\\n\" << grade;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "4\n80 70 90 60",
+          "output": "300\n75\nA"
+        },
+        {
+          "input": "3\n40 50 60",
+          "output": "150\n50\nC"
+        },
+        {
+          "input": "2\n30 35",
+          "output": "65\n32\nF"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n75",
+          "expected_output": "75\n75\nA"
+        },
+        {
+          "input": "2\n60 60",
+          "expected_output": "120\n60\nB"
+        },
+        {
+          "input": "5\n100 100 50 50 50",
+          "expected_output": "350\n70\nB"
+        },
+        {
+          "input": "3\n39 40 41",
+          "expected_output": "120\n40\nC"
+        },
+        {
+          "input": "4\n20 20 20 20",
+          "expected_output": "80\n20\nF"
+        },
+        {
+          "input": "4\n74 75 75 76",
+          "expected_output": "300\n75\nA"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "C++-H-002",
+      "title": "Shopping Bill",
+      "language": "C++",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "loops",
+        "multiplication",
+        "discount",
+        "percentage"
+      ],
+      "problem_statement": "Calculate a shopping bill from item prices and quantities. If the subtotal is at least 1000, give a 10% discount. Then add 5% tax to the discounted subtotal.",
+      "input_format": "N followed by N pairs of price and quantity.",
+      "output_format": "Print subtotal, discount, tax, and final total, each on a separate line. Use integer arithmetic for percentage calculations.",
+      "constraints": "1 <= N <= 10; 1 <= price <= 10000; 1 <= quantity <= 20",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int subtotal = 0;\n    for (int i = 0; i < n; i++) {\n        int price, quantity; cin >> price >> quantity;\n        subtotal += price;\n    }\n    int discount = 0;\n    if (subtotal > 1000) discount = subtotal * 10 / 100;\n    int afterDiscount = subtotal - discount;\n    int tax = subtotal * 5 / 100;\n    int total = subtotal + tax;\n    cout << subtotal << \"\\n\" << discount << \"\\n\" << tax << \"\\n\" << total;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "subtotal accumulation",
+          "description": "Only price is added, so quantity is ignored.",
+          "why_wrong": "The cost of an item is price multiplied by quantity."
+        },
+        {
+          "location": "discount condition",
+          "description": "The discount is applied only when subtotal is greater than 1000.",
+          "why_wrong": "The rule says the discount starts at 1000, so 1000 must qualify."
+        },
+        {
+          "location": "tax calculation",
+          "description": "Tax is calculated from subtotal instead of the discounted subtotal.",
+          "why_wrong": "The tax must be 5% of the amount remaining after discount."
+        },
+        {
+          "location": "final total calculation",
+          "description": "The final total uses subtotal instead of the discounted amount afterDiscount.",
+          "why_wrong": "The final bill should be the discounted subtotal plus tax."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int subtotal = 0;\n    for (int i = 0; i < n; i++) {\n        int price, quantity; cin >> price >> quantity;\n        subtotal += price * quantity;\n    }\n    int discount = 0;\n    if (subtotal >= 1000) discount = subtotal * 10 / 100;\n    int afterDiscount = subtotal - discount;\n    int tax = afterDiscount * 5 / 100;\n    int total = afterDiscount + tax;\n    cout << subtotal << \"\\n\" << discount << \"\\n\" << tax << \"\\n\" << total;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "2\n200 2\n100 3",
+          "output": "700\n0\n35\n735"
+        },
+        {
+          "input": "2\n500 1\n500 1",
+          "output": "1000\n100\n45\n945"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n100 5",
+          "expected_output": "500\n0\n25\n525"
+        },
+        {
+          "input": "2\n600 1\n400 1",
+          "expected_output": "1000\n100\n45\n945"
+        },
+        {
+          "input": "2\n250 2\n300 2",
+          "expected_output": "1100\n110\n49\n1039"
+        },
+        {
+          "input": "3\n100 1\n200 2\n50 4",
+          "expected_output": "700\n0\n35\n735"
+        },
+        {
+          "input": "1\n1000 1",
+          "expected_output": "1000\n100\n45\n945"
+        },
+        {
+          "input": "3\n75 3\n125 2\n200 1",
+          "expected_output": "675\n0\n33\n708"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "C++-H-003",
+      "title": "Attendance Eligibility",
+      "language": "C++",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "loops",
+        "counters",
+        "percentage",
+        "conditions"
+      ],
+      "problem_statement": "Read attendance for N classes using 1 for present and 0 for absent. Calculate attendance percentage and print the percentage followed by Eligible or Not Eligible. A student is eligible at 75% or higher.",
+      "input_format": "N followed by N attendance values (0 or 1).",
+      "output_format": "Print integer attendance percentage on the first line and Eligible/Not Eligible on the second.",
+      "constraints": "1 <= N <= 100",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int present = 1;\n    for (int i = 0; i < n; i++) {\n        int status; cin >> status;\n        if (status == 0) present++;\n    }\n    int percentage = present / n * 100;\n    cout << percentage << \"\\n\";\n    if (percentage > 75) cout << \"Eligible\";\n    else cout << \"Not Eligible\";\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "present initialization",
+          "description": "present starts at 1 even though no classes have been processed.",
+          "why_wrong": "The count of present classes must start at zero."
+        },
+        {
+          "location": "attendance counting condition",
+          "description": "The program increments present when status is 0, which means absent.",
+          "why_wrong": "Only status 1 should increase the present count."
+        },
+        {
+          "location": "percentage calculation",
+          "description": "Integer division happens before multiplication by 100.",
+          "why_wrong": "For many attendance values, present / n becomes 0 before it is multiplied by 100."
+        },
+        {
+          "location": "eligibility condition",
+          "description": "The program requires percentage to be greater than 75.",
+          "why_wrong": "The rule says 75% or higher is eligible."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    int present = 0;\n    for (int i = 0; i < n; i++) {\n        int status; cin >> status;\n        if (status == 1) present++;\n    }\n    int percentage = present * 100 / n;\n    cout << percentage << \"\\n\";\n    if (percentage >= 75) cout << \"Eligible\";\n    else cout << \"Not Eligible\";\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "4\n1 1 1 1",
+          "output": "100\nEligible"
+        },
+        {
+          "input": "4\n1 1 0 0",
+          "output": "50\nNot Eligible"
+        },
+        {
+          "input": "4\n1 1 1 0",
+          "output": "75\nEligible"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1\n1",
+          "expected_output": "100\nEligible"
+        },
+        {
+          "input": "1\n0",
+          "expected_output": "0\nNot Eligible"
+        },
+        {
+          "input": "5\n1 1 1 0 0",
+          "expected_output": "60\nNot Eligible"
+        },
+        {
+          "input": "8\n1 1 1 1 1 1 0 0",
+          "expected_output": "75\nEligible"
+        },
+        {
+          "input": "10\n1 1 1 1 1 1 1 0 0 0",
+          "expected_output": "70\nNot Eligible"
+        },
+        {
+          "input": "20\n1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0",
+          "expected_output": "75\nEligible"
+        }
+      ],
+      "estimated_time_minutes": 6
+    },
+    {
+      "id": "C++-H-004",
+      "title": "Menu-Based Number Calculator",
+      "language": "C++",
+      "difficulty": "HARD",
+      "points": 300,
+      "bug_count": 4,
+      "concepts": [
+        "switch",
+        "conditions",
+        "arithmetic",
+        "input/output"
+      ],
+      "problem_statement": "Perform one arithmetic operation on two integers. Menu 1 is addition, 2 subtraction, 3 multiplication, and 4 integer division.",
+      "input_format": "An option followed by two integers a and b. Division inputs have b != 0.",
+      "output_format": "Print the result of the selected operation.",
+      "constraints": "-1000 <= a,b <= 1000; b != 0 for option 4",
+      "buggy_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int choice, a, b; cin >> choice >> a >> b;\n    int result = 0;\n    switch (choice) {\n        case 1: result = a - b; break;\n        case 2: result = a + b; break;\n        case 3: result = a + b; break;\n        case 4: result = b / a; break;\n        default: result = 0;\n    }\n    cout << result;\n    return 0;\n}",
+      "bugs": [
+        {
+          "location": "case 1",
+          "description": "Addition is implemented using subtraction.",
+          "why_wrong": "Menu option 1 must calculate a + b."
+        },
+        {
+          "location": "case 2",
+          "description": "Subtraction is implemented using addition.",
+          "why_wrong": "Menu option 2 must calculate a - b."
+        },
+        {
+          "location": "case 3",
+          "description": "Multiplication is implemented using addition.",
+          "why_wrong": "Menu option 3 must calculate a * b."
+        },
+        {
+          "location": "case 4",
+          "description": "Division uses b / a instead of a / b.",
+          "why_wrong": "The calculator should divide the first number by the second number."
+        }
+      ],
+      "corrected_code": "#include <iostream>\nusing namespace std;\nint main() {\n    int choice, a, b; cin >> choice >> a >> b;\n    int result = 0;\n    switch (choice) {\n        case 1: result = a + b; break;\n        case 2: result = a - b; break;\n        case 3: result = a * b; break;\n        case 4: result = a / b; break;\n        default: result = 0;\n    }\n    cout << result;\n    return 0;\n}",
+      "visible_tests": [
+        {
+          "input": "1 12 5",
+          "output": "17"
+        },
+        {
+          "input": "2 12 5",
+          "output": "7"
+        },
+        {
+          "input": "3 6 7",
+          "output": "42"
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "1 2 3",
+          "expected_output": "5"
+        },
+        {
+          "input": "2 10 4",
+          "expected_output": "6"
+        },
+        {
+          "input": "3 9 5",
+          "expected_output": "45"
+        },
+        {
+          "input": "4 20 4",
+          "expected_output": "5"
+        },
+        {
+          "input": "1 -5 8",
+          "expected_output": "3"
+        },
+        {
+          "input": "3 -4 -6",
+          "expected_output": "24"
+        }
+      ],
+      "estimated_time_minutes": 4
+    }
+  ]
+}

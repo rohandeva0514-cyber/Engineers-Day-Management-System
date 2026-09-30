@@ -31,6 +31,25 @@ export const router = createBrowserRouter([
   // NOT what protects it — Spring Security refusing /api/admin/** is. Hiding a
   // route only hides the buttons.
   { path: '/admin', element: <AdminPage />, errorElement: <RouteErrorPage /> },
+
+  // The Debugging Arena. Outside the practical shell AND outside the experience
+  // route: it owns the viewport, carries no site chrome, and must never inherit
+  // Lenis — smooth-scroll hijacking fights a code editor.
+  //
+  // One route, no sub-paths. The server owns which phase a participant is in, and
+  // a URL is a client-supplied claim about phase.
+  //
+  // Code-split via the router's own `lazy`, not `React.lazy`: the router awaits
+  // the module before it commits the navigation, so there is no Suspense boundary
+  // and no flash of an empty frame. This matters more than it sounds — the arena
+  // will carry a code editor and five syntax grammars, and registration is the
+  // path every student uses. None of that belongs in the bundle they download to
+  // sign up for Chess.
+  {
+    path: '/arena',
+    lazy: async () => ({ Component: (await import('@/arena/ArenaRoute')).ArenaRoute }),
+    errorElement: <RouteErrorPage />,
+  },
   {
     element: <RootLayout />,
     errorElement: <RouteErrorPage />,

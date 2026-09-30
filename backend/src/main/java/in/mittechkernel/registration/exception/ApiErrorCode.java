@@ -72,6 +72,131 @@ public enum ApiErrorCode {
     TEAM_NAME_TAKEN(HttpStatus.CONFLICT),
 
     /**
+     * The requested arena lifecycle move is not one the state machine allows.
+     *
+     * <p>409 rather than 400: the request is well-formed and would have been valid
+     * from a different starting state. The one an organiser will actually hit is
+     * reopening an ENDED arena straight to ACTIVE, which has to go via OFFLINE so
+     * that restarting a finished competition is a deliberate two-step act rather
+     * than one mis-click.
+     */
+    ARENA_TRANSITION_INVALID(HttpStatus.CONFLICT),
+
+    /**
+     * The arena is not open, so nobody may check in or start.
+     *
+     * <p>Distinct from ARENA_ENDED so a student waiting for the event to begin is not
+     * told it is over. This one means "wait"; that one means "go home".
+     */
+    ARENA_OFFLINE(HttpStatus.CONFLICT),
+
+    /** The arena has been ended by mission control. Nothing further may start. */
+    ARENA_ENDED(HttpStatus.CONFLICT),
+
+    /**
+     * No live arena session backs this request.
+     *
+     * <p>One code for every cause - unknown token, lapsed session, a session
+     * displaced by a later check-in on another device. Telling them apart would let
+     * someone probing the endpoint learn when they had found a real session.
+     */
+    ARENA_SESSION_INVALID(HttpStatus.UNAUTHORIZED),
+
+    /** Start Mission was called on an attempt that is already running. */
+    ATTEMPT_ALREADY_STARTED(HttpStatus.CONFLICT),
+
+    /**
+     * The attempt is over - submitted, expired, or ended by mission control.
+     *
+     * <p>Separate from ATTEMPT_ALREADY_STARTED because the two need different screens:
+     * one returns the participant to a running mission, the other to a final state
+     * they cannot leave.
+     */
+    ATTEMPT_ALREADY_FINALIZED(HttpStatus.CONFLICT),
+
+    /**
+     * The language is fixed for the rest of the mission.
+     *
+     * <p>Chosen before Start Mission and locked by it. Enforced here rather than by
+     * the frontend hiding the picker, because hiding a control does not stop a direct
+     * call - and the problem bank a participant is scored against is decided by it.
+     */
+    ARENA_LANGUAGE_LOCKED(HttpStatus.CONFLICT),
+
+    /**
+     * Not one of the five supported debugging languages.
+     *
+     * <p>422 rather than 400: the request is well formed, and retrying it unchanged
+     * will always fail.
+     */
+    LANGUAGE_NOT_SUPPORTED(HttpStatus.UNPROCESSABLE_ENTITY),
+
+    /**
+     * The workspace was asked for before the mission started.
+     *
+     * <p>Separate from ATTEMPT_ALREADY_FINALIZED because the two send a participant
+     * to opposite ends of the flow: this one back to the briefing, that one to a
+     * final screen they cannot leave.
+     */
+    ATTEMPT_NOT_STARTED(HttpStatus.CONFLICT),
+
+    /**
+     * No such problem in this participant's mission.
+     *
+     * <p>One refusal covering "that handle does not exist" and "that handle belongs
+     * to a language you are not locked to". A participant cannot tell which, so the
+     * endpoint cannot be used to map another language's bank.
+     */
+    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND),
+
+    /** No arena attempt with that id. Admin-facing; participants never name one. */
+    ATTEMPT_NOT_FOUND(HttpStatus.NOT_FOUND),
+
+    /**
+     * The draft being saved was based on a revision that is no longer current.
+     *
+     * <p>Someone saved this problem on another device since this client loaded it.
+     * Refusing rather than applying is what stops a stale tab silently discarding
+     * work done elsewhere.
+     */
+    DRAFT_STALE(HttpStatus.CONFLICT),
+
+    /** The submitted draft exceeds the per-problem size ceiling. */
+    DRAFT_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE),
+
+    /**
+     * This problem has already been submitted and is final.
+     *
+     * <p>A per-problem lock, not the end of the mission: the other eleven problems
+     * are untouched. Phase E's whole-attempt submission is a separate thing.
+     */
+    PROBLEM_ALREADY_SUBMITTED(HttpStatus.CONFLICT),
+
+    /**
+     * The judge failed - not the participant's code.
+     *
+     * <p>503, and deliberately never a verdict. A run that hits this records no
+     * result, changes no status, and leaves the draft untouched so the participant
+     * can simply try again. Treating an outage as a wrong answer would score an
+     * infrastructure problem against a student.
+     */
+    EXECUTION_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE),
+
+    /**
+     * Live code execution is switched off for this event.
+     *
+     * <p>Distinct from EXECUTION_UNAVAILABLE, which means the judge broke. This means
+     * running code is deliberately not part of the competition: submissions are
+     * evaluated by hand. 409 rather than 503 because nothing is wrong and retrying
+     * will not help.
+     *
+     * <p>The UI offers no way to reach the endpoints that return this. It exists so
+     * that turning execution off is a server-side fact rather than a hidden button -
+     * a direct call is refused too.
+     */
+    EXECUTION_DISABLED(HttpStatus.CONFLICT),
+
+    /**
      * The roll number exists but the supplied email or year does not match the stored record.
      * Refusing here stops one student registering under another's roll number, and stops a
      * typo silently changing the year that eligibility is decided from.

@@ -1,0 +1,624 @@
+/* ===========================================================================
+   DEBUGGING ARENA — the mission console.
+
+   Same palette as everything else; no new tokens. The console is a working
+   environment someone sits in front of for 45 minutes, so the rule here is
+   stricter than on the approach screens: nothing animates on a loop, nothing
+   glows, and the only element whose treatment escalates is the clock.
+
+   Layout is a four-row grid — header, zones, rail, body, dock — so the editor
+   gets every pixel left over rather than a fixed height.
+   =========================================================================== */
+
+.console {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  height: 100dvh;
+  background: var(--color-void);
+  color: var(--color-ink);
+  overflow: hidden;
+}
+
+.console__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  margin: 0;
+}
+
+.console__label--spaced {
+  margin-top: 1.5rem;
+}
+
+.console__muted {
+  margin: 0.3rem 0 0;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+/* ------------------------------------------------------------------ header */
+
+.console__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem clamp(0.9rem, 2.5vw, 1.75rem);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.console__header-clock {
+  text-align: center;
+}
+
+.console__header-meta {
+  text-align: right;
+}
+
+.console__clock {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-mono);
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-ink);
+  transition: color 0.4s var(--ease-out-expo);
+}
+
+.console__clock[data-urgency='aware'] {
+  color: var(--color-tech);
+}
+.console__clock[data-urgency='urgent'] {
+  color: var(--color-orange);
+}
+.console__clock[data-urgency='critical'] {
+  color: var(--color-danger);
+}
+
+.console__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.4rem;
+  background: var(--color-signal);
+  vertical-align: 1px;
+}
+
+/* ------------------------------------------------------------------- zones */
+
+.console__zones {
+  display: flex;
+  gap: 1px;
+  padding: 0 clamp(0.9rem, 2.5vw, 1.75rem);
+  background: var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.console__zone {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  background: var(--color-panel);
+  border: none;
+  border-top: 2px solid transparent;
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  transition:
+    color 0.14s var(--ease-out-expo),
+    background-color 0.14s var(--ease-out-expo);
+}
+
+.console__zone:hover {
+  color: var(--color-ink);
+  background: var(--color-raised);
+}
+
+/* The active zone is marked by a rule and a colour, never by colour alone. */
+.console__zone[data-active='true'] {
+  color: var(--color-signal);
+  background: var(--color-raised);
+  border-top-color: var(--color-signal);
+}
+
+.console__zone-strip {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.console__zone-strip i {
+  width: 6px;
+  height: 6px;
+  background: var(--color-line-bright);
+}
+
+.console__zone-strip i[data-status='ATTEMPTED'] {
+  background: var(--color-orange);
+}
+.console__zone-strip i[data-status='SOLVED'] {
+  background: var(--color-signal);
+}
+
+/* -------------------------------------------------------------------- rail */
+
+.console__rail {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.6rem clamp(0.9rem, 2.5vw, 1.75rem);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.console__chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+  padding: 0.5rem 0.8rem;
+  background: var(--color-raised);
+  border: 1px solid var(--color-line-bright);
+  color: var(--color-muted);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    border-color 0.14s var(--ease-out-expo),
+    color 0.14s var(--ease-out-expo);
+}
+
+.console__chip:hover {
+  border-color: var(--color-tech);
+  color: var(--color-ink);
+}
+
+.console__chip[data-active='true'] {
+  border-color: var(--color-signal);
+  color: var(--color-ink);
+  background: var(--color-signal-soft);
+}
+
+.console__chip-mark {
+  font-family: var(--font-mono);
+  color: var(--color-faint);
+}
+
+.console__chip[data-status='ATTEMPTED'] .console__chip-mark {
+  color: var(--color-orange);
+}
+.console__chip[data-status='SOLVED'] .console__chip-mark {
+  color: var(--color-signal);
+}
+
+.console__chip-ref {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--color-faint);
+}
+
+.console__chip-points {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-faint);
+}
+
+/* -------------------------------------------------------------------- body */
+
+.console__body {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.console__brief {
+  padding: 1.25rem clamp(0.9rem, 2.5vw, 1.5rem);
+  border-right: 1px solid var(--color-line);
+  overflow-y: auto;
+  background: var(--color-panel);
+}
+
+.console__brief-title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.console__meta {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-tech);
+}
+
+.console__statement {
+  margin: 1.1rem 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-ink);
+}
+
+.console__section {
+  margin-top: 1.1rem;
+}
+
+.console__section-body {
+  margin: 0.3rem 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.console__example {
+  margin-top: 0.6rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-void);
+}
+
+.console__example > div {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0.7rem;
+}
+
+.console__example > div + div {
+  border-top: 1px solid var(--color-line);
+}
+
+.console__example span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  flex: none;
+  width: 2rem;
+}
+
+.console__example pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------------------------------------------------------------- terminal */
+
+.console__terminal {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  background: var(--color-void);
+}
+
+.console__terminal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem clamp(0.9rem, 2vw, 1.25rem);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+/* Opacity only, never a spinner — this updates every few seconds and a moving
+   indicator that frequent becomes noise. */
+.console__save {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+  transition: color 0.2s var(--ease-out-expo);
+}
+
+.console__save[data-state='saved'] {
+  color: var(--color-signal-deep);
+}
+.console__save[data-state='failed'] {
+  color: var(--color-danger);
+}
+
+.arena-editor {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.console__editor-empty {
+  height: 100%;
+}
+
+/* -------------------------------------------------------------------- dock */
+
+.console__dock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem clamp(0.9rem, 2.5vw, 1.75rem);
+  border-top: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.console__dock-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.console__button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.15rem;
+  background: transparent;
+  border: 1px solid var(--color-line-bright);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.console__button:hover:not(:disabled) {
+  border-color: var(--color-tech);
+  color: var(--color-tech);
+}
+
+.console__button--primary {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+.console__button--primary:hover:not(:disabled) {
+  background: var(--color-signal);
+  color: var(--color-void);
+  border-color: var(--color-signal);
+}
+
+.console__button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------ dock output
+   Each state has a colour AND a word. Colour is never the only signal - this
+   gets read quickly, in a bright hall, by people who may not distinguish it. */
+
+.console__dock {
+  align-items: flex-start;
+}
+
+.console__dock-output {
+  flex: 1;
+  min-width: 0;
+  max-height: 9rem;
+  overflow-y: auto;
+}
+
+.console__label[data-tone='ok'] {
+  color: var(--color-signal);
+}
+
+.console__label[data-tone='fail'] {
+  color: var(--color-danger);
+}
+
+.console__label[data-tone='warn'] {
+  color: var(--color-orange);
+}
+
+.console__scan {
+  position: relative;
+  margin-top: 0.5rem;
+  height: 2px;
+  background: var(--color-line);
+  overflow: hidden;
+}
+
+.console__scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--color-tech), transparent);
+  animation: console-scan 1.1s var(--ease-in-out-quart) infinite;
+}
+
+@keyframes console-scan {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.console__cases {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.console__case {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.console__case-mark {
+  font-family: var(--font-mono);
+  color: var(--color-danger);
+}
+
+.console__case[data-passed='true'] .console__case-mark {
+  color: var(--color-signal);
+}
+
+.console__case-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.console__case-diff code {
+  font-family: var(--font-mono);
+  color: var(--color-ink);
+  background: var(--color-raised);
+  padding: 0 0.25rem;
+}
+
+.console__stderr {
+  margin: 0.6rem 0 0;
+  padding: 0.6rem 0.7rem;
+  background: var(--color-void);
+  border-left: 2px solid var(--color-danger);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 6rem;
+  overflow-y: auto;
+}
+
+/* ---------------------------------------------------------------- modal
+   The one irreversible confirmation in the participant flow. */
+
+.console__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgb(0 0 0 / 0.72);
+  backdrop-filter: blur(6px);
+  animation: modal-in 0.2s var(--ease-out-expo);
+}
+
+.console__modal-panel {
+  width: min(100%, 30rem);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background: var(--color-panel);
+  border: 1px solid var(--color-line-bright);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    12px 100%,
+    0 calc(100% - 12px)
+  );
+}
+
+.console__modal-title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.console__modal-body {
+  margin: 0.9rem 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-muted);
+}
+
+.console__modal-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.console__muted[data-tone='fail'] {
+  color: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .console__scan::after {
+    animation: none;
+    opacity: 0.4;
+  }
+
+  .console__modal {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------- responsive
+   The editor is the product; everything else yields to it. Below 1024 the brief
+   stops competing for width and sits above the editor instead. */
+
+@media (max-width: 1023px) {
+  .console__body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .console__brief {
+    border-right: none;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .console__header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .console__zone-strip {
+    display: none;
+  }
+
+  .console__chip-title {
+    display: none;
+  }
+
+  .console__dock {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* A submission failure, shown inside the confirm dialog rather than behind it.
+   A failure the participant cannot see reads as the button doing nothing. */
+.console__modal-error {
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.85rem;
+  background: var(--color-danger-soft);
+  border-left: 2px solid var(--color-danger);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-ink);
+}

@@ -1,0 +1,560 @@
+/* ===========================================================================
+   DEBUGGING ARENA — Phase A (gate)
+
+   No new palette. Every colour here is a token from globals.css, because the
+   arena is the same world as the rest of the site seen from inside a terminal,
+   and a second palette would make it a different product.
+
+   The restraint is deliberate and is the spec: subtle HUD, technical grid, one
+   scanning element, no aggressive neon. Anything that animates on this screen
+   animates once or slowly — students sit in front of it for minutes.
+   =========================================================================== */
+
+.arena {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background-color: var(--color-void);
+  color: var(--color-ink);
+  overflow: hidden;
+}
+
+/* Two stacked textures and a vignette, all static. They read as material, not as
+   a pattern anyone consciously notices — the moment a background animates, a
+   45-minute screen becomes tiring. */
+.arena__backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.arena__backdrop::before,
+.arena__backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.arena__backdrop::before {
+  background-image:
+    linear-gradient(to right, rgb(230 240 236 / 0.024) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(230 240 236 / 0.024) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.arena__backdrop::after {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.016) 0px,
+      rgb(255 255 255 / 0.016) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(
+      ellipse 120% 90% at 50% 45%,
+      transparent 40%,
+      rgb(0 0 0 / 0.45) 78%,
+      rgb(0 0 0 / 0.82) 100%
+    );
+}
+
+/* --------------------------------------------------------------- the panel */
+
+.arena__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 44rem);
+  border: 1px solid var(--color-line-bright);
+  background: color-mix(in srgb, var(--color-panel) 88%, transparent);
+  padding: clamp(1.75rem, 5vw, 3.5rem);
+  /* Angular, not rounded. A border radius here would put the whole thing back
+     into ordinary dashboard territory. */
+  clip-path: polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% 100%,
+    14px 100%,
+    0 calc(100% - 14px)
+  );
+}
+
+/* Corner ticks — four short rules that imply a HUD frame without drawing one. */
+.arena__panel::before,
+.arena__panel::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+.arena__panel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid var(--color-signal);
+  border-left: 1px solid var(--color-signal);
+}
+
+.arena__panel::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 1px solid var(--color-signal);
+  border-bottom: 1px solid var(--color-signal);
+}
+
+.arena__panel[data-tone='offline']::before,
+.arena__panel[data-tone='offline']::after {
+  border-color: var(--color-closed);
+}
+
+.arena__panel[data-tone='ended']::before,
+.arena__panel[data-tone='ended']::after {
+  border-color: var(--color-orange);
+}
+
+.arena__panel[data-tone='error']::before,
+.arena__panel[data-tone='error']::after {
+  border-color: var(--color-danger);
+}
+
+/* -------------------------------------------------------------- status line */
+
+.arena__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.arena__dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  background: var(--color-closed);
+  /* A square, not a circle. Every other indicator on this site is angular. */
+  box-shadow: 0 0 10px -2px currentColor;
+}
+
+.arena__status[data-tone='offline'] .arena__dot {
+  background: var(--color-closed);
+  animation: arena-breathe 2.4s var(--ease-in-out-quart) infinite;
+}
+
+.arena__status[data-tone='active'] .arena__dot {
+  background: var(--color-signal);
+  animation: arena-breathe 1.8s var(--ease-in-out-quart) infinite;
+}
+
+.arena__status[data-tone='ended'] .arena__dot {
+  background: var(--color-orange);
+}
+
+.arena__status[data-tone='error'] .arena__dot {
+  background: var(--color-danger);
+}
+
+@keyframes arena-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ---------------------------------------------------------------- headings */
+
+.arena__title {
+  margin-top: 1.75rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-size: clamp(2rem, 7vw, 3.5rem);
+  color: var(--color-ink);
+}
+
+.arena__subtitle {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-tech);
+}
+
+.arena__body {
+  margin-top: 1.75rem;
+  max-width: 44ch;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-muted);
+}
+
+.arena__body strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------- system log */
+
+.arena__log {
+  margin-top: 2.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.arena__log-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.arena__log-line + .arena__log-line {
+  margin-top: 0.45rem;
+}
+
+.arena__log-value {
+  color: var(--color-muted);
+}
+
+/* The one moving element on the gate: a slow band crossing the log strip while
+   the client waits. Cyan, because this is the interface reporting on itself —
+   green would claim the arena is live, which is the one thing it is not. */
+.arena__scan {
+  position: relative;
+  margin-top: 1.25rem;
+  height: 1px;
+  background: var(--color-line);
+  overflow: hidden;
+}
+
+.arena__scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-tech) 50%,
+    transparent 100%
+  );
+  opacity: 0.55;
+  animation: arena-scan 2.8s var(--ease-in-out-quart) infinite;
+}
+
+@keyframes arena-scan {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------------------------------------------------------------- actions */
+
+.arena__actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.arena__button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.4rem;
+  border: 1px solid var(--color-line-bright);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    border-color 0.16s var(--ease-out-expo),
+    color 0.16s var(--ease-out-expo),
+    background-color 0.16s var(--ease-out-expo);
+}
+
+.arena__button:hover,
+.arena__button:focus-visible {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+  background: var(--color-signal-soft);
+}
+
+.arena__link {
+  color: var(--color-tech);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-tech) 40%, transparent);
+}
+
+.arena__link:hover {
+  color: var(--color-signal);
+  border-bottom-color: var(--color-signal);
+}
+
+.arena__button--primary {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+.arena__button--primary:hover:not(:disabled),
+.arena__button--primary:focus-visible:not(:disabled) {
+  background: var(--color-signal);
+  color: var(--color-void);
+}
+
+.arena__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------- access code cells */
+
+.arena__field-label {
+  margin-top: 2.25rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.arena__cells {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.arena__cell {
+  width: 2.75rem;
+  height: 3.4rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  background: var(--color-raised);
+  border: 1px solid var(--color-line-bright);
+  caret-color: var(--color-signal);
+  transition:
+    border-color 0.12s var(--ease-out-expo),
+    background-color 0.12s var(--ease-out-expo);
+}
+
+.arena__cell:focus {
+  outline: none;
+  border-color: var(--color-tech);
+  background: var(--color-overlay);
+}
+
+.arena__cells[data-invalid='true'] .arena__cell {
+  border-color: var(--color-danger);
+}
+
+.arena__hint {
+  margin-top: 0.85rem;
+  font-size: 13px;
+  color: var(--color-faint);
+}
+
+/* ------------------------------------------------------------------ facts */
+
+.arena__facts {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1.25rem 2rem;
+}
+
+.arena__fact dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+.arena__fact dd {
+  margin: 0.35rem 0 0;
+  font-size: 15px;
+  color: var(--color-ink);
+}
+
+/* ------------------------------------------------------------ language cards */
+
+.arena__cards {
+  margin-top: 1.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.arena__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.15rem 1rem;
+  text-align: left;
+  background: var(--color-raised);
+  border: 1px solid var(--color-line-bright);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    border-color 0.16s var(--ease-out-expo),
+    background-color 0.16s var(--ease-out-expo),
+    transform 0.16s var(--ease-out-expo);
+}
+
+.arena__card:hover:not(:disabled),
+.arena__card:focus-visible:not(:disabled) {
+  border-color: var(--color-tech);
+  transform: translateY(-2px);
+}
+
+.arena__card[data-selected='true'] {
+  border-color: var(--color-signal);
+  background: var(--color-signal-soft);
+}
+
+.arena__card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.arena__card-name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.arena__card-runtime {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+/* ------------------------------------------------------------------ rules */
+
+.arena__rules {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 52ch;
+}
+
+.arena__rules li {
+  position: relative;
+  padding-left: 1.1rem;
+  margin-top: 0.7rem;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.arena__rules li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--color-signal);
+}
+
+.arena__rules strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.arena__title--sm {
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+}
+
+/* ------------------------------------------------------------- mission clock */
+
+.arena__clock-label {
+  margin-top: 1.75rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+/* The one element whose treatment escalates. Nothing else on the screen does —
+   a student mid-thought at 04:59 should notice the colour and not lose the
+   thought. Never a sound, never full-screen, never a modal. */
+.arena__clock {
+  margin-top: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: clamp(2.4rem, 8vw, 3.6rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-ink);
+  transition: color 0.4s var(--ease-out-expo);
+}
+
+.arena__clock[data-urgency='aware'] {
+  color: var(--color-tech);
+}
+
+.arena__clock[data-urgency='urgent'] {
+  color: var(--color-orange);
+}
+
+.arena__clock[data-urgency='critical'] {
+  color: var(--color-danger);
+}
+
+/* ------------------------------------------------------------------ errors */
+
+.arena__log--error .arena__log-value {
+  color: var(--color-danger);
+}
+
+.arena__error-detail {
+  margin-top: 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .arena__scan::after,
+  .arena__status .arena__dot {
+    animation: none;
+  }
+
+  .arena__card:hover:not(:disabled),
+  .arena__card:focus-visible:not(:disabled) {
+    transform: none;
+  }
+
+  /* The scan band is the only thing that says "still checking". With motion off
+     it becomes a static rule, and the log text carries the meaning instead. */
+  .arena__scan::after {
+    opacity: 0.25;
+  }
+}

@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * No authentication, no event execution, no submissions, no results.
  */
 @SpringBootApplication
+@org.springframework.boot.context.properties.ConfigurationPropertiesScan
 public class RegistrationServiceApplication {
 
     public static void main(String[] args) {

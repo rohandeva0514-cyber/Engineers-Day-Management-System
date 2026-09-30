@@ -17,6 +17,18 @@ spring:
     locations: classpath:db/migration
 
 app:
+  # A known admin credential for the suite.
+  #
+  # Without one, SecurityConfig registers no admin user at all and every
+  # /api/admin/** call is refused before it reaches a controller - which would make
+  # the admin tests pass for the wrong reason, asserting 401 against an endpoint
+  # that was never reachable rather than against one that correctly refused them.
+  # Setting it here means "unauthenticated is refused" and "wrong password is
+  # refused" test the filter chain instead of its absence.
+  admin:
+    username: admin
+    password: test-admin-password
+
   cors:
     # Both shapes the policy has to get right: the deployed frontend and a dev server.
     # CorsPolicyTest asserts against these exact values.

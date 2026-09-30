@@ -1,0 +1,779 @@
+[
+  {
+    "id": "C-E-001",
+    "title": "Sum from 1 to N",
+    "language": "C",
+    "difficulty": "EASY",
+    "points": 100,
+    "bug_count": 1,
+    "concepts": [
+      "for loop",
+      "accumulator",
+      "arithmetic"
+    ],
+    "problem_statement": "Students must calculate the sum of all integers from 1 through N.",
+    "input_format": "Input contains one integer N.",
+    "output_format": "Print the sum from 1 through N.",
+    "constraints": "1 <= N <= 1000",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int sum = 1;\n    for (int i = 1; i <= n; i++) {\n        sum += i;\n    }\n    printf(\"%d\\n\", sum);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "initialization of sum",
+        "description": "sum starts at 1 instead of 0.",
+        "why_wrong": "The accumulator already contains an extra 1 before the loop adds the numbers."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int sum = 0;\n    for (int i = 1; i <= n; i++) {\n        sum += i;\n    }\n    printf(\"%d\\n\", sum);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "5",
+        "15"
+      ],
+      [
+        "10",
+        "55"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1",
+        "1"
+      ],
+      [
+        "2",
+        "3"
+      ],
+      [
+        "3",
+        "6"
+      ],
+      [
+        "50",
+        "1275"
+      ],
+      [
+        "1000",
+        "500500"
+      ]
+    ],
+    "estimated_time_minutes": 3
+  },
+  {
+    "id": "C-E-002",
+    "title": "Find the Largest Mark",
+    "language": "C",
+    "difficulty": "EASY",
+    "points": 100,
+    "bug_count": 1,
+    "concepts": [
+      "arrays",
+      "comparison",
+      "initial value"
+    ],
+    "problem_statement": "Given N marks, print the largest mark.",
+    "input_format": "First line contains N. Second line contains N integers.",
+    "output_format": "Print the largest value.",
+    "constraints": "1 <= N <= 100; -100 <= mark <= 100",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int a[100];\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    int max = 0;\n    for (int i = 0; i < n; i++) {\n        if (a[i] > max) max = a[i];\n    }\n    printf(\"%d\\n\", max);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "initialization of max",
+        "description": "max starts at 0 instead of the first array element.",
+        "why_wrong": "If every input value is negative, 0 is not an input value and is incorrectly reported as the maximum."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int a[100];\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    int max = a[0];\n    for (int i = 1; i < n; i++) {\n        if (a[i] > max) max = a[i];\n    }\n    printf(\"%d\\n\", max);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "5\n10 7 25 4 18",
+        "25"
+      ],
+      [
+        "4\n-3 -8 -1 -5",
+        "-1"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1\n-9",
+        "-9"
+      ],
+      [
+        "3\n-5 -2 -7",
+        "-2"
+      ],
+      [
+        "5\n0 -1 0 -3 -2",
+        "0"
+      ],
+      [
+        "6\n12 12 3 8 1 9",
+        "12"
+      ],
+      [
+        "2\n-100 -99",
+        "-99"
+      ]
+    ],
+    "estimated_time_minutes": 3
+  },
+  {
+    "id": "C-E-003",
+    "title": "Celsius to Fahrenheit",
+    "language": "C",
+    "difficulty": "EASY",
+    "points": 100,
+    "bug_count": 1,
+    "concepts": [
+      "input/output",
+      "arithmetic",
+      "type conversion"
+    ],
+    "problem_statement": "Convert a temperature from Celsius to Fahrenheit using F = C * 9 / 5 + 32.",
+    "input_format": "Input contains one real number C.",
+    "output_format": "Print Fahrenheit with exactly 2 decimal places.",
+    "constraints": "-100 <= C <= 100",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    double c;\n    scanf(\"%lf\", &c);\n    double f = c * 9.0 / 5.0 + 30.0;\n    printf(\"%.2f\\n\", f);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "calculation of f",
+        "description": "The constant 30.0 is added instead of 32.0.",
+        "why_wrong": "The Fahrenheit conversion formula requires an offset of 32 degrees."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    double c;\n    scanf(\"%lf\", &c);\n    double f = c * 9.0 / 5.0 + 32.0;\n    printf(\"%.2f\\n\", f);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "0",
+        "32.00"
+      ],
+      [
+        "100",
+        "212.00"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "-40",
+        "-40.00"
+      ],
+      [
+        "1",
+        "33.80"
+      ],
+      [
+        "25",
+        "77.00"
+      ],
+      [
+        "37.5",
+        "99.50"
+      ],
+      [
+        "-10.5",
+        "13.10"
+      ]
+    ],
+    "estimated_time_minutes": 3
+  },
+  {
+    "id": "C-E-004",
+    "title": "Count Even Numbers",
+    "language": "C",
+    "difficulty": "EASY",
+    "points": 100,
+    "bug_count": 1,
+    "concepts": [
+      "arrays",
+      "loop",
+      "condition",
+      "counter"
+    ],
+    "problem_statement": "Given N integers, count how many are even.",
+    "input_format": "First line contains N. Second line contains N integers.",
+    "output_format": "Print the number of even integers.",
+    "constraints": "1 <= N <= 100; -1000 <= value <= 1000",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n, count = 0, x;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        scanf(\"%d\", &x);\n        if (x % 2 == 1) count++;\n    }\n    printf(\"%d\\n\", count);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "even-number condition",
+        "description": "The condition checks for remainder 1 instead of remainder 0.",
+        "why_wrong": "An integer is even when its remainder after division by 2 is 0."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n, count = 0, x;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        scanf(\"%d\", &x);\n        if (x % 2 == 0) count++;\n    }\n    printf(\"%d\\n\", count);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "5\n2 7 4 9 10",
+        "3"
+      ],
+      [
+        "4\n1 3 5 8",
+        "1"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1\n0",
+        "1"
+      ],
+      [
+        "2\n-2 -3",
+        "1"
+      ],
+      [
+        "6\n-4 -1 0 7 8 11",
+        "3"
+      ],
+      [
+        "5\n6 6 6 6 6",
+        "5"
+      ],
+      [
+        "7\n1 2 3 4 5 6 7",
+        "3"
+      ]
+    ],
+    "estimated_time_minutes": 3
+  },
+  {
+    "id": "C-M-001",
+    "title": "Factorial of N",
+    "language": "C",
+    "difficulty": "MEDIUM",
+    "points": 200,
+    "bug_count": 1,
+    "concepts": [
+      "for loop",
+      "accumulator",
+      "boundary"
+    ],
+    "problem_statement": "Calculate N! for a non-negative integer N.",
+    "input_format": "Input contains one integer N.",
+    "output_format": "Print N!.",
+    "constraints": "0 <= N <= 10",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int fact = 1;\n    for (int i = 1; i < n; i++) {\n        fact *= i;\n    }\n    printf(\"%d\\n\", fact);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "factorial loop condition",
+        "description": "The loop stops when i reaches n because it uses i < n.",
+        "why_wrong": "N! must include multiplication by N, so the loop must continue through i == n."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int fact = 1;\n    for (int i = 1; i <= n; i++) {\n        fact *= i;\n    }\n    printf(\"%d\\n\", fact);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "5",
+        "120"
+      ],
+      [
+        "0",
+        "1"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1",
+        "1"
+      ],
+      [
+        "2",
+        "2"
+      ],
+      [
+        "3",
+        "6"
+      ],
+      [
+        "6",
+        "720"
+      ],
+      [
+        "10",
+        "3628800"
+      ]
+    ],
+    "estimated_time_minutes": 4
+  },
+  {
+    "id": "C-M-002",
+    "title": "First Occurrence Search",
+    "language": "C",
+    "difficulty": "MEDIUM",
+    "points": 200,
+    "bug_count": 1,
+    "concepts": [
+      "arrays",
+      "linear search",
+      "loop boundary"
+    ],
+    "problem_statement": "Find the index of the first occurrence of a target in an array. If it is absent, print -1.",
+    "input_format": "First line: N. Second line: N integers. Third line: target.",
+    "output_format": "Print the zero-based index of the first occurrence, or -1.",
+    "constraints": "1 <= N <= 100; -1000 <= values,target <= 1000",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n, a[100], target, pos = -1;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    scanf(\"%d\", &target);\n    for (int i = 0; i < n - 1; i++) {\n        if (a[i] == target) {\n            pos = i;\n            break;\n        }\n    }\n    printf(\"%d\\n\", pos);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "search loop condition",
+        "description": "The loop uses i < n - 1, so it never checks index n - 1.",
+        "why_wrong": "The last array element is a valid position and must also be checked."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n, a[100], target, pos = -1;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    scanf(\"%d\", &target);\n    for (int i = 0; i < n; i++) {\n        if (a[i] == target) {\n            pos = i;\n            break;\n        }\n    }\n    printf(\"%d\\n\", pos);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "5\n4 8 2 8 6\n8",
+        "1"
+      ],
+      [
+        "4\n3 5 7 9\n2",
+        "-1"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1\n9\n9",
+        "0"
+      ],
+      [
+        "1\n9\n3",
+        "-1"
+      ],
+      [
+        "5\n1 2 3 4 5\n5",
+        "4"
+      ],
+      [
+        "6\n7 7 2 7 9 7\n7",
+        "0"
+      ],
+      [
+        "4\n-1 -2 -3 -4\n-4",
+        "3"
+      ]
+    ],
+    "estimated_time_minutes": 4
+  },
+  {
+    "id": "C-M-003",
+    "title": "Reverse a Number",
+    "language": "C",
+    "difficulty": "MEDIUM",
+    "points": 200,
+    "bug_count": 1,
+    "concepts": [
+      "while loop",
+      "digits",
+      "arithmetic"
+    ],
+    "problem_statement": "Reverse the digits of a positive integer. For example, 1234 becomes 4321.",
+    "input_format": "Input contains one positive integer N.",
+    "output_format": "Print the reversed number.",
+    "constraints": "1 <= N <= 100000000",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int rev = 0;\n    while (n > 0) {\n        int digit = n % 10;\n        rev = rev + digit;\n        n /= 10;\n    }\n    printf(\"%d\\n\", rev);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "reverse-number update",
+        "description": "The new digit is added directly to rev instead of shifting existing digits left by one decimal place.",
+        "why_wrong": "To append a digit, the existing reversed number must be multiplied by 10 before adding the digit."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    int rev = 0;\n    while (n > 0) {\n        int digit = n % 10;\n        rev = rev * 10 + digit;\n        n /= 10;\n    }\n    printf(\"%d\\n\", rev);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "1234",
+        "4321"
+      ],
+      [
+        "120",
+        "21"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1",
+        "1"
+      ],
+      [
+        "9",
+        "9"
+      ],
+      [
+        "10",
+        "1"
+      ],
+      [
+        "305",
+        "503"
+      ],
+      [
+        "10001",
+        "10001"
+      ]
+    ],
+    "estimated_time_minutes": 4
+  },
+  {
+    "id": "C-M-004",
+    "title": "Row Sums of a Matrix",
+    "language": "C",
+    "difficulty": "MEDIUM",
+    "points": 200,
+    "bug_count": 1,
+    "concepts": [
+      "nested loops",
+      "2D arrays",
+      "accumulator reset"
+    ],
+    "problem_statement": "Given an N x M matrix, print the sum of each row in order.",
+    "input_format": "First line contains N and M. Next N lines contain M integers.",
+    "output_format": "Print N row sums separated by spaces.",
+    "constraints": "1 <= N,M <= 10; -100 <= matrix value <= 100",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n, m, a[10][10];\n    scanf(\"%d %d\", &n, &m);\n    for (int i = 0; i < n; i++)\n        for (int j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n    int sum = 0;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            sum += a[i][j];\n        }\n        printf(\"%d\", sum);\n        if (i < n - 1) printf(\" \");\n    }\n    printf(\"\\n\");\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "row-sum accumulator",
+        "description": "sum is initialized only once before all rows are processed.",
+        "why_wrong": "Each row needs a fresh sum; otherwise later rows include values from earlier rows."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n, m, a[10][10];\n    scanf(\"%d %d\", &n, &m);\n    for (int i = 0; i < n; i++)\n        for (int j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n    for (int i = 0; i < n; i++) {\n        int sum = 0;\n        for (int j = 0; j < m; j++) {\n            sum += a[i][j];\n        }\n        printf(\"%d\", sum);\n        if (i < n - 1) printf(\" \");\n    }\n    printf(\"\\n\");\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "2 3\n1 2 3\n4 5 6",
+        "6 15"
+      ],
+      [
+        "3 2\n5 5\n1 2\n-3 4",
+        "10 3 1"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1 1\n7",
+        "7"
+      ],
+      [
+        "2 2\n-1 -2\n3 4",
+        "-3 7"
+      ],
+      [
+        "3 1\n10\n20\n30",
+        "10 20 30"
+      ],
+      [
+        "2 4\n1 1 1 1\n2 2 2 2",
+        "4 8"
+      ],
+      [
+        "4 2\n0 0\n-5 5\n7 -2\n3 3",
+        "0 0 5 6"
+      ]
+    ],
+    "estimated_time_minutes": 5
+  },
+  {
+    "id": "C-H-001",
+    "title": "Student Result Calculator",
+    "language": "C",
+    "difficulty": "HARD",
+    "points": 300,
+    "bug_count": 4,
+    "concepts": [
+      "arrays",
+      "loops",
+      "average",
+      "conditions",
+      "grade calculation"
+    ],
+    "problem_statement": "Calculate the result of a student from five subject marks. The total is the sum of all five marks. Average is total/5. Grade is A for average >= 90, B for >= 75, C for >= 60, D for >= 40, otherwise F.",
+    "input_format": "Input contains five integer marks on one line or multiple lines.",
+    "output_format": "Print total, average with 2 decimals, and grade on separate lines.",
+    "constraints": "0 <= each mark <= 100",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int marks[5], total = 1;\n    for (int i = 0; i < 4; i++) scanf(\"%d\", &marks[i]);\n    double average = total / 4.0;\n    char grade;\n    if (average >= 90) grade = 'A';\n    else if (average >= 70) grade = 'B';\n    else if (average >= 60) grade = 'C';\n    else if (average >= 40) grade = 'D';\n    else grade = 'F';\n    printf(\"Total: %d\\n\", total);\n    printf(\"Average: %.2f\\n\", average);\n    printf(\"Grade: %c\\n\", grade);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "total initialization",
+        "description": "total starts at 1 instead of 0.",
+        "why_wrong": "The total must begin at zero before marks are added."
+      },
+      {
+        "location": "marks input loop",
+        "description": "The loop reads only four marks instead of five.",
+        "why_wrong": "All five subject marks are part of the result."
+      },
+      {
+        "location": "average calculation",
+        "description": "The average is divided by 4 instead of 5.",
+        "why_wrong": "There are five subjects, so the total must be divided by 5."
+      },
+      {
+        "location": "B grade threshold",
+        "description": "The B grade threshold is 70 instead of 75.",
+        "why_wrong": "According to the stated grading rule, B begins at an average of 75."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int marks[5], total = 0;\n    for (int i = 0; i < 5; i++) scanf(\"%d\", &marks[i]);\n    for (int i = 0; i < 5; i++) total += marks[i];\n    double average = total / 5.0;\n    char grade;\n    if (average >= 90) grade = 'A';\n    else if (average >= 75) grade = 'B';\n    else if (average >= 60) grade = 'C';\n    else if (average >= 40) grade = 'D';\n    else grade = 'F';\n    printf(\"Total: %d\\n\", total);\n    printf(\"Average: %.2f\\n\", average);\n    printf(\"Grade: %c\\n\", grade);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "95 90 85 92 88",
+        "Total: 450\nAverage: 90.00\nGrade: A"
+      ],
+      [
+        "70 75 80 65 60",
+        "Total: 350\nAverage: 70.00\nGrade: C"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "75 75 75 75 75",
+        "Total: 375\nAverage: 75.00\nGrade: B"
+      ],
+      [
+        "89 89 89 89 89",
+        "Total: 445\nAverage: 89.00\nGrade: B"
+      ],
+      [
+        "40 40 40 40 40",
+        "Total: 200\nAverage: 40.00\nGrade: D"
+      ],
+      [
+        "39 40 40 40 40",
+        "Total: 199\nAverage: 39.80\nGrade: F"
+      ],
+      [
+        "100 100 100 100 100",
+        "Total: 500\nAverage: 100.00\nGrade: A"
+      ]
+    ],
+    "estimated_time_minutes": 7
+  },
+  {
+    "id": "C-H-002",
+    "title": "Shopping Bill",
+    "language": "C",
+    "difficulty": "HARD",
+    "points": 300,
+    "bug_count": 4,
+    "concepts": [
+      "loops",
+      "multiplication",
+      "accumulator",
+      "conditions",
+      "discount"
+    ],
+    "problem_statement": "Calculate a shopping bill. For each item, subtotal is price * quantity. If the subtotal is at least 1000, discount is 10%; otherwise if it is at least 500, discount is 5%; otherwise discount is 0%. Print subtotal, discount, and final amount.",
+    "input_format": "First line contains N. Each of the next N lines contains price (real number) and quantity (integer).",
+    "output_format": "Print Subtotal, Discount, and Final with 2 decimals on separate lines.",
+    "constraints": "1 <= N <= 20; 0.01 <= price <= 10000; 1 <= quantity <= 20",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    double total = 1.0;\n    for (int i = 0; i < n - 1; i++) {\n        double price; int qty;\n        scanf(\"%lf %d\", &price, &qty);\n        total += price * qty;\n    }\n    double discount;\n    if (total >= 1000) discount = total * 0.05;\n    else if (total >= 500) discount = total * 0.05;\n    else discount = 0;\n    double final_amount = total + discount;\n    printf(\"Subtotal: %.2f\\n\", total);\n    printf(\"Discount: %.2f\\n\", discount);\n    printf(\"Final: %.2f\\n\", final_amount);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "total initialization",
+        "description": "total starts at 1.0 instead of 0.0.",
+        "why_wrong": "An extra 1.0 is added to every bill before item totals are processed."
+      },
+      {
+        "location": "item input loop",
+        "description": "The loop runs while i < n - 1, so the final item is skipped.",
+        "why_wrong": "All N items must contribute to the subtotal."
+      },
+      {
+        "location": "10 percent discount branch",
+        "description": "The discount for totals of at least 1000 is calculated using 5% instead of 10%.",
+        "why_wrong": "The stated rule gives a 10% discount at 1000 or more."
+      },
+      {
+        "location": "final amount calculation",
+        "description": "The discount is added to the subtotal instead of subtracted.",
+        "why_wrong": "A discount reduces the amount the customer pays."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    double total = 0.0;\n    for (int i = 0; i < n; i++) {\n        double price; int qty;\n        scanf(\"%lf %d\", &price, &qty);\n        total += price * qty;\n    }\n    double discount;\n    if (total >= 1000) discount = total * 0.10;\n    else if (total >= 500) discount = total * 0.05;\n    else discount = 0;\n    double final_amount = total - discount;\n    printf(\"Subtotal: %.2f\\n\", total);\n    printf(\"Discount: %.2f\\n\", discount);\n    printf(\"Final: %.2f\\n\", final_amount);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "2\n300 1\n250 1",
+        "Subtotal: 550.00\nDiscount: 27.50\nFinal: 522.50"
+      ],
+      [
+        "1\n1200 1",
+        "Subtotal: 1200.00\nDiscount: 120.00\nFinal: 1080.00"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1\n499 1",
+        "Subtotal: 499.00\nDiscount: 0.00\nFinal: 499.00"
+      ],
+      [
+        "1\n500 1",
+        "Subtotal: 500.00\nDiscount: 25.00\nFinal: 475.00"
+      ],
+      [
+        "2\n600 1\n400 1",
+        "Subtotal: 1000.00\nDiscount: 100.00\nFinal: 900.00"
+      ],
+      [
+        "3\n100 2\n50 3\n25 4",
+        "Subtotal: 450.00\nDiscount: 0.00\nFinal: 450.00"
+      ],
+      [
+        "4\n250 1\n250 1\n250 1\n250 1",
+        "Subtotal: 1000.00\nDiscount: 100.00\nFinal: 900.00"
+      ]
+    ],
+    "estimated_time_minutes": 8
+  },
+  {
+    "id": "C-H-003",
+    "title": "Attendance Eligibility",
+    "language": "C",
+    "difficulty": "HARD",
+    "points": 300,
+    "bug_count": 4,
+    "concepts": [
+      "arrays",
+      "loops",
+      "percentage",
+      "conditions",
+      "accumulator"
+    ],
+    "problem_statement": "A student has attendance records for five subjects. For each subject, input classes held and classes attended. Compute overall attendance percentage using total attended / total held * 100. The student is Eligible if the percentage is at least 75, otherwise Not Eligible.",
+    "input_format": "Input contains five pairs: classes held and classes attended.",
+    "output_format": "Print total held, total attended, percentage with 2 decimals, and eligibility on separate lines.",
+    "constraints": "For every subject: 1 <= held <= 100 and 0 <= attended <= held",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int held[5], attended[5];\n    int totalHeld = 0, totalAttended = 1;\n    for (int i = 0; i < 4; i++) {\n        scanf(\"%d %d\", &held[i], &attended[i]);\n        totalHeld += held[i];\n        totalAttended += attended[i];\n    }\n    double percentage = (totalAttended / totalHeld) * 100;\n    const char *status;\n    if (percentage > 75) status = \"Eligible\";\n    else status = \"Not Eligible\";\n    printf(\"Total Held: %d\\n\", totalHeld);\n    printf(\"Total Attended: %d\\n\", totalAttended);\n    printf(\"Attendance: %.2f%%\\n\", percentage);\n    printf(\"Status: %s\\n\", status);\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "totalAttended initialization",
+        "description": "totalAttended starts at 1 instead of 0.",
+        "why_wrong": "An attendance count must begin at zero before adding the five subject counts."
+      },
+      {
+        "location": "subject input loop",
+        "description": "The loop reads only four subject records instead of five.",
+        "why_wrong": "All five subjects must be included in the overall attendance."
+      },
+      {
+        "location": "percentage calculation",
+        "description": "The division is performed as integer division before multiplication by 100.",
+        "why_wrong": "Both totals are integers, so the ratio can become 0 or 1 before being multiplied; floating-point division is needed."
+      },
+      {
+        "location": "eligibility comparison",
+        "description": "The program uses > 75 instead of >= 75.",
+        "why_wrong": "Exactly 75% attendance is eligible according to the rule."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int held[5], attended[5];\n    int totalHeld = 0, totalAttended = 0;\n    for (int i = 0; i < 5; i++) {\n        scanf(\"%d %d\", &held[i], &attended[i]);\n        totalHeld += held[i];\n        totalAttended += attended[i];\n    }\n    double percentage = ((double) totalAttended / totalHeld) * 100.0;\n    const char *status;\n    if (percentage >= 75.0) status = \"Eligible\";\n    else status = \"Not Eligible\";\n    printf(\"Total Held: %d\\n\", totalHeld);\n    printf(\"Total Attended: %d\\n\", totalAttended);\n    printf(\"Attendance: %.2f%%\\n\", percentage);\n    printf(\"Status: %s\\n\", status);\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "60 45\n40 35\n50 40\n30 25\n20 15",
+        "Total Held: 200\nTotal Attended: 160\nAttendance: 80.00%\nStatus: Eligible"
+      ],
+      [
+        "40 30\n40 30\n40 30\n40 30\n40 30",
+        "Total Held: 200\nTotal Attended: 150\nAttendance: 75.00%\nStatus: Eligible"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "10 10\n10 10\n10 10\n10 10\n10 10",
+        "Total Held: 50\nTotal Attended: 50\nAttendance: 100.00%\nStatus: Eligible"
+      ],
+      [
+        "100 75\n1 1\n1 1\n1 1\n1 1",
+        "Total Held: 104\nTotal Attended: 79\nAttendance: 75.96%\nStatus: Eligible"
+      ],
+      [
+        "100 74\n1 1\n1 1\n1 1\n1 1",
+        "Total Held: 104\nTotal Attended: 78\nAttendance: 75.00%\nStatus: Eligible"
+      ],
+      [
+        "80 40\n20 10\n50 25\n30 15\n20 10",
+        "Total Held: 200\nTotal Attended: 100\nAttendance: 50.00%\nStatus: Not Eligible"
+      ],
+      [
+        "1 0\n2 1\n3 2\n4 3\n5 4",
+        "Total Held: 15\nTotal Attended: 10\nAttendance: 66.67%\nStatus: Not Eligible"
+      ]
+    ],
+    "estimated_time_minutes": 8
+  },
+  {
+    "id": "C-H-004",
+    "title": "Menu-Based Number Calculator",
+    "language": "C",
+    "difficulty": "HARD",
+    "points": 300,
+    "bug_count": 4,
+    "concepts": [
+      "switch",
+      "loops",
+      "conditions",
+      "accumulators",
+      "menu"
+    ],
+    "problem_statement": "Process N commands. Each command has a choice and two integers. Choice 1 prints the sum, choice 2 prints the larger number, choice 3 prints the difference a-b, and choice 4 prints the product. Any other choice prints Invalid. Print one result per command.",
+    "input_format": "First line contains N. Each of the next N lines contains choice, a, b.",
+    "output_format": "Print one result per command.",
+    "constraints": "1 <= N <= 20; -100 <= a,b <= 100; choice is an integer",
+    "buggy_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n - 1; i++) {\n        int choice, a, b;\n        scanf(\"%d %d %d\", &choice, &a, &b);\n        switch (choice) {\n            case 1:\n                printf(\"%d\\n\", a - b);\n                break;\n            case 2:\n                printf(\"%d\\n\", a > b ? a : b);\n                break;\n            case 3:\n                printf(\"%d\\n\", a + b);\n                break;\n            case 4:\n                printf(\"%d\\n\", a + b);\n                break;\n            default:\n                printf(\"Invalid\\n\");\n        }\n    }\n    return 0;\n}",
+    "bugs": [
+      {
+        "location": "command loop boundary",
+        "description": "The loop processes only n - 1 commands.",
+        "why_wrong": "All N commands must be read and processed."
+      },
+      {
+        "location": "choice 1 operation",
+        "description": "Choice 1 performs subtraction instead of addition.",
+        "why_wrong": "Choice 1 is defined as sum, so it must calculate a + b."
+      },
+      {
+        "location": "choice 3 operation",
+        "description": "Choice 3 performs addition instead of subtraction.",
+        "why_wrong": "Choice 3 is defined as a - b."
+      },
+      {
+        "location": "choice 4 operation",
+        "description": "Choice 4 performs addition instead of multiplication.",
+        "why_wrong": "Choice 4 is defined as a * b."
+      }
+    ],
+    "corrected_code": "#include <stdio.h>\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int choice, a, b;\n        scanf(\"%d %d %d\", &choice, &a, &b);\n        switch (choice) {\n            case 1:\n                printf(\"%d\\n\", a + b);\n                break;\n            case 2:\n                printf(\"%d\\n\", a > b ? a : b);\n                break;\n            case 3:\n                printf(\"%d\\n\", a - b);\n                break;\n            case 4:\n                printf(\"%d\\n\", a * b);\n                break;\n            default:\n                printf(\"Invalid\\n\");\n        }\n    }\n    return 0;\n}",
+    "visible_tests": [
+      [
+        "4\n1 10 5\n2 8 12\n3 9 4\n4 3 6",
+        "15\n12\n5\n18"
+      ],
+      [
+        "3\n4 2 5\n1 -2 7\n9 1 1",
+        "10\n5\nInvalid"
+      ]
+    ],
+    "hidden_tests": [
+      [
+        "1\n1 0 0",
+        "0"
+      ],
+      [
+        "1\n3 -5 2",
+        "-7"
+      ],
+      [
+        "1\n4 -3 4",
+        "-12"
+      ],
+      [
+        "2\n2 -10 -3\n3 -2 -7",
+        "-3\n5"
+      ],
+      [
+        "5\n1 1 2\n2 5 4\n3 1 8\n4 7 0\n8 0 0",
+        "3\n5\n-7\n0\nInvalid"
+      ]
+    ],
+    "estimated_time_minutes": 7
+  }
+]
